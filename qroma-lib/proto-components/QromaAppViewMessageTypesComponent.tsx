@@ -3,19 +3,17 @@ import { MessageDetailsComponent } from "./message-types-viewer/MessageDetailsCo
 import { MessageInfo } from "@protobuf-ts/runtime";
 
 
-export const QromaAppViewMessageTypesComponent = ({messages}: {messages: MessageInfo[]}) => {
-  // console.log("QromaAppMessagesComponent");
-  // console.log(messages);
+export const QromaAppViewMessageTypesComponent = ({messages}: {messages: MessageInfo}) => {
+
+  const m = messages;
 
   return (
     <>
-      {messages.map(m => (
         <MessageDetailsComponent
           typeName={m.typeName}
           fields={m.fields}
           key={m.typeName}
           />
-      ))}
     </>
   )
 }

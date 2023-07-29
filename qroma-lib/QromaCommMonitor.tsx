@@ -1,16 +1,18 @@
 import React, { useState } from "react"
 import { MessageType } from "@protobuf-ts/runtime";
 import { MessageDataViewerComponent } from "./proto-components/message-data-viewer/MessageDataViewerComponent";
-import { IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
+import { IQromaAppWebSerial, IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
 import { PortRequestResult } from "./webserial/QromaWebSerial";
 import { QromaCommResponse } from "../qroma-comm-proto/qroma-comm";
 
 
-interface IQromaCommMonitorProps<T extends object> {
-  messageType: MessageType<T>
+interface IQromaCommMonitorProps<T extends object, U extends object> {
+  commandMessageType: MessageType<T>
+  responseMessageType: MessageType<U>
+  qromaWebSerial: IQromaAppWebSerial<T>
 }
 
-export const QromaCommMonitor = <T extends object>(props: IQromaCommMonitorProps<T>) => {
+export const QromaCommMonitor = <T extends object, U extends object>(props: IQromaCommMonitorProps<T, U>) => {
   
   const [messageData, setMessageData] = useState(props.messageType.create());
 
@@ -19,15 +21,15 @@ export const QromaCommMonitor = <T extends object>(props: IQromaCommMonitorProps
     console.log(message);
   };
 
-  const onQromaAppResponse = (appMessage: T) => {
+  const onQromaAppResponse = (appMessage: U) => {
     console.log("QromaCommMonitor - onQromaAppResponse");
     setMessageData(appMessage);
   }
 
-  const webSerialInputs: IUseQromaAppWebSerialInputs<T, T> = {
+  const webSerialInputs: IUseQromaAppWebSerialInputs<T, U> = {
     onPortRequestResult: (requestResult: PortRequestResult) => { console.log("PORT REQUEST RESULT " + requestResult.success) },
-    commandMessageType: props.messageType,
-    responseMessageType: props.messageType,
+    commandMessageType: props.commandMessageType,
+    responseMessageType: props.responseMessageType,
     onQromaCommResponse,
     onQromaAppResponse,
   };
