@@ -102,14 +102,16 @@ export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQr
     console.log(requestB64);
     console.log(requestB64.length);
 
-    const port = await qromaWebSerial.requestPort();
-    console.log(port);
-    const writer = port.writable.getWriter();
+    await qromaWebSerial.sendString(requestB64);
 
-    const encoder = new TextEncoder();
-    const encoded = encoder.encode(requestB64);
-    await writer.write(encoded);
-    writer.releaseLock();
+    // const port = await qromaWebSerial.requestPort();
+    // console.log(port);
+    // const writer = port.writable.getWriter();
+
+    // const encoder = new TextEncoder();
+    // const encoded = encoder.encode(requestB64);
+    // await writer.write(encoded);
+    // writer.releaseLock();
   }
 
   const onPortRequestResult = (requestResult: PortRequestResult): void => {
@@ -132,7 +134,7 @@ export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQr
   });
 
   return {
-    requestPort: qromaWebSerial.requestPort,
+    // requestPort: qromaWebSerial.requestPort,
     startMonitoring: startMonitoring,
     getIsConnected: qromaWebSerial.getIsConnected,
     stopMonitoring: qromaWebSerial.stopMonitoring,

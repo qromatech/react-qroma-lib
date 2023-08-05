@@ -22,6 +22,35 @@ export const getScalarTypeName = (scalarType: ScalarType): string => {
   }
 }
 
+export const getScalarValue = (scalarType: ScalarType, strValue: string): any => {
+  switch (scalarType) {
+    case ScalarType.STRING: 
+      return strValue;
+
+    case ScalarType.FLOAT:
+    case ScalarType.DOUBLE: 
+      return parseFloat(strValue)
+    
+    case ScalarType.UINT32: 
+    case ScalarType.INT64:
+    case ScalarType.UINT64:
+    case ScalarType.INT32:
+    case ScalarType.FIXED64:
+    case ScalarType.FIXED32:
+    case ScalarType.SFIXED32:
+    case ScalarType.SFIXED64:
+    case ScalarType.SINT32:
+    case ScalarType.SINT64:
+      return parseInt(strValue);
+    
+    case ScalarType.BOOL: 
+      return strValue.toLowerCase() !== "false";
+
+    // case ScalarType.BYTES: return "bytes";
+  }
+}
+
+
 
 interface IMessageScalarFieldInputComponentProps {
   field: FieldInfo
@@ -36,9 +65,14 @@ export const MessageScalarFieldInputComponent = (props: IMessageScalarFieldInput
     return <div>Non-scalar input field provided: {field.name}</div>
   }
 
+  const doOnChange = (e) => {
+    const updatedValue = getScalarValue(field.T, e.target.value);
+    props.onChange(field, updatedValue);
+  }
+
   return (
     <div>
-      {field.name} [{getScalarTypeName(field.T)}] <input onChange={(e) => props.onChange(field, e.target.value)}/>
+      {field.name} [{getScalarTypeName(field.T)}] <input onChange={doOnChange}/>
     </div>
   )
 }

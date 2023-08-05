@@ -57,7 +57,7 @@ export const MessageInputComponent = <T extends object>(props: IMessageInputComp
   
   return (
     <div>
-      {props.messageName} [{props.typeName}]
+      {props.messageName} [{props.typeName}] +++
       <MessageAllFieldsInputComponent
         messageTypeName={props.typeName}
         fields={props.fields}

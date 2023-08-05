@@ -7,14 +7,13 @@ import { QromaCommResponse } from "../qroma-comm-proto/qroma-comm";
 
 
 interface IQromaCommMonitorProps<T extends object, U extends object> {
-  commandMessageType: MessageType<T>
   responseMessageType: MessageType<U>
   qromaWebSerial: IQromaAppWebSerial<T>
 }
 
 export const QromaCommMonitor = <T extends object, U extends object>(props: IQromaCommMonitorProps<T, U>) => {
   
-  const [messageData, setMessageData] = useState(props.messageType.create());
+  const [messageData, setMessageData] = useState(props.responseMessageType.create());
 
   const onQromaCommResponse = (message: QromaCommResponse) => {
     console.log("QromaCommMonitor - onQromaCommResponse");
@@ -28,7 +27,6 @@ export const QromaCommMonitor = <T extends object, U extends object>(props: IQro
 
   const webSerialInputs: IUseQromaAppWebSerialInputs<T, U> = {
     onPortRequestResult: (requestResult: PortRequestResult) => { console.log("PORT REQUEST RESULT " + requestResult.success) },
-    commandMessageType: props.commandMessageType,
     responseMessageType: props.responseMessageType,
     onQromaCommResponse,
     onQromaAppResponse,
@@ -61,7 +59,7 @@ export const QromaCommMonitor = <T extends object, U extends object>(props: IQro
       </button>
       
       <MessageDataViewerComponent
-        messageType={props.messageType}
+        messageType={props.responseMessageType}
         messageData={messageData}
         />
     </div>

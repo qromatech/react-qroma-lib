@@ -20,7 +20,9 @@ export interface IUseQromaWebSerialInputs {
 }
 
 export interface IQromaWebSerial {
-  requestPort(): any
+  // requestPort(): any
+  sendBytes(data: Uint8Array): void
+  sendString(data: string): void
   getIsConnected(): boolean
   startMonitoring(): void
   stopMonitoring(): void  
@@ -79,11 +81,21 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
   });
   console.log("POST USEEFFECT - LISTNERS");
 
-  let isConnected = false;
 
-  const getIsConnected = () => isConnected;
+  // let isConnected = false;
+  if (!globalThis.qromaInitComplete) {
+    console.log("INITIALIZING isConnected");
+    globalThis.isConnected = false;
+  }
+  globalThis.qromaInitComplete = true;
+  
+  const getIsConnected = () => {
+    console.log("GETTING isConnected: " + globalThis.isConnected);
+    return globalThis.isConnected;
+  }
   const setIsConnected = (c: boolean) => {
-    isConnected = c;
+    console.log("SETTING isConnected: " + c);
+    globalThis.isConnected = c;
   }
 
   const requestPort = async () => {
@@ -92,14 +104,22 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
     console.log("In requestPort()");
 
     try {
-      if (qromaWebSerialContext.port && isConnected) {
+      if (qromaWebSerialContext.port && globalThis.isConnected) {
         return qromaWebSerialContext.port;
       }
 
       console.log("Requesting port");
       const port = await qNavigator.serial.requestPort();
+      // https://webserial.io/?vid=303a&pid=1001
+      // const port = await qNavigator.serial.requestPort({filters: [{
+      //   "usbProductId": 4097,
+      //   "usbVendorId": 12346
+      // }]});
       console.log("Port request complete");
+      console.log(port);
       await port.open({baudRate: 115200});
+      console.log("OPEN INFO");
+      console.log(port.getInfo());
 
       qromaWebSerialContext.port = port;
 
@@ -117,6 +137,21 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
 
       inputs.onPortRequestResult({success: false});
     }
+  }
+
+  const sendBytes = async (data: Uint8Array) => {
+    const port = await requestPort();
+    console.log(port);
+    const writer = port.writable.getWriter();
+
+    await writer.write(data);
+    writer.releaseLock();
+  }
+
+  const sendString = async (data: string) => {
+    const encoder = new TextEncoder();
+    const encoded = encoder.encode(data);
+    await sendBytes(encoded);
   }
 
   // const startMonitoring = async (onData: (data: Uint8Array) => void) => {
@@ -165,7 +200,9 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
   }
 
   return {
-    requestPort,
+    // requestPort,
+    sendBytes,
+    sendString,
     getIsConnected,
     startMonitoring,
     stopMonitoring,
