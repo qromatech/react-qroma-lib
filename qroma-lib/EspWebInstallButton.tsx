@@ -30,6 +30,6 @@ export const EspWebInstallButton: FunctionComponent<EspWebInstallButtonProps> =
 
   return <Fragment>
     <p>{props.instructionsText}</p>
-    flafxf - {installButtonElement}
+    {installButtonElement}
   </Fragment>
 }
