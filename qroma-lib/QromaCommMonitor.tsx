@@ -45,9 +45,9 @@ export const QromaCommMonitor = <T extends object, U extends object>(props: IQro
     <div>
       Qroma comm monitor
       <button onClick={async () => {
-        const port = await webSerial.requestPort();
-        console.log("PORT");
-        console.log(port);
+//         const port = await webSerial.requestPort();
+//         console.log("PORT");
+//         console.log(port);
         webSerial.startMonitoring();
       }}>
         Start monitor
