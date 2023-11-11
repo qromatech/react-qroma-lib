@@ -2,8 +2,8 @@ import React, { useState } from "react"
 import { IQromaCommFilesystemApi } from "./QromaCommFileSystemApi";
 import { DirItem, DirItemType } from "../../qroma-comm-proto/file-system-commands";
 
-// @ts-ignore
-import { Buffer } from 'buffer';
+// // @ts-ignore
+// import { Buffer } from 'buffer';
 
 
 interface IQromaCommFileExplorerUiComponentProps {
@@ -34,6 +34,16 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
     )
   }
 
+  const OpenContentsLink = (props: {itemPath: string}) => {
+    console.log(props.itemPath)
+    const itemUrl = "./qroma-io/showQromaFile/#" + props.itemPath;
+    return (
+      <a href={itemUrl} target="_blank" rel="noopener noreferrer">
+        {props.itemPath}
+      </a>
+    )
+  }
+
   const FileUiComponent = ({dirPath, dirItem}: {dirPath: string, dirItem: DirItem}) => {
     console.log("FILEPATH");
     console.log(dirPath);
@@ -48,6 +58,9 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
         <button onClick={() => listDirPath("/" + dirItem.name)}>F: {dirItem.name}</button>
         <button onClick={() => rmFile(itemPath) }>Delete</button>
         <button onClick={() => showFileContents(itemPath) }>Show</button>
+        <OpenContentsLink 
+          itemPath={itemPath}
+          />
       </li>
     )
   }
@@ -170,7 +183,6 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
   const startMonitoring = async () => {
     props.qromaCommFileSystemApi.init(onConnection);
     console.log("INIT CALLED");
-    // setIsConnected(true);
   }
 
   
