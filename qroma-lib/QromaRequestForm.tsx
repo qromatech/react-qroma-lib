@@ -6,6 +6,8 @@ import { MessageDataViewerComponent } from './proto-components/message-data-view
 import { IQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
 import { MyAppCommand } from "../../qroma-proto/hello-qroma";
 import { QromaCommCommand, QromaCommResponse } from "../qroma-comm-proto/qroma-comm";
+import { QcuCreateQromaCommMessageForAppCommand } from './QromaCommUtils';
+import { convertBinaryToBase64 } from './utils';
 // import { IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from './webserial/QromaAppWebSerial';
 // import { QromaCommResponse } from '../qroma-comm-proto/qroma-comm';
 
@@ -19,7 +21,7 @@ interface IQromaRequestFormProps<TCommand extends object, TResponse extends obje
 export const QromaRequestForm = <TCommand extends object, TResponse extends object>(props: IQromaRequestFormProps<TCommand, TResponse>) => {
   const m = props.requestMessageType;
 
-  const [requestObject, _] = useState(props.requestMessageType.create());
+  const [requestObject, setRequestObject] = useState(props.requestMessageType.create());
   const [requestObjectData, setRequestObjectData] = useState(
     props.requestMessageType.toJson(props.requestMessageType.create())
   );
@@ -91,14 +93,12 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
 
     console.log(qromaMessageBytes);
     const requestB64 = Buffer.from(qromaMessageBytes).toString('base64') + "\n";
+    console.log("APP MESSAGE B64");
     console.log(requestB64);
     console.log(requestB64.length);
 
-    // return requestB64;
-
     console.log("REQUEST TO QROMA B64");
     console.log(requestObject);
-    // console.log(requestB64);
   }
 
   const promptUserForJson = () => {
@@ -131,21 +131,21 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
     }
   }
 
-  const doTest = () => {
-    const myAppCommand: MyAppCommand = {
-      command: {
-        oneofKind: 'helloQromaRequest',
-        helloQromaRequest: {
-          name: 'blah'
-        }
-      }
-    };
+  // const doTest = () => {
+  //   const myAppCommand: MyAppCommand = {
+  //     command: {
+  //       oneofKind: 'helloQromaRequest',
+  //       helloQromaRequest: {
+  //         name: 'blah'
+  //       }
+  //     }
+  //   };
 
-    console.log("MY APP COMMAND OUTPUT");
-    console.log(myAppCommand);
+  //   console.log("MY APP COMMAND OUTPUT");
+  //   console.log(myAppCommand);
 
-    setRequestObjectData(MyAppCommand.toJson(myAppCommand));
-  }
+  //   setRequestObjectData(MyAppCommand.toJson(myAppCommand));
+  // }
 
   const doSetUpdateProgressIndicatorTest = () => {
     // const myAppCommand: MyAppCommand = {
@@ -173,19 +173,15 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
   const isQromaWebSerialConnected = props.qromaWebSerial.getIsConnected();
   console.log("isQromaWebSerialConnected: " + isQromaWebSerialConnected);
 
+  const requestObjectJsonDataToB64 = (data) => {
+    const message = props.requestMessageType.fromJson(data);
+    const appMessageBytes = props.requestMessageType.toBinary(message);
+    const appCommandB64 = convertBinaryToBase64(appMessageBytes);
+    return appCommandB64;
+  }
+
   return (
     <div>
-      {/* Qroma Request Form: {props.requestMessageType.typeName}
-      <button onClick={() => qromaWebSerial.startMonitoring() }>START MONITORING</button> */}
-
-      {/* <MessageInputComponent
-        requestMessageType={m}
-        messageName="requestForm"
-        typeName={m.typeName}
-        fields={m.fields}
-        onChange={onChange}
-        key={m.typeName}
-        /> */}
       <MessageInputComponent
         requestMessageType={m}
         messageName="requestForm"
@@ -196,6 +192,9 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
         />
       <div>
         App Command: {props.requestMessageType.toJsonString(props.requestMessageType.fromJson(requestObjectData))}
+      </div>
+      <div>
+        App Command B64: {requestObjectJsonDataToB64(requestObjectData)}
       </div>
       <div>
         QC Command: {QromaCommCommand.toJsonString(qromaCommCommand)}

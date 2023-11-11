@@ -3,6 +3,7 @@ import { PortRequestResult } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
 import { useQromaCommWebSerial } from './QromaCommWebSerial';
 import { IMessageType } from '@protobuf-ts/runtime';
+import { QcuCreateQromaCommMessageForAppCommand } from '../QromaCommUtils';
 
 
 export interface IUseQromaAppWebSerialInputs<TCommand extends object, TResponse extends object> {
@@ -41,68 +42,48 @@ export const useQromaAppWebSerial =
 
 
   const createQromaCommMessageForAppCommand = (appCommand: TCommand): QromaCommCommand => {
-    if (inputs.commandMessageType === undefined) {
-      throw Error("sendQromaAppCommand() failure - no commandMessageType provided on IUseQromaAppWebSerialInputs");
-    }
+    return QcuCreateQromaCommMessageForAppCommand(appCommand, inputs.commandMessageType);
 
-    const appCommandType = Object.keys(appCommand)[0];
-    const command = {
-      command: {
-        oneofKind: appCommandType,
-        [appCommandType]: appCommand[appCommandType],
-      }
-    } as TCommand;
-    // appCommand.oneofKind = Object.keys(appCommand)[0];
+  // const createQromaCommMessageForAppCommand = (appCommand: TCommand): QromaCommCommand => {
+  //   if (inputs.commandMessageType === undefined) {
+  //     throw Error("sendQromaAppCommand() failure - no commandMessageType provided on IUseQromaAppWebSerialInputs");
+  //   }
 
-    console.log("APP COMMAND");
-    console.log(command);
-    // console.log(Object.keys(appCommand));
-    // appCommand.command = appCommand;
-    console.log("APP MESSAGE TYPE");
-    console.log(inputs.commandMessageType);
-    const appMessageJson = inputs.commandMessageType.toJson(command);
-    console.log(appMessageJson);
-    const appMessageBytes = inputs.commandMessageType.toBinary(command);
-    console.log("BYTES DONE");
-    console.log(appMessageBytes);
-    // const parsed = inputs.commandMessageType.fromBinary(appMessageBytes);
-    // console.log(parsed);
+  //   const appCommandType = Object.keys(appCommand)[0];
+  //   const command = {
+  //     command: {
+  //       oneofKind: appCommandType,
+  //       [appCommandType]: appCommand[appCommandType],
+  //     }
+  //   } as TCommand;
+  //   // appCommand.oneofKind = Object.keys(appCommand)[0];
 
-    const qromaCommCommand: QromaCommCommand = {
-      command: {
-        oneofKind: 'appCommandBytes',
-        appCommandBytes: appMessageBytes,
-      }
-    }
+  //   console.log("APP COMMAND");
+  //   console.log(command);
+  //   // console.log(Object.keys(appCommand));
+  //   // appCommand.command = appCommand;
+  //   console.log("APP MESSAGE TYPE");
+  //   console.log(inputs.commandMessageType);
+  //   const appMessageJson = inputs.commandMessageType.toJson(command);
+  //   console.log(appMessageJson);
+  //   const appMessageBytes = inputs.commandMessageType.toBinary(command);
+  //   console.log("BYTES DONE");
+  //   console.log(appMessageBytes);
+  //   // const parsed = inputs.commandMessageType.fromBinary(appMessageBytes);
+  //   // console.log(parsed);
 
-    // const reportFileDataCommand: QromaCommCommand = {
-    //   command: {
-    //     oneofKind: 'fsCommand',
-    //     fsCommand: {
-    //       command: {
-    //         oneofKind: 'reportFileDataCommand',
-    //         reportFileDataCommand: {
-    //           filename: filePath,
-    //         }
-    //       }
-    //     }
-    //   }
-    // };
+  //   const qromaCommCommand: QromaCommCommand = {
+  //     command: {
+  //       oneofKind: 'appCommandBytes',
+  //       appCommandBytes: appMessageBytes,
+  //     }
+  //   }
 
-    console.log("QROMA COMM COMMAND READY");
-    console.log(qromaCommCommand);
-    console.log(appCommand);
+  //   console.log("QROMA COMM COMMAND READY");
+  //   console.log(qromaCommCommand);
+  //   console.log(appCommand);
 
-    return qromaCommCommand;
-
-    // const qromaMessageBytes = QromaCommCommand.toBinary(qromaCommCommand);
-
-    // console.log(qromaMessageBytes);
-    // const requestB64 = Buffer.from(qromaMessageBytes).toString('base64') + "\n";
-    // console.log(requestB64);
-    // console.log(requestB64.length);
-
-    // return requestB64;
+  //   return qromaCommCommand;
   }
 
   const sendQromaAppCommand = async (appCommand: TCommand) => {
