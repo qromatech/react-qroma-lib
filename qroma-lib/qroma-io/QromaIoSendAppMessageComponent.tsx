@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { MessageType } from "@protobuf-ts/runtime";
 import { PortRequestResult, QromaCommResponse, useQromaAppWebSerial } from "../..";
-import { IQromaAppWebSerial, IUseQromaAppWebSerialInputs } from "../webserial/QromaAppWebSerial";
+import { IUseQromaAppWebSerialInputs } from "../webserial/QromaAppWebSerial";
 import {useLocation} from '@docusaurus/router';
 import { convertBase64ToBinary } from "../utils";
 import { QcuCreateQromaCommMessageForAppCommand } from "../QromaCommUtils";
@@ -13,7 +13,6 @@ interface IQromaIoSendAppMessageComponentProps<T extends object, U extends objec
 }
 
 
-// export const QromaIoSendAppMessageComponent = <T extends object, U extends object>(
 export const QromaIoSendAppMessageComponent = <T extends object, U extends object>(
   props: IQromaIoSendAppMessageComponentProps<T, U>
 ) => {
