@@ -3,6 +3,7 @@ import { IMessageType } from "@protobuf-ts/runtime"
 import { IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from './webserial/QromaAppWebSerial';
 import { QromaCommResponse } from '../qroma-comm-proto/qroma-comm';
 import { QromaRequestForm } from "./QromaRequestForm";
+import { useInitQromaAppWebSerial } from "./QromaSiteApp";
 
 
 interface IQromaRequestPageProps<TCommand extends object, TResponse extends object> {
@@ -26,7 +27,8 @@ export const QromaRequestPage = <TCommand extends object, TResponse extends obje
     responseMessageType: props.responseMessageType,
     onPortRequestResult: () => { console.log("PORT REQUEST COMPLETE") }
   }
-  const qromaWebSerial = useQromaAppWebSerial(inputs);
+  // const qromaWebSerial = useQromaAppWebSerial(inputs);
+  const qromaWebSerial = useInitQromaAppWebSerial(inputs);
 
   
   return (

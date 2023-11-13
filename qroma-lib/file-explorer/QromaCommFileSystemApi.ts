@@ -60,14 +60,15 @@ export const QromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
   }
       
 
-  const useQromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
+  const qromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
     onQromaCommResponse,
     onConnect: () => { console.log("SERIAL CONNECTED"); },
     onDisconnect: () => { console.log("SERIAL DISCONNECTED"); },
     onPortRequestResult,
   }
 
-  const qromaCommWebSerial = useQromaCommWebSerial(useQromaCommWebSerialInputs);
+  // const qromaCommWebSerial = useQromaCommWebSerial(qromaCommWebSerialInputs);
+  const qromaCommWebSerial = useQromaCommWebSerial(qromaCommWebSerialInputs);
 
 
   const waitForResponse = async <T,>(filter: (message: QromaCommResponse) => T, timeoutInMs: number) : Promise<T | undefined> => {

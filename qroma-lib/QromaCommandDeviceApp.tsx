@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { MessageType } from "@protobuf-ts/runtime";
 import { IUseQromaAppWebSerialInputs, PortRequestResult, QromaCommResponse, QromaRequestForm, useQromaAppWebSerial } from "..";
+import { useInitQromaAppWebSerial } from "./QromaSiteApp";
 
 
 interface IQromaCommandDeviceAppProps<T extends object, U extends object> {
@@ -36,7 +37,9 @@ export const QromaCommandDeviceApp = <T extends object, U extends object>(props:
       }
     }
   }
-  const qromaWebSerial = useQromaAppWebSerial(inputs);
+  // const qromaWebSerial = useQromaAppWebSerial(inputs);
+  const qromaWebSerial = useInitQromaAppWebSerial(inputs);
+
   
   return (
     <>

@@ -5,6 +5,7 @@ import { IUseQromaAppWebSerialInputs } from "../webserial/QromaAppWebSerial";
 import {useLocation} from '@docusaurus/router';
 import { convertBase64ToBinary } from "../utils";
 import { QcuCreateQromaCommMessageForAppCommand } from "../QromaCommUtils";
+import { useInitQromaAppWebSerial } from "../QromaSiteApp";
 
 
 interface IQromaIoSendAppMessageComponentProps<T extends object, U extends object> {
@@ -39,7 +40,8 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
       }
     }
   }
-  const qromaWebSerial = useQromaAppWebSerial(inputs);
+  // const qromaWebSerial = useQromaAppWebSerial(inputs);
+  const qromaWebSerial = useInitQromaAppWebSerial(inputs);
   
   const [isPortConnected, setIsPortConnected] = useState(false);
 

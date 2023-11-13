@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { IUseQromaWebSerialInputs, useQromaWebSerial } from "./webserial/QromaWebSerial";
+import { useInitQromaWebSerial } from "./QromaSiteApp";
 
 
 export const QromaStrMonitor = () => {
@@ -57,7 +58,8 @@ export const QromaStrMonitor = () => {
     onPortRequestResult: () => { console.log("PORT REQUEST COMPLETE") }
   }
 
-  const qromaWebSerial = useQromaWebSerial(inputs);
+  // const qromaWebSerial = useQromaWebSerial(inputs);
+  const qromaWebSerial = useInitQromaWebSerial(inputs);
   
   if (qromaWebSerial === null) {
     return (

@@ -1,9 +1,9 @@
-import { Buffer } from 'buffer';
 import { PortRequestResult } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
 import { useQromaCommWebSerial } from './QromaCommWebSerial';
 import { IMessageType } from '@protobuf-ts/runtime';
 import { QcuCreateQromaCommMessageForAppCommand } from '../QromaCommUtils';
+import { useInitQromaCommWebSerial } from "../QromaSiteApp";
 
 
 export interface IUseQromaAppWebSerialInputs<TCommand extends object, TResponse extends object> {
@@ -19,15 +19,11 @@ export interface IUseQromaAppWebSerialInputs<TCommand extends object, TResponse 
 }
 
 export interface IQromaAppWebSerial<TCommand extends object> {
-  // requestPort: () => any
-  // startMonitoring: (onConnection: (success: boolean) => void) => void
   startMonitoring: () => void
   stopMonitoring: () => void
   getIsConnected: () => boolean
-  // sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
   sendQromaAppCommand: (appCommand: TCommand) => void
   createQromaCommMessageForAppCommand: (appCommand: TCommand) => QromaCommCommand
-  // onQromaAppMessage: (appMessage: TResponse) => void
 }
 
 
@@ -35,7 +31,6 @@ export const useQromaAppWebSerial =
   <TCommand extends object, TResponse extends object>
 (inputs: IUseQromaAppWebSerialInputs<TCommand, TResponse>): IQromaAppWebSerial<TCommand> => 
 {
-
   if (!window) {
     throw Error("Not running in a browser");
   }
@@ -43,47 +38,6 @@ export const useQromaAppWebSerial =
 
   const createQromaCommMessageForAppCommand = (appCommand: TCommand): QromaCommCommand => {
     return QcuCreateQromaCommMessageForAppCommand(appCommand, inputs.commandMessageType);
-
-  // const createQromaCommMessageForAppCommand = (appCommand: TCommand): QromaCommCommand => {
-  //   if (inputs.commandMessageType === undefined) {
-  //     throw Error("sendQromaAppCommand() failure - no commandMessageType provided on IUseQromaAppWebSerialInputs");
-  //   }
-
-  //   const appCommandType = Object.keys(appCommand)[0];
-  //   const command = {
-  //     command: {
-  //       oneofKind: appCommandType,
-  //       [appCommandType]: appCommand[appCommandType],
-  //     }
-  //   } as TCommand;
-  //   // appCommand.oneofKind = Object.keys(appCommand)[0];
-
-  //   console.log("APP COMMAND");
-  //   console.log(command);
-  //   // console.log(Object.keys(appCommand));
-  //   // appCommand.command = appCommand;
-  //   console.log("APP MESSAGE TYPE");
-  //   console.log(inputs.commandMessageType);
-  //   const appMessageJson = inputs.commandMessageType.toJson(command);
-  //   console.log(appMessageJson);
-  //   const appMessageBytes = inputs.commandMessageType.toBinary(command);
-  //   console.log("BYTES DONE");
-  //   console.log(appMessageBytes);
-  //   // const parsed = inputs.commandMessageType.fromBinary(appMessageBytes);
-  //   // console.log(parsed);
-
-  //   const qromaCommCommand: QromaCommCommand = {
-  //     command: {
-  //       oneofKind: 'appCommandBytes',
-  //       appCommandBytes: appMessageBytes,
-  //     }
-  //   }
-
-  //   console.log("QROMA COMM COMMAND READY");
-  //   console.log(qromaCommCommand);
-  //   console.log(appCommand);
-
-  //   return qromaCommCommand;
   }
 
   const sendQromaAppCommand = async (appCommand: TCommand) => {
@@ -100,26 +54,7 @@ export const useQromaAppWebSerial =
       }
     }
 
-    // const qromaMessageBytes = QromaCommCommand.toBinary(qromaCommCommand);
-
-    // console.log(qromaMessageBytes);
-    // const requestB64 = Buffer.from(qromaMessageBytes).toString('base64') + "\n";
-    // console.log(requestB64);
-    // console.log(requestB64.length);
-
     qromaCommWebSerial.sendQromaCommCommand(qromaCommCommand);
-
-    // const encoder = new TextEncoder();
-    // const encoded = encoder.encode(requestB64);
-
-    // const port = await qromaCommWebSerial.requestPort();
-    // console.log(port);
-    // const writer = port.writable.getWriter();
-    // console.log("QromaAppWebSerial wrote to serial");
-    // console.log(encoded);
-
-    // await writer.write(encoded);
-    // writer.releaseLock();
   }
 
   const onQromaCommResponse = (qromaCommResponse: QromaCommResponse) => {
@@ -149,9 +84,9 @@ export const useQromaAppWebSerial =
     }
   }
 
-
   console.log("CALLING useQromaCommWebSerial");
-  const qromaCommWebSerial = useQromaCommWebSerial({
+  // const qromaCommWebSerial = useQromaCommWebSerial({
+  const qromaCommWebSerial = useInitQromaCommWebSerial({
     onQromaCommResponse,
     onConnect: inputs.onConnect,
     onDisconnect: inputs.onDisconnect,
@@ -160,7 +95,6 @@ export const useQromaAppWebSerial =
 
 
   return {
-    // requestPort: qromaCommWebSerial.requestPort,
     startMonitoring: qromaCommWebSerial.startMonitoring,
     getIsConnected: qromaCommWebSerial.getIsConnected,
     stopMonitoring: qromaCommWebSerial.stopMonitoring,

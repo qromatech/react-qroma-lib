@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import { PortRequestResult, useQromaWebSerial } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
+import { useInitQromaWebSerial } from '../QromaSiteApp';
 
 
 export interface IUseQromaCommWebSerialInputs {
@@ -11,7 +12,7 @@ export interface IUseQromaCommWebSerialInputs {
 }
 
 export interface IQromaCommWebSerial {
-  requestPort: () => any
+  // requestPort: () => any
   startMonitoring: () => void
   getIsConnected(): boolean
   stopMonitoring: () => void
@@ -74,11 +75,9 @@ export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQr
     setRxBuffer(currentRxBuffer);
   }
 
-  // const startMonitoring = async (onConnection: (success: boolean) => void) => {
   const startMonitoring = async () => {
     try {
       console.log("COMM WEB SERIAL - START");
-      // qromaWebSerial.startMonitoring(onData);
       qromaWebSerial.startMonitoring();
       console.log("COMM WEB SERIAL - START - CONNECTED");
       // onConnection(true);
@@ -103,15 +102,6 @@ export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQr
     console.log(requestB64.length);
 
     await qromaWebSerial.sendString(requestB64);
-
-    // const port = await qromaWebSerial.requestPort();
-    // console.log(port);
-    // const writer = port.writable.getWriter();
-
-    // const encoder = new TextEncoder();
-    // const encoded = encoder.encode(requestB64);
-    // await writer.write(encoded);
-    // writer.releaseLock();
   }
 
   const onPortRequestResult = (requestResult: PortRequestResult): void => {
@@ -126,7 +116,8 @@ export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQr
 
 
   console.log("CALLING useQromaWebSerial");
-  const qromaWebSerial = useQromaWebSerial({
+  // const qromaWebSerial = useQromaWebSerial({
+  const qromaWebSerial = useInitQromaWebSerial({
     onData,
     onConnect: inputs.onConnect,
     onDisconnect: inputs.onDisconnect,

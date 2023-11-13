@@ -5,6 +5,7 @@ import { QromaCommCommand, QromaCommResponse } from "../../qroma-comm-proto/qrom
 import { PortRequestResult } from "../webserial/QromaWebSerial";
 import { useLocation } from "@docusaurus/router";
 import { convertBase64ToBinary } from "../utils";
+import { useInitQromaCommWebSerial } from "../QromaSiteApp";
 
 
 interface IQromaIoSendQromaMessageComponentProps<T extends object, U extends object> {
@@ -33,14 +34,15 @@ export const QromaIoSendQromaMessageComponent = <T extends object, U extends obj
     }
   }
 
-  const useQromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
+  const qromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
     onQromaCommResponse,
     onConnect: () => { console.log("SERIAL CONNECTED"); },
     onDisconnect: () => { console.log("SERIAL DISCONNECTED"); },
     onPortRequestResult,
   }
 
-  const qromaCommWebSerial = useQromaCommWebSerial(useQromaCommWebSerialInputs);
+  // const qromaCommWebSerial = useQromaCommWebSerial(qromaCommWebSerialInputs);
+  const qromaCommWebSerial = useInitQromaCommWebSerial(qromaCommWebSerialInputs);
   
   const [isPortConnected, setIsPortConnected] = useState(false);
 

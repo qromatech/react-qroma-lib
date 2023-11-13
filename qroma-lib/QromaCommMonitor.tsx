@@ -4,6 +4,7 @@ import { MessageDataViewerComponent } from "./proto-components/message-data-view
 import { IQromaAppWebSerial, IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
 import { PortRequestResult } from "./webserial/QromaWebSerial";
 import { QromaCommResponse } from "../qroma-comm-proto/qroma-comm";
+import { useInitQromaAppWebSerial } from "./QromaSiteApp";
 
 
 interface IQromaCommMonitorProps<T extends object, U extends object> {
@@ -31,7 +32,8 @@ export const QromaCommMonitor = <T extends object, U extends object>(props: IQro
     onQromaCommResponse,
     onQromaAppResponse,
   };
-  const webSerial = useQromaAppWebSerial(webSerialInputs);
+  // const webSerial = useQromaAppWebSerial(webSerialInputs);
+  const webSerial = useInitQromaAppWebSerial(webSerialInputs);
 
   if (webSerial === null) {
     return (
@@ -45,9 +47,6 @@ export const QromaCommMonitor = <T extends object, U extends object>(props: IQro
     <div>
       Qroma comm monitor
       <button onClick={async () => {
-//         const port = await webSerial.requestPort();
-//         console.log("PORT");
-//         console.log(port);
         webSerial.startMonitoring();
       }}>
         Start monitor

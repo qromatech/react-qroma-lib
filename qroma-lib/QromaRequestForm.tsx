@@ -50,22 +50,6 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
     setRequestB64(updatedRequestB64);
   }
 
-  
-  // const inputs: IUseQromaAppWebSerialInputs<TCommand, TResponse> = {
-  //   onQromaAppResponse: (appMessage: TResponse) => {
-  //     console.log("QromaRequestForm - onQromaAppResponse");
-  //     console.log(appMessage);
-  //   },
-  //   onQromaCommResponse: (message: QromaCommResponse) => {
-  //     console.log("QromaRequestForm - onQromaCommResponse");
-  //     console.log(message);
-  //   },
-  //   commandMessageType: props.requestMessageType,
-  //   responseMessageType: props.responseMessageType,
-  //   onPortRequestResult: () => { console.log("PORT REQUEST COMPLETE") }
-  // }
-  // const qromaWebSerial = useQromaAppWebSerial(inputs);
-  
   const sendRequest = async () => {
     console.log("SEND COMMAND");
 
@@ -131,37 +115,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
     }
   }
 
-  // const doTest = () => {
-  //   const myAppCommand: MyAppCommand = {
-  //     command: {
-  //       oneofKind: 'helloQromaRequest',
-  //       helloQromaRequest: {
-  //         name: 'blah'
-  //       }
-  //     }
-  //   };
-
-  //   console.log("MY APP COMMAND OUTPUT");
-  //   console.log(myAppCommand);
-
-  //   setRequestObjectData(MyAppCommand.toJson(myAppCommand));
-  // }
-
   const doSetUpdateProgressIndicatorTest = () => {
-    // const myAppCommand: MyAppCommand = {
-    //   command: {
-    //     oneofKind: 'setUpdateProgressIndicator',
-    //     setUpdateProgressIndicator: {
-    //       indicatorChars: '.-',
-    //     }
-    //   }
-    // };
-
-    // console.log("MY APP COMMAND OUTPUT");
-    // console.log(myAppCommand);
-
-    // setRequestObjectData(MyAppCommand.toJson(myAppCommand));
-
     const qromaCommCommand = props.qromaWebSerial.createQromaCommMessageForAppCommand(requestObject);
     console.log("qromaCommCommand");
     console.log(qromaCommCommand);
