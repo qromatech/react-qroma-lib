@@ -2,7 +2,7 @@ import { IMessageType } from "@protobuf-ts/runtime";
 import { QromaCommCommand } from "../qroma-comm-proto/qroma-comm";
 
 
-export const QcuCreateQromaCommMessageForAppCommand = <TCommand extends object>(
+export const QcuCreateQromaCommAppCommandBytesMessageForAppCommand = <TCommand extends object>(
   appCommand: TCommand,
   commandMessageType?: IMessageType<TCommand>, 
 ): QromaCommCommand => {
@@ -22,11 +22,13 @@ export const QcuCreateQromaCommMessageForAppCommand = <TCommand extends object>(
 
   console.log("APP COMMAND");
   console.log(command);
+  console.log(appCommand)
   console.log("APP MESSAGE TYPE");
   console.log(commandMessageType);
-  const appMessageJson = commandMessageType.toJson(command);
+  console.log(appCommandType);
+  const appMessageJson = commandMessageType.toJson(appCommand);
   console.log(appMessageJson);
-  const appMessageBytes = commandMessageType.toBinary(command);
+  const appMessageBytes = commandMessageType.toBinary(appCommand);
   console.log("BYTES DONE");
   console.log(appMessageBytes);
   // const parsed = inputs.commandMessageType.fromBinary(appMessageBytes);

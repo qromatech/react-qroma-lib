@@ -1,6 +1,7 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { IUseQromaWebSerialInputs, PortRequestResult, useQromaWebSerial } from "../webserial/QromaWebSerial";
 import { subscribeToQromaWebSerial, useInitQromaWebSerial } from "../QromaSiteApp";
+import { useQromaPageSerial } from "../webserial/QromaPageSerial";
 
 
 export const NavbarConnectionComponent = () => {
@@ -16,7 +17,15 @@ export const NavbarConnectionComponent = () => {
     setQromaWebSerialIsConnected(requestResult.success),
   };
   // const qromaWebSerial = useInitQromaWebSerial(inputs);
-  subscribeToQromaWebSerial(inputs);
+  // subscribeToQromaWebSerial(inputs);
+  
+  // useEffect(() => {
+  //   const qromaPageSerial = useQromaPageSerial(inputs);
+  //   return () => qromaPageSerial.unsubscribe();
+  // });
+
+  const qpSerial = useQromaPageSerial();
+  // qpSerial.listen(inputs);
 
   console.log("RENDERING NavbarConnectionComponent");
 

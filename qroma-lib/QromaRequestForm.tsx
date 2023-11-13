@@ -6,8 +6,9 @@ import { MessageDataViewerComponent } from './proto-components/message-data-view
 import { IQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
 import { MyAppCommand } from "../../qroma-proto/hello-qroma";
 import { QromaCommCommand, QromaCommResponse } from "../qroma-comm-proto/qroma-comm";
-import { QcuCreateQromaCommMessageForAppCommand } from './QromaCommUtils';
+import { QcuCreateQromaCommAppCommandBytesMessageForAppCommand } from './QromaCommUtils';
 import { convertBinaryToBase64 } from './utils';
+import { IQromaPageSerial } from './webserial/QromaPageSerial';
 // import { IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from './webserial/QromaAppWebSerial';
 // import { QromaCommResponse } from '../qroma-comm-proto/qroma-comm';
 
@@ -15,46 +16,52 @@ import { convertBinaryToBase64 } from './utils';
 interface IQromaRequestFormProps<TCommand extends object, TResponse extends object> {
   requestMessageType: IMessageType<TCommand>
   responseMessageType: IMessageType<TResponse>
-  qromaWebSerial: IQromaAppWebSerial<TCommand>
+  // qromaWebSerial: IQromaAppWebSerial<TCommand>
+  sendQromaAppCommand: (appCommand: TCommand) => void
+  qromaPageSerial: IQromaPageSerial
 }
 
 export const QromaRequestForm = <TCommand extends object, TResponse extends object>(props: IQromaRequestFormProps<TCommand, TResponse>) => {
   const m = props.requestMessageType;
 
-  const [requestObject, setRequestObject] = useState(props.requestMessageType.create());
-  const [requestObjectData, setRequestObjectData] = useState(
+  // const [requestObject, setRequestObject] = useState(props.requestMessageType.create());
+  const requestObject = props.requestMessageType.create();
+  const [requestObjectDataJson, setRequestObjectDataJson] = useState(
     props.requestMessageType.toJson(props.requestMessageType.create())
   );
 
-  const [qromaCommCommand, setQromaCommCommand] = useState(QromaCommCommand.create());
-  const [requestB64, setRequestB64] = useState("");
+  // const [qromaCommCommand, setQromaCommCommand] = useState(QromaCommCommand.create());
+  // const [requestB64, setRequestB64] = useState("");
 
   console.log("INIT OBJECT STATE");
-  console.log(requestObjectData);
+  console.log(requestObjectDataJson);
 
   const onChange = (_: FieldInfo, newValue: any) => {
     console.log("REQUEST FORM CHANGE");
     console.log(newValue);
 
-    const newRequestObjectData = JSON.parse(JSON.stringify(newValue));
-    setRequestObjectData(newRequestObjectData);
+    const newRequestObjectDataJson = JSON.parse(JSON.stringify(newValue));
+    setRequestObjectDataJson(newRequestObjectDataJson);
 
     console.log("newRequestObjectData");
-    console.log(newRequestObjectData);
+    console.log(newRequestObjectDataJson);
 
-    const updatedQromaCommCommand = props.qromaWebSerial.createQromaCommMessageForAppCommand(newRequestObjectData);
-    setQromaCommCommand(updatedQromaCommCommand);
+    // const updatedQromaCommCommand = props.qromaWebSerial.createQromaCommMessageForAppCommand(newRequestObjectData);
 
-    const qromaMessageBytes = QromaCommCommand.toBinary(updatedQromaCommCommand);
-    const updatedRequestB64 = Buffer.from(qromaMessageBytes).toString('base64') + "\n";
-    setRequestB64(updatedRequestB64);
+
+    // const updatedQromaCommCommand = QcuCreateQromaCommAppCommandBytesMessageForAppCommand<TCommand>(newRequestObjectData, props.requestMessageType);
+    // setQromaCommCommand(updatedQromaCommCommand);
+
+    // const qromaMessageBytes = QromaCommCommand.toBinary(updatedQromaCommCommand);
+    // const updatedRequestB64 = Buffer.from(qromaMessageBytes).toString('base64') + "\n";
+    // setRequestB64(updatedRequestB64);
   }
 
   const sendRequest = async () => {
     console.log("SEND COMMAND");
 
-    const requestObject = props.requestMessageType.fromJson(requestObjectData);
-    const result = await props.qromaWebSerial.sendQromaAppCommand(requestObject);
+    const requestObject = props.requestMessageType.fromJson(requestObjectDataJson);
+    const result = await props.sendQromaAppCommand(requestObject);
 
     console.log("REQUEST SENT");
     console.log(result);
@@ -62,15 +69,16 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
   
   const startConnection = () => {
     console.log("START CONNECTION");
-    props.qromaWebSerial.startMonitoring();
-    console.log("CONNECTION STARTED: " + props.qromaWebSerial.getIsConnected());
+    props.qromaPageSerial.startMonitoring();
+    console.log("CONNECTION STARTED: " + props.qromaPageSerial.getIsConnected());
   }
 
-  const createQromaAppMessage = () => {
+  const createQromaCommMessage = () => {
     console.log(props.requestMessageType);
-    console.log(requestObjectData);
-    const requestObject = props.requestMessageType.fromJson(requestObjectData);
-    const qromaCommCommand = props.qromaWebSerial.createQromaCommMessageForAppCommand(requestObject);
+    console.log(requestObjectDataJson);
+    const requestObject = props.requestMessageType.fromJson(requestObjectDataJson);
+    const qromaCommCommand = QcuCreateQromaCommAppCommandBytesMessageForAppCommand(requestObject, props.requestMessageType);
+    // const qromaCommCommand = props.qromaWebSerial.createQromaCommMessageForAppCommand(requestObject);
     console.log(qromaCommCommand);
 
     const qromaMessageBytes = QromaCommCommand.toBinary(qromaCommCommand);
@@ -88,8 +96,8 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
   const promptUserForJson = () => {
     const userJson = prompt("Enter JSON to use for message");
     if (userJson) {
-      const newRequestObjectData = JSON.parse(userJson);
-      setRequestObjectData(newRequestObjectData);
+      const newRequestObjectDataJson = JSON.parse(userJson);
+      setRequestObjectDataJson(newRequestObjectDataJson);
     }
   }
 
@@ -99,8 +107,8 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
       const messageBytes = Buffer.from(userB64, 'base64');
       const qcc = QromaCommCommand.fromBinary(messageBytes);
       console.log(qcc);
-      const appCommand = props.requestMessageType.fromBinary(qcc.command.appCommandBytes);
-      console.log(appCommand);
+      // const appCommand = props.requestMessageType.fromBinary(qcc.command.appCommandBytes);
+      // console.log(appCommand);
     }
   }
 
@@ -110,28 +118,52 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
       const messageBytes = Buffer.from(userB64, 'base64');
       const qcr = QromaCommResponse.fromBinary(messageBytes);
       console.log(qcr);
-      const appResponse = props.responseMessageType.fromBinary(qcr.response.appResponseBytes);
-      console.log(appResponse);
+      // const appResponse = props.responseMessageType.fromBinary(qcr.response.appResponseBytes);
+      // console.log(appResponse);
     }
   }
 
-  const doSetUpdateProgressIndicatorTest = () => {
-    const qromaCommCommand = props.qromaWebSerial.createQromaCommMessageForAppCommand(requestObject);
-    console.log("qromaCommCommand");
-    console.log(qromaCommCommand);
-  }
+  // const doSetUpdateProgressIndicatorTest = () => {
+  //   // const qromaCommCommand = props.qromaWebSerial.createQromaCommMessageForAppCommand(requestObject);
+  //   const qromaCommCommand = QcuCreateQromaCommMessageForAppCommand<TResponse>(requestObject, props.responseMessageType);
+  //   console.log("qromaCommCommand");
+  //   console.log(qromaCommCommand);
+  // }
   
   console.log("QCC");
-  console.log(qromaCommCommand);
+  // console.log(qromaCommCommand);
 
-  const isQromaWebSerialConnected = props.qromaWebSerial.getIsConnected();
+  const isQromaWebSerialConnected = props.qromaPageSerial.getIsConnected();
   console.log("isQromaWebSerialConnected: " + isQromaWebSerialConnected);
+
+  // const requestObjectQromaCommCommand = QcuCreateQromaCommAppCommandBytesMessageForAppCommand(requestObjectData, props.requestMessageType);
+
+
+
 
   const requestObjectJsonDataToB64 = (data) => {
     const message = props.requestMessageType.fromJson(data);
     const appMessageBytes = props.requestMessageType.toBinary(message);
     const appCommandB64 = convertBinaryToBase64(appMessageBytes);
     return appCommandB64;
+  }
+
+  const requestObjectJsonDataToQromaCommAppMessage = (jsonData) => {
+    const objectData = props.requestMessageType.fromJson(jsonData);
+    const qromaCommCommand = QcuCreateQromaCommAppCommandBytesMessageForAppCommand<TCommand>(objectData, props.requestMessageType);
+    console.log("HERE WE BE MESSAGE");
+    console.log(objectData);
+    console.log(qromaCommCommand);
+    return JSON.stringify(QromaCommCommand.toJson(qromaCommCommand));  
+  }
+
+  const requestObjectJsonDataToQromaCommAppMessageB64 = (jsonData) => {
+    const objectData = props.requestMessageType.fromJson(jsonData);
+    const qromaCommCommand = QcuCreateQromaCommAppCommandBytesMessageForAppCommand<TCommand>(objectData, props.requestMessageType);
+    console.log("HERE WE BE 64");
+    const qcMessageBytes = QromaCommCommand.toBinary(qromaCommCommand);
+    const qcCommandB64 = convertBinaryToBase64(qcMessageBytes);
+    return qcCommandB64;
   }
 
   return (
@@ -145,27 +177,27 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
         key={m.typeName}
         />
       <div>
-        App Command: {props.requestMessageType.toJsonString(props.requestMessageType.fromJson(requestObjectData))}
+        App Command: {props.requestMessageType.toJsonString(props.requestMessageType.fromJson(requestObjectDataJson))}
       </div>
       <div>
-        App Command B64: {requestObjectJsonDataToB64(requestObjectData)}
+        App Command B64: {requestObjectJsonDataToB64(requestObjectDataJson)}
       </div>
       <div>
-        QC Command: {QromaCommCommand.toJsonString(qromaCommCommand)}
+        QC Command: {requestObjectJsonDataToQromaCommAppMessage(requestObjectDataJson)}
       </div>
       <div>
-        QC Command B64: [{requestB64}]
+        QC Command B64: {requestObjectJsonDataToQromaCommAppMessageB64(requestObjectDataJson)}
       </div>
       
       {isQromaWebSerialConnected ? 
         <button onClick={() => sendRequest() }>Send Request</button> :
         <button onClick={() => startConnection() }>Start Connection!</button> 
       }
-      <button onClick={() => createQromaAppMessage() }>Show Qroma Comm Message</button>
+      <button onClick={() => createQromaCommMessage() }>Show Qroma Comm Message</button>
       <button onClick={() => promptUserForJson() }>Load from JSON</button>
       <button onClick={() => promptUserForBase64QromaCommand() }>Load QC Command from B64</button>
       <button onClick={() => promptUserForBase64QromaResponse() }>Load QC Response from B64</button>
-      <button onClick={() => doSetUpdateProgressIndicatorTest() }>Test</button>
+      {/* <button onClick={() => doSetUpdateProgressIndicatorTest() }>Test</button> */}
       <MessageDataViewerComponent
         messageType={props.requestMessageType}
         messageData={requestObject}

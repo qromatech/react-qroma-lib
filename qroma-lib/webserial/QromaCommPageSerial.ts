@@ -1,26 +1,29 @@
 import { Buffer } from 'buffer';
 import { PortRequestResult, useQromaWebSerial } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
-import { useInitQromaWebSerial } from '../QromaSiteApp';
+// import { useInitQromaWebSerial } from '../QromaSiteApp';
+import { useQromaPageSerial } from './QromaPageSerial';
 
 
-export interface IUseQromaCommWebSerialInputs {
+export interface IUseQromaCommPageSerialInputs {
   onQromaCommResponse: (message: QromaCommResponse) => void;
   onConnect?: () => void;
   onDisconnect?: () => void;
   onPortRequestResult: ((requestResult: PortRequestResult) => void);
 }
 
-export interface IQromaCommWebSerial {
+export interface IQromaCommPageSerial {
   // requestPort: () => any
-  startMonitoring: () => void
-  getIsConnected(): boolean
-  stopMonitoring: () => void
+  // startMonitoring: () => void
+  // getIsConnected(): boolean
+  // stopMonitoring: () => void
+  qromaCommPageSerial: IQromaCommPageSerial
   sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
+  unsubscribe: () => void
 }
 
 
-export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQromaCommWebSerial => {
+export const useQromaCommPageSerial = (inputs: IUseQromaCommPageSerialInputs): IQromaCommPageSerial => {
   if (!window) {
     throw Error("Not running in a browser");
   }
@@ -117,7 +120,7 @@ export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQr
 
   console.log("CALLING useQromaWebSerial");
   // const qromaWebSerial = useQromaWebSerial({
-  const qromaWebSerial = useInitQromaWebSerial({
+  const qromaWebSerial = useQromaPageSerial({
     onData,
     onConnect: inputs.onConnect,
     onDisconnect: inputs.onDisconnect,
@@ -130,5 +133,6 @@ export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQr
     getIsConnected: qromaWebSerial.getIsConnected,
     stopMonitoring: qromaWebSerial.stopMonitoring,
     sendQromaCommCommand,
+    unsubscribe: qromaWebSerial.unsubscribe,
   };
 }
