@@ -39,6 +39,7 @@ export const QromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
   }
 
   const onQromaCommResponse = (message: QromaCommResponse) => {
+    console.log("QromaCommFileSystemApi - onQromaCommResponse()");
     setLatestResponse(message);
   }
 
@@ -62,12 +63,14 @@ export const QromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
 
   const qromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
     onQromaCommResponse,
-    onConnect: () => { console.log("SERIAL CONNECTED"); },
-    onDisconnect: () => { console.log("SERIAL DISCONNECTED"); },
+    onConnect: () => { console.log("QFSApi - SERIAL CONNECTED"); },
+    onDisconnect: () => { console.log("QFSApi - SERIAL DISCONNECTED"); },
     onPortRequestResult,
   }
 
   // const qromaCommWebSerial = useQromaCommWebSerial(qromaCommWebSerialInputs);
+  console.log("QFSApi - useQromaCommWebSerial()");
+  console.log(qromaCommWebSerialInputs);
   const qromaCommWebSerial = useQromaCommWebSerial(qromaCommWebSerialInputs);
 
 
@@ -83,6 +86,8 @@ export const QromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
       }
       await sleep(25);
     }
+
+    console.log(`waitForResponse() expired [${timeoutInMs} ms timeout]`);
 
     return;
   }

@@ -50,15 +50,17 @@ export const registerQromaAppMessageTypes = (qromaAppMessageTypes: Record<string
 
 
 export const subscribeToQromaWebSerial = (subscriber: IUseQromaWebSerialInputs) => {
-  if (!qromaSiteAppContext.qromaWebSerial) {
-    throw new Error("No qromaWebSerial defined yet");
-  }
+  // if (!qromaSiteAppContext.qromaWebSerial) {
+  //   throw new Error("No qromaWebSerial defined yet");
+  // }
 
   qromaSiteAppContext.qromaWebSerialSubscribers.push(subscriber);
+  console.log("subscribeToQromaWebSerial PUSH - " + qromaSiteAppContext.qromaWebSerialSubscribers.length);
   
   const removeSubscriberFunction = () => {
     qromaSiteAppContext.qromaWebSerialSubscribers = 
       qromaSiteAppContext.qromaWebSerialSubscribers.filter(s => s !== subscriber);
+    console.log("subscribeToQromaWebSerial REMOVE - " + qromaSiteAppContext.qromaWebSerialSubscribers.length);
   }
   
   return removeSubscriberFunction;
@@ -75,15 +77,19 @@ export const useInitQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaW
 
   const initSubscriber: IUseQromaWebSerialInputs = {
     onData: (data: Uint8Array): void => {
+      console.log("INIT APP WS - onData()");
       inputs.onData(data);
       qromaSiteAppContext.qromaWebSerialSubscribers.forEach(s => s.onData(data));
     },
     onPortRequestResult: (requestResult: PortRequestResult): void => {
+      console.log("INIT APP WS - onPortRequestResult()");
+      console.log(requestResult.success);
       inputs.onPortRequestResult(requestResult);
       qromaSiteAppContext.qromaWebSerialSubscribers.forEach(s => 
         s.onPortRequestResult(requestResult));
     },
     onConnect: () => {
+      console.log("INIT APP WS - onConnect()");
       if (inputs.onConnect !== undefined) {
         inputs.onConnect();
         qromaSiteAppContext.qromaWebSerialSubscribers.forEach(s => {
@@ -94,6 +100,7 @@ export const useInitQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaW
       }
     },
     onDisconnect: () => {
+      console.log("INIT APP WS - onDisconnect()");
       if (inputs.onDisconnect !== undefined) {
         inputs.onDisconnect();
         qromaSiteAppContext.qromaWebSerialSubscribers.forEach(s => {
@@ -107,7 +114,8 @@ export const useInitQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaW
 
   const qromaWebSerial = useQromaWebSerial(initSubscriber);
 
-  qromaSiteAppContext.qromaWebSerialSubscription = initSubscriber;
+  // qromaSiteAppContext.qromaWebSerialSubscription = initSubscriber;
+  qromaSiteAppContext.qromaWebSerialSubscribers.push(inputs);
   qromaSiteAppContext.qromaWebSerial = qromaWebSerial;
 
   return qromaSiteAppContext.qromaWebSerial;

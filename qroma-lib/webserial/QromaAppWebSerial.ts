@@ -1,6 +1,5 @@
 import { PortRequestResult } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
-import { useQromaCommWebSerial } from './QromaCommWebSerial';
 import { IMessageType } from '@protobuf-ts/runtime';
 import { QcuCreateQromaCommMessageForAppCommand } from '../QromaCommUtils';
 import { useInitQromaCommWebSerial } from "../QromaSiteApp";

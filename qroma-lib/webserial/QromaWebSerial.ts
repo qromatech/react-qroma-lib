@@ -96,6 +96,9 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
   const setIsConnected = (c: boolean) => {
     console.log("SETTING isConnected: " + c);
     globalThis.isConnected = c;
+    if (inputs.onConnect) {
+      inputs.onConnect();
+    }
   }
 
   const requestPort = async () => {
@@ -120,6 +123,7 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
       await port.open({baudRate: 115200});
       console.log("OPEN INFO");
       console.log(port.getInfo());
+      console.log(port);
 
       qromaWebSerialContext.port = port;
 
