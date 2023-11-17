@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer';
 import { FieldInfo, IMessageType } from "@protobuf-ts/runtime"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { MessageInputComponent } from "./proto-components/message-builder/MessageInputComponent"
 import { MessageDataViewerComponent } from './proto-components/message-data-viewer/MessageDataViewerComponent';
 import { IQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
@@ -9,6 +9,8 @@ import { QromaCommCommand, QromaCommResponse } from "../qroma-comm-proto/qroma-c
 import { QcuCreateQromaCommAppCommandBytesMessageForAppCommand } from './QromaCommUtils';
 import { convertBinaryToBase64 } from './utils';
 import { IQromaPageSerial } from './webserial/QromaPageSerial';
+import { QromaPageSerialContext } from './webserial/QromaPageSerialContext';
+import { QromaPageAppContext } from './webserial/QromaPageAppContext';
 // import { IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from './webserial/QromaAppWebSerial';
 // import { QromaCommResponse } from '../qroma-comm-proto/qroma-comm';
 
@@ -18,7 +20,7 @@ interface IQromaRequestFormProps<TCommand extends object, TResponse extends obje
   responseMessageType: IMessageType<TResponse>
   // qromaWebSerial: IQromaAppWebSerial<TCommand>
   sendQromaAppCommand: (appCommand: TCommand) => void
-  qromaPageSerial: IQromaPageSerial
+  // qromaPageSerial: IQromaPageSerial
 }
 
 export const QromaRequestForm = <TCommand extends object, TResponse extends object>(props: IQromaRequestFormProps<TCommand, TResponse>) => {
@@ -29,6 +31,9 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
   const [requestObjectDataJson, setRequestObjectDataJson] = useState(
     props.requestMessageType.toJson(props.requestMessageType.create())
   );
+
+  const qromaPageApp = useContext(QromaPageAppContext);
+  const qromaPageSerial = qromaPageApp.qromaPageSerial;
 
   // const [qromaCommCommand, setQromaCommCommand] = useState(QromaCommCommand.create());
   // const [requestB64, setRequestB64] = useState("");
@@ -69,8 +74,8 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
   
   const startConnection = () => {
     console.log("START CONNECTION");
-    props.qromaPageSerial.startMonitoring();
-    console.log("CONNECTION STARTED: " + props.qromaPageSerial.getIsConnected());
+    qromaPageSerial.startMonitoring();
+    console.log("CONNECTION STARTED: " + qromaPageSerial.isConnected);
   }
 
   const createQromaCommMessage = () => {
@@ -133,7 +138,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
   console.log("QCC");
   // console.log(qromaCommCommand);
 
-  const isQromaWebSerialConnected = props.qromaPageSerial.getIsConnected();
+  const isQromaWebSerialConnected = qromaPageSerial.isConnected;
   console.log("isQromaWebSerialConnected: " + isQromaWebSerialConnected);
 
   // const requestObjectQromaCommCommand = QcuCreateQromaCommAppCommandBytesMessageForAppCommand(requestObjectData, props.requestMessageType);
@@ -166,6 +171,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
     return qcCommandB64;
   }
 
+  
   return (
     <div>
       <MessageInputComponent

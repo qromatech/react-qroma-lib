@@ -1,23 +1,27 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { IQromaCommFilesystemApi } from "./QromaCommFileSystemApi";
 import { DirItem, DirItemType } from "../../qroma-comm-proto/file-system-commands";
+import { QromaPageAppContext } from "../webserial/QromaPageAppContext";
 
 // // @ts-ignore
 // import { Buffer } from 'buffer';
 
 
-interface IQromaCommFileExplorerUiComponentProps {
-  qromaCommFileSystemApi: IQromaCommFilesystemApi
+interface INewQromaCommFileExplorerUiComponentProps {
+  // qromaCommFileSystemApi: IQromaCommFilesystemApi
 }
 
 
 
-export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUiComponentProps) => {
+export const NewQromaCommFileExplorerUiComponent = (props: INewQromaCommFileExplorerUiComponentProps) => {
   
   // const [isConnected, setIsConnected] = useState(false);
 
   const [dirItems, setDirItems] = useState([] as DirItem[]);
   const [activeDirPath, setActiveDirPath] = useState("...");
+
+  const qromaApp = useContext(QromaPageAppContext);
+  const qcFileExplorer = qromaApp.qromaCommFileExplorer;
 
   
   const DirUiComponent = ({dirPath, dirItem}: {dirPath: string, dirItem: DirItem}) => {
@@ -34,12 +38,12 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
     )
   }
 
-  const OpenContentsLink = (props: {itemPath: string}) => {
-    console.log(props.itemPath)
-    const itemUrl = "./qroma-io/showQromaFile/#" + props.itemPath;
+  const OpenContentsLink = ({itemPath}: {itemPath: string}) => {
+    console.log(itemPath)
+    const itemUrl = "./qroma-io/showQromaFile/#" + itemPath;
     return (
       <a href={itemUrl} target="_blank" rel="noopener noreferrer">
-        {props.itemPath}
+        {itemPath}
       </a>
     )
   }
@@ -67,7 +71,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
   
 
   const listDirPath = async (dirPath: string) => {
-    const dirResult = await props.qromaCommFileSystemApi.listDir(dirPath);
+    const dirResult = await qcFileExplorer.listDir(dirPath);
     if (dirResult && dirResult.success) {
       setDirItems(dirResult.dirItems);
       setActiveDirPath(dirResult.dirPath);
@@ -80,7 +84,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
     const dirPath = prompt("Enter directory name");
     if (dirPath !== null) {  
       const prefix = dirPath.startsWith("/") ? "" : "/";
-      await props.qromaCommFileSystemApi.mkDir(prefix + dirPath);
+      await qcFileExplorer.mkDir(prefix + dirPath);
     }
   }
 
@@ -101,7 +105,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
     const encoder = new TextEncoder();
     const encoded = encoder.encode(fileContent);
 
-    await props.qromaCommFileSystemApi.writeFileContents(filePath, encoded);
+    await qcFileExplorer.writeFileContents(filePath, encoded);
   }
 
   const createFileInDirPath = async (dirPath: string) => {
@@ -124,7 +128,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
     const encoder = new TextEncoder();
     const encoded = encoder.encode(fileContent);
 
-    await props.qromaCommFileSystemApi.writeFileContents(filePath, encoded);
+    await qcFileExplorer.writeFileContents(filePath, encoded);
   }
 
   // const readFile = async () => {
@@ -148,11 +152,11 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
   // }
 
   const rmFile = async (filePath: string) => {
-    await props.qromaCommFileSystemApi.rmFile(filePath);
+    await qcFileExplorer.rmFile(filePath);
   }
 
   const showFileContents = async (filePath: string) => {
-    const fileContents = await props.qromaCommFileSystemApi.getFileContents(filePath);
+    const fileContents = await qcFileExplorer.getFileContents(filePath);
     if (fileContents === undefined) {
       console.log("Unable to read file contents for " + filePath);
       return;
@@ -169,7 +173,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
   }
 
   const rmDir = async (dirPath: string) => {
-    await props.qromaCommFileSystemApi.rmDir(dirPath);
+    await qcFileExplorer.rmDir(dirPath);
   }
 
   const onConnection = (success: boolean) => {
@@ -181,11 +185,11 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
   }
 
   const startMonitoring = async () => {
-    props.qromaCommFileSystemApi.init(onConnection);
+    qcFileExplorer.init(onConnection);
     console.log("INIT CALLED");
   }
 
-  const isConnected = props.qromaCommFileSystemApi.qromaPageSerial.isConnected;
+  const isConnected = qromaApp.qromaPageSerial.isConnected;
   
   if (!isConnected) {
     return (

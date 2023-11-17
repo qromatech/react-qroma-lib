@@ -3,17 +3,93 @@ import { QromaCommResponse } from '../../../qroma-comm-proto/qroma-comm';
 import { IQromaPageSerial } from '../QromaPageSerial';
 
 
+// export interface IQromaCommRxInputs {
+//   onQromaCommResponse: (message: QromaCommResponse) => void;
+//   qromaPageSerial: IQromaPageSerial
+// }
+
+// export interface IQromaCommRx {
+//   unsubscribe: () => void
+// }
+
+
+// export const createQromaCommRx = (inputs: IQromaCommRxInputs): IQromaCommRx => {
+//   let rxBuffer = new Uint8Array();
+
+//   const setRxBuffer = (update: Uint8Array) => {
+//     rxBuffer = update;
+//   }
+
+//   const _onData = (newData: Uint8Array) => {
+//     console.log("QromaCommWebSerial - onData");
+//     console.log(newData);
+
+//     let currentRxBuffer = new Uint8Array([...rxBuffer, ...newData]);
+
+//     let firstNewLineIndex = 0;
+
+//     while (firstNewLineIndex !== -1) {
+
+//       let firstNewLineIndex = currentRxBuffer.findIndex(x => x === 10);
+
+//       if (firstNewLineIndex === -1) {
+//         setRxBuffer(currentRxBuffer);
+//         return;
+//       }
+
+//       if (firstNewLineIndex === 0) {
+//         currentRxBuffer = currentRxBuffer.slice(1, currentRxBuffer.length);
+//         continue;
+//       }
+
+//       try {
+//         const b64Bytes = currentRxBuffer.slice(0, firstNewLineIndex);
+//         currentRxBuffer = currentRxBuffer.slice(firstNewLineIndex, currentRxBuffer.length);
+
+//         const b64String = new TextDecoder().decode(b64Bytes);
+//         console.log("RESPONSE: " + b64String);
+//         const messageBytes = Buffer.from(b64String, 'base64');
+//         const response = QromaCommResponse.fromBinary(messageBytes);
+
+//         console.log("QromaCommRx - onData has response");
+//         console.log(response);
+
+//         inputs.onQromaCommResponse(response);
+
+//       } catch (e) {
+//         // console.log("CAUGHT ERROR");
+//         // console.log(e);
+//       }
+//     }
+//     setRxBuffer(currentRxBuffer);
+//   }
+
+//   const qpsListener = {
+//     onData: _onData,
+//     onPortRequestResult: (prr) => { }
+//   };
+
+//   inputs.qromaPageSerial.subscribeSerial(qpsListener);
+
+//   return {
+//     unsubscribe : () => { },
+//   };
+// }
+
+
 export interface IQromaCommRxInputs {
-  onQromaCommResponse: (message: QromaCommResponse) => void;
-  qromaPageSerial: IQromaPageSerial
+  onQromaCommResponse: (message: QromaCommResponse) => void
+  // onSerialData: (newData: Uint8Array
+  // qromaPageSerial: IQromaPageSerial
 }
 
 export interface IQromaCommRx {
-  unsubscribe: () => void
+  // unsubscribe: () => void
+  addNewSerialData: (newData: Uint8Array) => void
 }
 
-
-export const createQromaCommRx = (inputs: IQromaCommRxInputs): IQromaCommRx => {
+export const createQromaCommRx = (onQromaCommResponse: (message: QromaCommResponse) => void): IQromaCommRx => {
+  console.log("createQromaCommRx()")
   let rxBuffer = new Uint8Array();
 
   const setRxBuffer = (update: Uint8Array) => {
@@ -47,31 +123,36 @@ export const createQromaCommRx = (inputs: IQromaCommRxInputs): IQromaCommRx => {
         currentRxBuffer = currentRxBuffer.slice(firstNewLineIndex, currentRxBuffer.length);
 
         const b64String = new TextDecoder().decode(b64Bytes);
-        console.log("RESPONSE: " + b64String);
+        console.log("RESPONSE rx : " + b64String);
         const messageBytes = Buffer.from(b64String, 'base64');
         const response = QromaCommResponse.fromBinary(messageBytes);
 
-        console.log("QromaCommWebSerial - onData has response");
+        console.log("QromaCommRx - onData has response");
         console.log(response);
+        console.log(onQromaCommResponse)
 
-        inputs.onQromaCommResponse(response);
+        onQromaCommResponse(response);
 
       } catch (e) {
-        // console.log("CAUGHT ERROR");
-        // console.log(e);
+        console.log("CAUGHT ERROR");
+        console.log(e);
       }
     }
     setRxBuffer(currentRxBuffer);
   }
 
-  const qpsListener = {
-    onData: _onData,
-    onPortRequestResult: (prr) => { }
-  };
+  // const qpsListener = {
+  //   onData: _onData,
+  //   onPortRequestResult: (prr) => { }
+  // };
 
-  const unsubscribe = inputs.qromaPageSerial.listen(qpsListener);
+  // inputs.qromaPageSerial.subscribeSerial(qpsListener);
+
+  // return {
+  //   unsubscribe : () => { },
+  // };
 
   return {
-    unsubscribe,
+    addNewSerialData: _onData,
   };
 }

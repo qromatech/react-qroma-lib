@@ -1,8 +1,8 @@
 import { PortRequestResult } from "../QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../../qroma-comm-proto/qroma-comm';
 import { IMessageType } from '@protobuf-ts/runtime';
-import { QcuCreateQromaCommMessageForAppCommand } from '../../QromaCommUtils';
-import { useInitQromaCommWebSerial } from "../../QromaSiteApp";
+// import { QcuCreateQromaCommMessageForAppCommand } from '../../QromaCommUtils';
+// import { useInitQromaCommWebSerial } from "../../QromaSiteApp";
 import { IQromaPageSerial } from "../QromaPageSerial";
 import { createQromaCommRx } from "./QromaCommRx";
 
@@ -89,6 +89,7 @@ export const createQromaAppRx = <TResponse extends object>(inputs: IQromaAppRxIn
       const appResponse = inputs.responseMessageType.fromBinary(appResponseBytes);
       console.log("APP RESPONSE");
       console.log(appResponse);
+      
       if (appResponse === undefined) {
         console.log("UNDEFINED APP RESPONSE BYTES");
         console.log(appResponseBytes);

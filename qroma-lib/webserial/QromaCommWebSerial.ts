@@ -58,7 +58,7 @@ export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQr
         currentRxBuffer = currentRxBuffer.slice(firstNewLineIndex, currentRxBuffer.length);
 
         const b64String = new TextDecoder().decode(b64Bytes);
-        console.log("RESPONSE: " + b64String);
+        console.log("RESPONSE --: " + b64String);
         const messageBytes = Buffer.from(b64String, 'base64');
         const response = QromaCommResponse.fromBinary(messageBytes);
 

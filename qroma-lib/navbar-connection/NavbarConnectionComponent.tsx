@@ -1,39 +1,50 @@
-import React, { useEffect, useState } from "react"
-import { IUseQromaWebSerialInputs, PortRequestResult, useQromaWebSerial } from "../webserial/QromaWebSerial";
-import { subscribeToQromaWebSerial, useInitQromaWebSerial } from "../QromaSiteApp";
-import { useQromaPageSerial } from "../webserial/QromaPageSerial";
+import React, { useContext, useEffect, useState } from "react"
+// import { PortRequestResult } from "../webserial/QromaWebSerial";
+// import { IQromaPageSerialListener } from "../webserial/QromaPageSerial";
+// import { QromaPageSerialContext } from "../webserial/QromaPageSerialContext";
+import { QromaPageAppContext } from "../webserial/QromaPageAppContext";
 
 
 export const NavbarConnectionComponent = () => {
 
-  const [isPortConnected, setIsPortConnected] = useState(false);
-  const [qromaWebSerialIsConnected, setQromaWebSerialIsConnected] = useState(false);
+  // const [isPortConnected, setIsPortConnected] = useState(false);
+  // const [qromaWebSerialIsConnected, setQromaWebSerialIsConnected] = useState(false);
 
-  const inputs: IUseQromaWebSerialInputs = {
-    onData: (data: Uint8Array) => {},
-    onConnect: () => setIsPortConnected(true),
-    onDisconnect: () => setIsPortConnected(false),
-    onPortRequestResult: (requestResult: PortRequestResult) => 
-    setQromaWebSerialIsConnected(requestResult.success),
-  };
-  // const qromaWebSerial = useInitQromaWebSerial(inputs);
-  // subscribeToQromaWebSerial(inputs);
-  
   // useEffect(() => {
-  //   const qromaPageSerial = useQromaPageSerial(inputs);
-  //   return () => qromaPageSerial.unsubscribe();
+  //   const listener: IQromaPageSerialListener = {
+  //     onData: (data: Uint8Array) => {},
+  //     onConnect: () => setIsPortConnected(true),
+  //     onDisconnect: () => setIsPortConnected(false),
+  //     onPortRequestResult: (requestResult: PortRequestResult) => 
+  //     setQromaWebSerialIsConnected(requestResult.success),
+  //   };
+
+  //   const qromaPageSerial = useQromaPageSerial();
+  //   const unsubscribe = qromaPageSerial.listen(listener);
+  //   return unsubscribe;
   // });
 
-  const qpSerial = useQromaPageSerial();
-  // qpSerial.listen(inputs);
+  // const listener: IQromaPageSerialListener = {
+  //   onData: (data: Uint8Array) => {},
+  //   onConnect: () => setIsPortConnected(true),
+  //   onDisconnect: () => setIsPortConnected(false),
+  //   onPortRequestResult: (requestResult: PortRequestResult) => 
+  //   setQromaWebSerialIsConnected(requestResult.success),
+  // };
 
-  console.log("RENDERING NavbarConnectionComponent");
+  // const qpSerial = useQromaPageSerial();
+  // qpSerial.listen(listener);
+
+  // console.log("RENDERING NavbarConnectionComponent");
+
+  const qromaPageApp = useContext(QromaPageAppContext);
+  const qromaPageSerial = qromaPageApp.qromaPageSerial;
 
   return (
     <div>
-      {/* <div>Navbar Connection</div> */}
-      <div>Port Connected: {isPortConnected ? "Yes" : "No"}</div>
-      <div>QromaWS Connected: {qromaWebSerialIsConnected ? "Yes" : "No"}</div>
+      <div>Port Connected: {qromaPageSerial.isConnected ? "Yes" : "No"}</div>
+      <div>QromaWS Connected: {qromaPageSerial.isPortConnected ? "Yes" : "No"}</div>
+      <div>Monitoring: {qromaPageSerial.isMonitorOn ? "Yes" : "No"}</div>
     </div>
   )
 }

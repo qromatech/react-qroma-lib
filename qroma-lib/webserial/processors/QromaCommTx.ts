@@ -5,19 +5,18 @@ import { IQromaPageSerial } from '../QromaPageSerial';
 
 export interface IQromaCommTxInputs {
   qromaPageSerial: IQromaPageSerial
-  sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
+  // sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
 }
 
 export interface IQromaCommTx {
   sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
-  unsubscribe: () => void
 }
 
 
 export const createQromaCommTx = (inputs: IQromaCommTxInputs): IQromaCommTx => {
 
   const sendQromaCommCommand = async (qcCommand: QromaCommCommand) => {
-    if (!inputs.qromaPageSerial.getIsConnected()) {
+    if (!inputs.qromaPageSerial.isConnected) {
       console.log("sendQromaCommCommand - CAN'T SEND COMMAND - NO CONNECTION");
       console.log(qcCommand);
       return;
@@ -35,6 +34,5 @@ export const createQromaCommTx = (inputs: IQromaCommTxInputs): IQromaCommTx => {
 
   return {
     sendQromaCommCommand,
-    unsubscribe: () => {},
   }
 }

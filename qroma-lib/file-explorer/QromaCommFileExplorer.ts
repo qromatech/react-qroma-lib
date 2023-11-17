@@ -1,20 +1,16 @@
-import { useContext, useEffect, useState } from "react";
-import { GetFileContentsResponse, ListDirContentsResponse, MkDirResponse, RmDirResponse, RmFileResponse, ReportFileDataResponse } from "../../qroma-comm-proto/file-system-commands";
+import { useState } from "react";
+import { GetFileContentsResponse, ListDirContentsResponse, MkDirResponse, RmDirResponse, RmFileResponse, ReportFileDataResponse, DirItem } from "../../qroma-comm-proto/file-system-commands";
 import { QromaCommCommand, QromaCommResponse } from "../../qroma-comm-proto/qroma-comm";
 import { crc32 } from "crc";
-import { IUseQromaCommWebSerialInputs, useQromaCommWebSerial } from "../webserial/QromaCommWebSerial";
 import { sleep } from "../utils";
-import { PortRequestResult } from "../webserial/QromaWebSerial";
 
 // @ts-ignore
 import { Buffer } from 'buffer';
-import { QromaPageSerialContext } from "../webserial/QromaPageSerialContext";
 import { createQromaCommTx } from "../webserial/processors/QromaCommTx";
-import { IQromaPageSerial } from "../webserial/QromaPageSerial";
-import { IQromaCommRxInputs, createQromaCommRx } from "../webserial/processors/QromaCommRx";
+import { IQromaCommListener, IQromaPageSerial } from "../webserial/QromaPageSerial";
 
 
-export interface IQromaCommFilesystemApi {
+export interface IQromaCommFileExplorer {
   init: (onConnection: (success: boolean) => void) => void
 
   listDir: (dirPath: string) => Promise<ListDirContentsResponse | undefined>
@@ -25,107 +21,52 @@ export interface IQromaCommFilesystemApi {
   getFileContents: (filePath: string) => Promise<GetFileContentsResponse | undefined>
   writeFileContents: (filePath: string, contents: Uint8Array) => Promise<ReportFileDataResponse | undefined>
   rmFile: (filePath: string) => Promise<RmFileResponse | undefined>
-
-  qromaPageSerial: IQromaPageSerial
 }
 
 
-export const QromaCommFileSystemApi = (props: {qromaPageSerial: IQromaPageSerial}): IQromaCommFilesystemApi => {
+export const QromaCommFileExplorer = (qromaPageSerial: IQromaPageSerial): IQromaCommFileExplorer => {
 
-  console.log("STARTING QromaCommFileSystemApi");
+  console.log("STARTING QromaCommFileExplorer");
 
-  // const [latestResponse, setLatestResponse] = useState(undefined as QromaCommResponse | undefined);
-  // let latestResponse: QromaCommResponse | undefined = undefined;
-  let latestResponse: any = undefined;
-  let latestResponseLastSet: Date = new Date();
-  let latestResponseLastCleared: Date = new Date();
-  // let _onConnection: ((success: boolean) => void) | undefined = undefined; 
+  const [latestResponse, setLatestResponse] = useState(undefined as QromaCommResponse | undefined);
 
   const clearLatestResponse = (reason: string) => {
-    console.log("CLEARING LATES RESPONSE - " + reason)
-    // latestResponse = undefined;
-    latestResponse = "notset"
-    latestResponseLastCleared = new Date();
-    console.log(latestResponseLastCleared);
+    setLatestResponse(undefined);
   }
-
-  const setLatestResponse = (message: QromaCommResponse) => {
-    console.log("SETING LATEST RESPONSE");
-    console.log(message);
-    latestResponse = message;
-    console.log(latestResponse)
-    latestResponseLastSet = new Date();
-    console.log(latestResponseLastSet);
-  }
-
-  // const clearLatestResponse = () => {
-  //   setLatestResponse(undefined);
-  // }
 
   const onQromaCommResponse = (message: QromaCommResponse) => {
-    console.log("QromaCommFileSystemApi - onQromaCommResponse()");
+    console.log("QromaCommFileExplorer - onQromaCommResponse()");
     console.log(message);
     setLatestResponse(message);
     console.log(latestResponse)
   }
 
-  
-  const startMonitoring = (onConnection: (success: boolean) => void) => {
-    // _onConnection = onConnection;
-
-    if (qromaCommWebSerial) {
-      setTimeout(() => {
-        props.qromaPageSerial.startMonitoring();
-      }, 0);
-    }
-  }
-
-  const onPortRequestResult = (requestResult: PortRequestResult) => {
-    // if (_onConnection !== undefined) {
-    //   _onConnection(requestResult.success);
-    // }
-  }
-      
-
-  const qromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
-    onQromaCommResponse,
-    // onConnect: () => { console.log("QFSApi - SERIAL CONNECTED"); },
-    // onDisconnect: () => { console.log("QFSApi - SERIAL DISCONNECTED"); },
-    onPortRequestResult,
-  }
-
-  // const qromaCommWebSerial = useQromaCommWebSerial(qromaCommWebSerialInputs);
-  console.log("QFSApi - useQromaCommWebSerial()");
-  console.log(qromaCommWebSerialInputs);
-  // const qromaCommWebSerial = useQromaCommWebSerial(qromaCommWebSerialInputs);
-
-  // const qromaPageSerial = useContext(QromaPageSerialContext);
   const qromaCommWebSerial = createQromaCommTx({
-    qromaPageSerial: props.qromaPageSerial,
+    qromaPageSerial,
   });
 
-  const qromaCommRxInputs: IQromaCommRxInputs = {
+  const qromaCommListener: IQromaCommListener = {
     onQromaCommResponse,
-    qromaPageSerial: props.qromaPageSerial,
-  };
-  const qromaCommRx = createQromaCommRx(qromaCommRxInputs);
+  }
+  qromaPageSerial.subscribeQromaCommRx(qromaCommListener);
 
+  
+  const startMonitoring = (onConnection: (success: boolean) => void) => {
+    qromaPageSerial.startMonitoring();
+  }
+
+  const timeIdentity = new Date()
 
   const waitForResponse = async <T,>(filter: (message: QromaCommResponse) => T, timeoutInMs: number) : Promise<T | undefined> => {
-    console.log("waitForResponse");
+    console.log(`waitForResponse - ${timeIdentity}`);
     const expirationTime = Date.now() + timeoutInMs;
     console.log(expirationTime)
     console.log(filter)
-    console.log(latestResponseLastSet);
-    console.log(latestResponseLastCleared);
     
     while (Date.now() < expirationTime) {
-      console.log("TICKx")
-      console.log(latestResponse)
-      console.log(latestResponseLastSet);
-      console.log(latestResponseLastCleared);
-      // if (latestResponse !== undefined) {
-      if (latestResponse !== "notset") {
+      console.log(`TICKx - ${timeIdentity}`)
+      console.log(`LATESTRESPONSE - ${latestResponse}`)
+      if (latestResponse !== undefined) {
         console.log("LATEST RESPONSE");
         console.log(latestResponse)
         const filteredResponse = filter(latestResponse);
@@ -133,7 +74,7 @@ export const QromaCommFileSystemApi = (props: {qromaPageSerial: IQromaPageSerial
           return filteredResponse;
         }
       }
-      await sleep(100);
+      await sleep(500);
     }
 
     console.log(`waitForResponse() expired [${timeoutInMs} ms timeout]`);
@@ -291,7 +232,7 @@ export const QromaCommFileSystemApi = (props: {qromaPageSerial: IQromaPageSerial
 
     // listen for latest message; if valid/expected message type, return value
     const result = await waitForResponse((message: QromaCommResponse) => {
-      console.log("FILTERING");
+      console.log("FILTERING - listDir");
       console.log(message);
 
       if (message.response.oneofKind === 'fsResponse' &&
@@ -301,9 +242,11 @@ export const QromaCommFileSystemApi = (props: {qromaPageSerial: IQromaPageSerial
         return message.response.fsResponse.response.listDirContentsResponse;
       }
 
+      console.log("RETURNING EMPTY DIR RESULT");
       return;
     }, 1000);
 
+    console.log("RETURNING DIR RESULT");
     return result;
   }
 
@@ -343,16 +286,10 @@ export const QromaCommFileSystemApi = (props: {qromaPageSerial: IQromaPageSerial
     return result;
   }
 
-  useEffect(() => {
-    return () => {
-      console.log("UNMUONTING QROMACOMMFILESYSTEMAPI")
-    }
-  });
-
 
   return {
     init: startMonitoring,
-    
+
     getFileDetails,
     getFileContents,
     writeFileContents,
@@ -362,6 +299,6 @@ export const QromaCommFileSystemApi = (props: {qromaPageSerial: IQromaPageSerial
     mkDir,
     rmDir,
 
-    qromaPageSerial: props.qromaPageSerial,
+    // qromaPageSerial: qromaPageSerial,
   };
 }
