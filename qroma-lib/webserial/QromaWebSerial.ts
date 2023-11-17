@@ -29,7 +29,47 @@ export interface IQromaWebSerial {
 }
 
 
-export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSerial => {
+let _qromaWebSerial: IQromaWebSerial | undefined = undefined;
+
+
+
+
+const subscriptions = [] as IUseQromaWebSerialInputs[];
+
+const subscriberInputs = {
+  onData: (data: Uint8Array) => {
+    subscriptions.forEach(s => s.onData(data));
+  },
+  onConnect: () => {
+    console.log("QPA ON CONNECT")
+    subscriptions.forEach(s => {
+      if (s.onConnect) {
+        s.onConnect();
+      }
+    })
+  },
+  onDisconnect: () => {
+    subscriptions.forEach(s => {
+      if (s.onDisconnect) {
+        s.onDisconnect();
+      }
+    })
+  },
+  onPortRequestResult: (requestResult: PortRequestResult) => {
+    console.log("QPA onPortRequestResult")
+    console.log(subscriptions)
+    subscriptions.forEach(s => s.onPortRequestResult(requestResult));
+  },
+}
+
+
+export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaWebSerial => {
+
+  subscriptions.push(subscriber);
+  console.log("NEED TO ACCOUNT FOR UNSUBSCRIBING")
+  if (_qromaWebSerial !== undefined) {
+    return _qromaWebSerial;
+  }
 
   if (!window) {
     throw Error("Not running in a browser");
@@ -44,41 +84,38 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
     throw new Error("Unable to get serial from window.navigator!");
   }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const initPort = async() => {
-      console.log("INITIALIZING CONTEXT - ")
-      if (qromaWebSerialContext.initialized) {
-        return;
-      }
+  //   const initPort = async() => {
+  //     console.log("INITIALIZING CONTEXT - ")
+  //     if (qromaWebSerialContext.initialized) {
+  //       return;
+  //     }
      
-      qromaWebSerialContext.initialized = true;
-    }
-    initPort();
-  });
+  //     qromaWebSerialContext.initialized = true;
+  //   }
+  //   initPort();
+  // });
 
   const _onConnect = () => {
-    if (inputs.onConnect) {
-      inputs.onConnect();
-    }
+    console.log("QWS _onConnect")
+    subscriberInputs.onConnect();
   }
 
   const _onDisconnect = () => {
-    if (inputs.onDisconnect) {
-      inputs.onDisconnect();
-    }
+    subscriberInputs.onDisconnect();
   }
 
   console.log("PREx USEEFFECT - LISTNERS");
-  useEffect(() => {
+  // useEffect(() => {
     console.log("USEEFFECT - LISTENERS");
     qSerial.addEventListener("connect", _onConnect)
     qSerial.addEventListener("disconnect", _onDisconnect)
-    return () => {
-      qSerial.removeEventListener("connect", _onConnect)
-      qSerial.removeEventListener("disconnect", _onDisconnect)
-    }
-  });
+    // return () => {
+    //   qSerial.removeEventListener("connect", _onConnect)
+    //   qSerial.removeEventListener("disconnect", _onDisconnect)
+    // }
+  // });
   console.log("POST USEEFFECT - LISTNERS");
 
 
@@ -124,7 +161,7 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
       qromaWebSerialContext.port = port;
 
       setIsConnected(true);
-      inputs.onPortRequestResult({success: true});
+      subscriberInputs.onPortRequestResult({success: true});
 
       return port;
     } catch (e: any) {
@@ -135,7 +172,7 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
       console.log("IS PORT OPEN?");
       console.log(portOpen);
 
-      inputs.onPortRequestResult({success: false});
+      subscriberInputs.onPortRequestResult({success: false});
     }
   }
 
@@ -184,7 +221,7 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
           break;
         }
 
-        inputs.onData(value);
+        subscriberInputs.onData(value);
       } catch (error) {
         // Handle |error|...
       } finally {
@@ -199,7 +236,7 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
     qromaWebSerialContext.monitorOn = false;
   }
 
-  return {
+  _qromaWebSerial = {
     // requestPort,
     sendBytes,
     sendString,
@@ -208,4 +245,6 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
     stopMonitoring,
     // onData: (_: Uint8Array) => { },
   };
+
+  return _qromaWebSerial;
 }
