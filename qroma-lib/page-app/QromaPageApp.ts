@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IQromaWebSerial, IUseQromaWebSerialInputs, PortRequestResult, useQromaWebSerial } from "../webserial/QromaWebSerial";
+import { IQromaConnectionState, IQromaWebSerial, IUseQromaWebSerialInputs, PortRequestResult, useQromaWebSerial } from "../webserial/QromaWebSerial";
 
 
 export interface IQromaPageApp {
@@ -8,15 +8,8 @@ export interface IQromaPageApp {
   qromaConnectionState: IQromaConnectionState
 }
 
-export interface IQromaConnectionState {
-  isConnected: boolean
-  isPortConnected: boolean
-  isMonitorOn: boolean
-}
-
 
 export const _createQromaPageApp = (): IQromaPageApp => {  
-
 
   const [isConnected, setIsConnected] = useState(false);
   const [isPortConnected, setIsPortConnected] = useState(false);

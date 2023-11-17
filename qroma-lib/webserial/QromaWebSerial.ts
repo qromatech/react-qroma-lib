@@ -19,18 +19,23 @@ export interface IUseQromaWebSerialInputs {
   onPortRequestResult: ((requestResult: PortRequestResult) => void);
 }
 
+
+export interface IQromaConnectionState {
+  isConnected: boolean
+  isPortConnected: boolean
+  isMonitorOn: boolean
+}
+
 export interface IQromaWebSerial {
-  // requestPort(): any
   sendBytes(data: Uint8Array): void
   sendString(data: string): void
-  getIsConnected(): boolean
+  getConnectionState(): IQromaConnectionState
   startMonitoring(): void
   stopMonitoring(): void  
 }
 
 
 let _qromaWebSerial: IQromaWebSerial | undefined = undefined;
-
 
 
 
@@ -84,64 +89,41 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
     throw new Error("Unable to get serial from window.navigator!");
   }
 
-  // useEffect(() => {
+  const _connectionState: IQromaConnectionState = {
+    isConnected: false,
+    isPortConnected: false,
+    isMonitorOn: false
+  };
 
-  //   const initPort = async() => {
-  //     console.log("INITIALIZING CONTEXT - ")
-  //     if (qromaWebSerialContext.initialized) {
-  //       return;
-  //     }
-     
-  //     qromaWebSerialContext.initialized = true;
-  //   }
-  //   initPort();
-  // });
+  const getConnectionState = () => {
+    return {
+      ..._connectionState,
+    };
+  }
 
   const _onConnect = () => {
     console.log("QWS _onConnect")
+    _connectionState.isConnected = true;
     subscriberInputs.onConnect();
   }
 
   const _onDisconnect = () => {
+    _connectionState.isConnected = false;
     subscriberInputs.onDisconnect();
   }
 
-  console.log("PREx USEEFFECT - LISTNERS");
-  // useEffect(() => {
-    console.log("USEEFFECT - LISTENERS");
-    qSerial.addEventListener("connect", _onConnect)
-    qSerial.addEventListener("disconnect", _onDisconnect)
-    // return () => {
-    //   qSerial.removeEventListener("connect", _onConnect)
-    //   qSerial.removeEventListener("disconnect", _onDisconnect)
-    // }
-  // });
-  console.log("POST USEEFFECT - LISTNERS");
+  console.log("ADDING EVENT LISTENERS");
+  qSerial.addEventListener("connect", _onConnect)
+  qSerial.addEventListener("disconnect", _onDisconnect)
+  console.log("DONE ADDING EVENT LISTNERS");
 
-
-  // let isConnected = false;
-  if (!globalThis.qromaInitComplete) {
-    console.log("INITIALIZING isConnected");
-    globalThis.isConnected = false;
-  }
-  globalThis.qromaInitComplete = true;
-  
-  const getIsConnected = () => {
-    console.log("GETTING isConnected: " + globalThis.isConnected);
-    return globalThis.isConnected;
-  }
-  const setIsConnected = (c: boolean) => {
-    console.log("SETTING isConnected: " + c);
-    globalThis.isConnected = c;
-  }
 
   const requestPort = async () => {
-    // await initPort();
     
     console.log("In requestPort()");
 
     try {
-      if (qromaWebSerialContext.port && globalThis.isConnected) {
+      if (qromaWebSerialContext.port && _connectionState.isConnected) {
         return qromaWebSerialContext.port;
       }
 
@@ -160,7 +142,7 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
 
       qromaWebSerialContext.port = port;
 
-      setIsConnected(true);
+      _connectionState.isConnected = true;
       subscriberInputs.onPortRequestResult({success: true});
 
       return port;
@@ -191,15 +173,14 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
     await sendBytes(encoded);
   }
 
-  // const startMonitoring = async (onData: (data: Uint8Array) => void) => {
   const startMonitoring = async () => {
     console.log("START MONITORING: startMonitoring");
 
     await requestPort();
 
-    if (!getIsConnected()) {
-      // throw new Error("Can't start monitor - no connection");
-      return;
+    if (!getConnectionState().isConnected) {
+      throw new Error("Can't start monitor - no connection");
+      // return;
     }
 
     const port = qromaWebSerialContext.port!;
@@ -237,12 +218,14 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
   }
 
   _qromaWebSerial = {
-    // requestPort,
     sendBytes,
     sendString,
-    getIsConnected,
+
+    getConnectionState,
+
     startMonitoring,
     stopMonitoring,
+
     // onData: (_: Uint8Array) => { },
   };
 
