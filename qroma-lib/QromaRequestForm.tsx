@@ -170,7 +170,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
   console.log("QCC");
   console.log(qromaCommCommand);
 
-  const isQromaWebSerialConnected = props.qromaWebSerial.getIsConnected();
+  const isQromaWebSerialConnected = props.qromaWebSerial.getConnectionState().isConnected;
   console.log("isQromaWebSerialConnected: " + isQromaWebSerialConnected);
 
   const requestObjectJsonDataToB64 = (data) => {

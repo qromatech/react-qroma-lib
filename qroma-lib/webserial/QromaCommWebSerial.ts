@@ -13,7 +13,8 @@ import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qrom
 export interface IQromaCommWebSerial {
   // requestPort: () => any
   startMonitoring: () => void
-  getIsConnected(): boolean
+  // getIsConnected(): boolean
+  getConnectionState(): IQromaConnectionState
   stopMonitoring: () => void
   sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
 }
@@ -144,7 +145,7 @@ export const useQromaCommWebSerial = (
   return {
     // requestPort: qromaWebSerial.requestPort,
     startMonitoring: startMonitoring,
-    getIsConnected: () => qromaWebSerial.getConnectionState().isConnected,
+    getConnectionState: qromaWebSerial.getConnectionState,
     stopMonitoring: qromaWebSerial.stopMonitoring,
     sendQromaCommCommand,
   };

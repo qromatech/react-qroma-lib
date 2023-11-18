@@ -36,20 +36,22 @@ export const QromaCommandDeviceApp = <T extends object, U extends object>(props:
       }
     }
   }
-  const qromaWebSerial = useQromaAppWebSerial(inputs);
+  const qromaAppWebSerial = useQromaAppWebSerial(inputs);
+
+  const isConnected = qromaAppWebSerial.getConnectionState().isConnected;
   
   return (
     <>
       {props.requestMessageType.typeName} => {props.responseMessageType.typeName}
 
       <div>
-        Serial Connected? { qromaWebSerial.getIsConnected() ? "Yes" : "No" } / { isPortConnected ? "Yes" : "No" }
+        Serial Connected? { isConnected ? "Yes" : "No" } / { isPortConnected ? "Yes" : "No" }
       </div> 
 
       <QromaRequestForm
         requestMessageType={props.requestMessageType}
         responseMessageType={props.responseMessageType}
-        qromaWebSerial={qromaWebSerial}
+        qromaWebSerial={qromaAppWebSerial}
         />
 
       <div>

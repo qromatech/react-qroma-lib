@@ -21,7 +21,7 @@ export interface IUseQromaAppWebSerialInputs<TCommand extends object, TResponse 
 export interface IQromaAppWebSerial<TCommand extends object> {
   startMonitoring: () => void
   stopMonitoring: () => void
-  getIsConnected: () => boolean
+  getConnectionState: () => IQromaConnectionState
   sendQromaAppCommand: (appCommand: TCommand) => void
   createQromaCommMessageForAppCommand: (appCommand: TCommand) => QromaCommCommand
 }
@@ -88,7 +88,7 @@ export const useQromaAppWebSerial =
 
   return {
     startMonitoring: qromaCommWebSerial.startMonitoring,
-    getIsConnected: qromaCommWebSerial.getIsConnected,
+    getConnectionState: qromaCommWebSerial.getConnectionState,
     stopMonitoring: qromaCommWebSerial.stopMonitoring,
     sendQromaAppCommand,
     createQromaCommMessageForAppCommand,
