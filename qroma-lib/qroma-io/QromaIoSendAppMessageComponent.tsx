@@ -17,6 +17,9 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
   props: IQromaIoSendAppMessageComponentProps<T, U>
 ) => {
   
+  // const [qromaAppResponse, setQromaAppResponse] = useState(props.responseMessageType.create());
+  const [isPortConnected, setIsPortConnected] = useState(false);
+
   const inputs: IUseQromaAppWebSerialInputs<T, U> = {
     onQromaAppResponse: (appMessage: U) => {
       console.log("QromaRequestForm - onQromaAppResponse!!");
@@ -39,9 +42,11 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
       }
     }
   }
-  const qromaWebSerial = useQromaAppWebSerial(inputs);
+  const qromaAppWebSerial = useQromaAppWebSerial(inputs);
+
+  const isConnected = qromaAppWebSerial.getConnectionState().isConnected;
   
-  const [isPortConnected, setIsPortConnected] = useState(false);
+  // const [isPortConnected, setIsPortConnected] = useState(false);
 
   const location = useLocation();
   console.log(location);
@@ -68,7 +73,7 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
     console.log("SEND OBJECT");
     console.log(requestObject);
 
-    const result = await qromaWebSerial.sendQromaAppCommand(requestObject);
+    const result = await qromaAppWebSerial.sendQromaAppCommand(requestObject);
 
     console.log("REQUEST SENT");
     console.log(result);
@@ -76,17 +81,18 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
 
   const startConnection = () => {
     console.log("START CONNECTION");
-    qromaWebSerial.startMonitoring();
-    console.log("CONNECTION STARTED: " + qromaWebSerial.getIsConnected());
+    qromaAppWebSerial.startMonitoring();
+    // console.log("CONNECTION STARTED: " + qromaAppWebSerial.getIsConnected());
   }
 
-  const isQromaWebSerialConnected = qromaWebSerial.getIsConnected();
+  // const isQromaWebSerialConnected = qromaAppWebSerial.getIsConnected();
+  const isQromaWebSerialConnected = qromaAppWebSerial.getConnectionState().isConnected;
 
   
   return (
     <div>
       <div>
-        Serial Connected? { qromaWebSerial.getIsConnected() ? "Yes" : "No" } / { isPortConnected ? "Yes" : "No" }
+        Serial Connected? { isConnected ? "Yes" : "No" } / { isPortConnected ? "Yes" : "No" }
       </div> 
 
       <div>B64Content: {b64Content}</div>

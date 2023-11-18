@@ -41,7 +41,7 @@ export const QromaCommFileExplorerUiComponent = () => {
     console.log(props.itemPath)
     const itemUrl = "./qroma-io/showQromaFile/#" + props.itemPath;
     return (
-      <a href={itemUrl} target="_blank" rel="noopener noreferrer">
+      <a href={itemUrl}>
         {props.itemPath}
       </a>
     )
@@ -104,7 +104,7 @@ export const QromaCommFileExplorerUiComponent = () => {
     const encoder = new TextEncoder();
     const encoded = encoder.encode(fileContent);
 
-    await props.qromaCommFileSystemApi.writeFileContents(filePath, encoded);
+    await qromaCommFileSystemApi.writeFileContents(filePath, encoded);
   }
 
   const createFileInDirPath = async (dirPath: string) => {

@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { IQromaConnectionState, IQromaWebSerial, PortRequestResult, useQromaWebSerial } from "../webserial/QromaWebSerial";
+import { IQromaConnectionState, IQromaWebSerial, useQromaWebSerial } from "../webserial/QromaWebSerial";
+import { IQromaAppMessageTypesRegistry, createQromaAppMessageTypesRegistry } from "./QromaAppMessageTypesRegistry";
+import { MessageInfo } from "@protobuf-ts/runtime";
 
 
 export interface IQromaPageApp {
   qromaPageSerial: IQromaWebSerial
-  // qromaCommFileExplorer: IQromaCommFileExplorer
   qromaConnectionState: IQromaConnectionState
-  // getQromaConnectionState: () => IQromaConnectionState
+  qromaAppMessageTypesRegistry: IQromaAppMessageTypesRegistry
 }
 
 
@@ -16,19 +17,9 @@ export const _createQromaPageApp = (): IQromaPageApp => {
   const [isPortConnected, setIsPortConnected] = useState(false);
   const [isMonitorOn, setIsMonitorOn] = useState(false);
 
-  // const inputs: IUseQromaWebSerialInputs = {
-  //   onData: () => { },
-  //   onConnect: () => { setIsConnected(true); },
-  //   onDisconnect: () => { 
-  //     setIsConnected(false); 
-  //     setIsMonitorOn(false);
-  //   },
-  //   onPortRequestResult: (requestResult: PortRequestResult) => {
-  //     if (requestResult.success) {
-  //       setIsMonitorOn(true);
-  //     }
-  //   }
-  // };
+  const [qromaAppMessageTypes, setQromaAppMessageTypes] = useState({} as Record<string, MessageInfo>);
+
+
   const onConnectionChange = (latestConnectionState: IQromaConnectionState) => {
     setIsConnected(latestConnectionState.isConnected);
     setIsPortConnected(latestConnectionState.isPortConnected);
@@ -36,16 +27,17 @@ export const _createQromaPageApp = (): IQromaPageApp => {
   }
 
   const qromaPageSerial = useQromaWebSerial(() => { }, onConnectionChange);
+  const qromaAppMessageTypesRegistry = createQromaAppMessageTypesRegistry(qromaAppMessageTypes, setQromaAppMessageTypes);
 
   return {
     qromaPageSerial,
-    // getQromaConnectionState: qromaPageSerial.getConnectionState,
 
     qromaConnectionState: {
       isConnected,
       isPortConnected,
       isMonitorOn,
-    }
-    // qromaCommFileExplorer,
+    },
+
+    qromaAppMessageTypesRegistry,
   };
 }

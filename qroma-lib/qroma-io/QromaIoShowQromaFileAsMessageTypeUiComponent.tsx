@@ -1,15 +1,16 @@
-import React, { useState } from "react"
-import { useLocation } from "@docusaurus/router";
-import { IQromaCommFilesystemApi } from "../file-explorer/QromaCommFileSystemApi";
+import React, { useContext, useState } from "react"
+// import { useLocation } from "@docusaurus/router";
+import { IQromaCommFilesystemApi, useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { MessageType } from "@protobuf-ts/runtime";
 import { QromaAppMessageTypes } from "../../../qroma-app/QromaAppMessageTypes";
-import { useQromaSiteAppContext } from "../QromaSiteApp";
+import { QromaPageAppContext } from "../page-app/QromaPageAppContext";
+
 
 
 interface IQromaIoShowQromaFileAsMessageTypeUiComponentProps<T extends object> {
   fileMessageType: MessageType<T>
   filePath: string
-  qromaCommFileSystemApi: IQromaCommFilesystemApi
+  // qromaCommFileSystemApi: IQromaCommFilesystemApi
 }
 
 
@@ -17,53 +18,21 @@ export const QromaIoShowQromaFileAsMessageTypeUiComponent = <T extends object>(
   props: IQromaIoShowQromaFileAsMessageTypeUiComponentProps<T>
 ) => {
 
-  const [isConnected, setIsConnected] = useState(false);
   const [fileMessageJson, setFileMessageJson] = useState("");
 
-  // const location = useLocation();
-  // console.log(location);
-
-  // const hash: string = location.hash;
-  // const isValid = hash.startsWith("#/");
-
-  // const fileTypeStr = "QromaLightsConfig";
-  // const fileMessageType = QromaAppMessageTypes[fileTypeStr];
-
-  const siteApp = useQromaSiteAppContext();
-  // const fileMessageType = siteApp.appMessageTypesRegistry.getMessageTypeForName(fileTypeStr);
-  // const mts = siteApp.appMessageTypesRegistry.getAllMessageTypes();
+  // const qromaPageApp = useContext(QromaPageAppContext);
   const fileMessageType = props.fileMessageType;
 
-  console.log("FILE MESSAGE TYPE");
-  console.log(fileMessageType);
-  // console.log(mts)
-  // console.log(mts[fileTypeStr]);
-  // console.log(mts["QromaLightsConfig"])
-  // MessageInfo
-
-  // const filePath = hash.substring(1);
   const filePath = props.filePath;
 
-  // if (!isValid) {
-  //   return <div>
-  //     Invalid Qroma file path [{filePath}]. Paths must start with <b>#/</b>.
-  //   </div>
-  // }
+  const qromaCommFileSystemApi = useQromaCommFileSystemApi();
+
+  const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
 
   if (fileMessageType === undefined) {
     return <div>
       Invalid Qroma file message type.
     </div>
-  }
-
-  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
-
-  const onConnection = (success: boolean) => {
-    console.log("EXPLORER ON CONNECTION");
-    console.log(success);
-    if (success) {
-      setIsConnected(true);
-    }
   }
 
   
@@ -94,7 +63,7 @@ export const QromaIoShowQromaFileAsMessageTypeUiComponent = <T extends object>(
   }
 
   const startConnection = () => {
-    qromaCommFileSystemApi.init(onConnection);
+    qromaCommFileSystemApi.init();
     console.log("qromaCommFileSystemApi - INIT CALLED");
   }
 

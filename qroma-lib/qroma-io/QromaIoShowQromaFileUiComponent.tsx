@@ -1,18 +1,15 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { useLocation } from "@docusaurus/router";
-import { IQromaCommFilesystemApi } from "../file-explorer/QromaCommFileSystemApi";
+import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { convertBinaryToBase64 } from "../utils";
 
 
-interface IQromaIoShowQromaFileUiComponentProps<T extends object, U extends object> {
-  qromaCommFileSystemApi: IQromaCommFilesystemApi
-}
+interface IQromaIoShowQromaFileUiComponentProps<T extends object, U extends object> { }
 
 export const QromaIoShowQromaFileUiComponent = <T extends object, U extends object>(
   props: IQromaIoShowQromaFileUiComponentProps<T, U>
 ) => {
 
-  const [isConnected, setIsConnected] = useState(false);
   const [base64Content, setBase64Content] = useState("");
 
   const location = useLocation();
@@ -23,23 +20,16 @@ export const QromaIoShowQromaFileUiComponent = <T extends object, U extends obje
 
   const filePath = hash.substring(1);
 
+
   if (!isValid) {
     return <div>
       Invalid Qroma file path. Paths must start with <b>#/</b>.
     </div>
   }
 
-  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
+  const qromaCommFileSystemApi = useQromaCommFileSystemApi();
+  const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
 
-  const onConnection = (success: boolean) => {
-    console.log("EXPLORER ON CONNECTION");
-    console.log(success);
-    if (success) {
-      setIsConnected(true);
-    }
-  }
-
-  
   const showFileContents = async (filePath: string) => {
     console.log("SHOWING FILE CONTENTS FOR " + filePath);
     const fileContents = await qromaCommFileSystemApi.getFileContents(filePath);
@@ -61,7 +51,7 @@ export const QromaIoShowQromaFileUiComponent = <T extends object, U extends obje
   }
 
   const startConnection = () => {
-    qromaCommFileSystemApi.init(onConnection);
+    qromaCommFileSystemApi.init();
     console.log("qromaCommFileSystemApi - INIT CALLED");
   }
 

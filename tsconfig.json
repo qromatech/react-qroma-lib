@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es5",
+    "lib": ["es6", "dom"],
+    "sourceMap": true,
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+  },
+  "include": ["qroma-lib"]
+}

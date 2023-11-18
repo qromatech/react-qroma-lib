@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { MessageType } from "@protobuf-ts/runtime";
-import { QromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { QromaIoShowQromaFileAsMessageTypeUiComponent } from "./QromaIoShowQromaFileAsMessageTypeUiComponent";
 
 
@@ -13,13 +12,10 @@ export const QromaIoShowQromaFileAsMessageTypeComponent = <T extends object, U e
   props: IQromaIoShowQromaFileAsMessageTypeComponentProps<T, U>
 ) => {
 
-  const qromaCommFileSystemApi = QromaCommFileSystemApi();
-
   return (
     <QromaIoShowQromaFileAsMessageTypeUiComponent
       fileMessageType={props.fileMessageType}
       filePath={props.filePath}
-      qromaCommFileSystemApi={qromaCommFileSystemApi}
       />
   )
 }
