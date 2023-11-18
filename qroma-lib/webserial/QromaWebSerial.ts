@@ -12,12 +12,12 @@ export interface PortRequestResult {
   success: boolean
 }
 
-export interface IUseQromaWebSerialInputs {
-  onData: (data: Uint8Array) => void;
-  onConnect?: () => void;
-  onDisconnect?: () => void;
-  onPortRequestResult: ((requestResult: PortRequestResult) => void);
-}
+// export interface IUseQromaWebSerialInputs {
+//   onData: (data: Uint8Array) => void;
+//   onConnect?: () => void;
+//   onDisconnect?: () => void;
+//   onPortRequestResult: ((requestResult: PortRequestResult) => void);
+// }
 
 
 export interface IQromaConnectionState {
@@ -29,9 +29,13 @@ export interface IQromaConnectionState {
 export interface IQromaWebSerial {
   sendBytes(data: Uint8Array): void
   sendString(data: string): void
-  getConnectionState(): IQromaConnectionState
+
   startMonitoring(): void
   stopMonitoring(): void  
+
+  getConnectionState(): IQromaConnectionState
+
+  unsubscribe: () => void
 }
 
 
@@ -39,41 +43,90 @@ let _qromaWebSerial: IQromaWebSerial | undefined = undefined;
 
 
 
-const subscriptions = [] as IUseQromaWebSerialInputs[];
+interface IQromaWebSerialSubscription {
+  onData: (data: Uint8Array) => void
+  onConnectionChange?: (latestConnectionState: IQromaConnectionState) => void
+}
+
+const subscriptions = [] as IQromaWebSerialSubscription[];
 
 const subscriberInputs = {
   onData: (data: Uint8Array) => {
-    subscriptions.forEach(s => s.onData(data));
-  },
-  onConnect: () => {
-    console.log("QPA ON CONNECT")
     subscriptions.forEach(s => {
-      if (s.onConnect) {
-        s.onConnect();
+      try {
+        s.onData(data);
+      } catch (e) {
+        console.log("SUBSCRIBER EXCEPTION - ON DATA");
+        console.log(e);
       }
-    })
+    });
   },
-  onDisconnect: () => {
+  onConnectionChange: (latestConnectionState: IQromaConnectionState) => {
     subscriptions.forEach(s => {
-      if (s.onDisconnect) {
-        s.onDisconnect();
+      if (s.onConnectionChange) {
+        try {
+          s.onConnectionChange(latestConnectionState);
+        } catch (e) {
+          console.log("SUBSCRIBER EXCEPTION - ON CONNECTION CHANGE");
+          console.log(e);
+        }
       }
-    })
-  },
-  onPortRequestResult: (requestResult: PortRequestResult) => {
-    console.log("QPA onPortRequestResult")
-    console.log(subscriptions)
-    subscriptions.forEach(s => s.onPortRequestResult(requestResult));
-  },
+    });
+  }
+  
+  // onConnect: () => {
+  //   console.log("QPA ON CONNECT")
+  //   subscriptions.forEach(s => {
+  //     if (s.onConnect) {
+  //       s.onConnect();
+  //     }
+  //   })
+  // },
+  // onDisconnect: () => {
+  //   subscriptions.forEach(s => {
+  //     if (s.onDisconnect) {
+  //       s.onDisconnect();
+  //     }
+  //   })
+  // },
+  // onPortRequestResult: (requestResult: PortRequestResult) => {
+  //   console.log("QPA onPortRequestResult")
+  //   console.log(subscriptions)
+  //   subscriptions.forEach(s => s.onPortRequestResult(requestResult));
+  // },
 }
 
 
-export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaWebSerial => {
+export const useQromaWebSerial = (
+  onData: (data: Uint8Array) => void, 
+  onConnectionChange: (latestConnectionState: IQromaConnectionState) => void
+): IQromaWebSerial => {
 
-  subscriptions.push(subscriber);
-  console.log("NEED TO ACCOUNT FOR UNSUBSCRIBING")
+  const newSubscription = {
+    onData,
+    onConnectionChange,
+  };
+  subscriptions.push(newSubscription);
+
+  // console.log("NEED TO ACCOUNT FOR UNSUBSCRIBING");
+  
+  const unsubscribe = () => {
+    const index = subscriptions.indexOf(newSubscription, 0);
+    const toRemove = subscriptions[index];
+
+    console.log(`UNSUBSCRIBING SUBSCRIPTION - INDEX ${index}`);
+    console.log(toRemove);
+
+    if (index > -1) {
+      subscriptions.splice(index, 1);
+    }
+  }
+
   if (_qromaWebSerial !== undefined) {
-    return _qromaWebSerial;
+    return {
+      ..._qromaWebSerial,
+      unsubscribe,
+    };
   }
 
   if (!window) {
@@ -95,6 +148,16 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
     isMonitorOn: false
   };
 
+  const updateConnectionState = (newState: IQromaConnectionState) => {
+    _connectionState.isConnected = newState.isConnected;
+    _connectionState.isMonitorOn = newState.isMonitorOn;
+    _connectionState.isPortConnected = newState.isPortConnected;
+
+    subscriberInputs.onConnectionChange({
+      ..._connectionState
+    });
+  }
+
   const getConnectionState = () => {
     return {
       ..._connectionState,
@@ -103,13 +166,21 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
 
   const _onConnect = () => {
     console.log("QWS _onConnect")
-    _connectionState.isConnected = true;
-    subscriberInputs.onConnect();
+    updateConnectionState({
+      ..._connectionState,
+      isConnected: true,
+    });
+    // _connectionState.isConnected = true;
+    // subscriberInputs.onConnect();
   }
 
   const _onDisconnect = () => {
-    _connectionState.isConnected = false;
-    subscriberInputs.onDisconnect();
+    updateConnectionState({
+      ..._connectionState,
+      isConnected: false,
+    });
+    // _connectionState.isConnected = false;
+    // subscriberInputs.onDisconnect();
   }
 
   console.log("ADDING EVENT LISTENERS");
@@ -142,8 +213,14 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
 
       qromaWebSerialContext.port = port;
 
-      _connectionState.isConnected = true;
-      subscriberInputs.onPortRequestResult({success: true});
+      updateConnectionState({
+        ..._connectionState,
+        isConnected: true,
+        isPortConnected: true
+      });
+      // _connectionState.isConnected = true;
+      // _connectionState.isPortConnected = true;
+      // subscriberInputs.onPortRequestResult({success: true});
 
       return port;
     } catch (e: any) {
@@ -154,7 +231,13 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
       console.log("IS PORT OPEN?");
       console.log(portOpen);
 
-      subscriberInputs.onPortRequestResult({success: false});
+      updateConnectionState({
+        ..._connectionState,
+        isPortConnected: false
+      });
+
+      // subscriberInputs.onPortRequestResult({success: false});
+      // _connectionState.isPortConnected = false;
     }
   }
 
@@ -221,10 +304,12 @@ export const useQromaWebSerial = (subscriber: IUseQromaWebSerialInputs): IQromaW
     sendBytes,
     sendString,
 
-    getConnectionState,
-
     startMonitoring,
     stopMonitoring,
+
+    getConnectionState,
+
+    unsubscribe,
 
     // onData: (_: Uint8Array) => { },
   };

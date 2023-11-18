@@ -3,7 +3,7 @@ import { QromaCommCommand, QromaCommResponse } from "../../qroma-comm-proto/qrom
 import { crc32 } from "crc";
 import { IUseQromaCommWebSerialInputs, useQromaCommWebSerial } from "../webserial/QromaCommWebSerial";
 import { sleep } from "../utils";
-import { PortRequestResult } from "../webserial/QromaWebSerial";
+import { IQromaConnectionState, PortRequestResult } from "../webserial/QromaWebSerial";
 
 // @ts-ignore
 import { Buffer } from 'buffer';
@@ -20,6 +20,8 @@ export interface IQromaCommFilesystemApi {
   getFileContents: (filePath: string) => Promise<GetFileContentsResponse | undefined>
   writeFileContents: (filePath: string, contents: Uint8Array) => Promise<ReportFileDataResponse | undefined>
   rmFile: (filePath: string) => Promise<RmFileResponse | undefined>
+
+
 }
 
 
@@ -53,21 +55,29 @@ export const QromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
     }
   }
 
-  const onPortRequestResult = (requestResult: PortRequestResult) => {
-    if (_onConnection !== undefined) {
-      _onConnection(requestResult.success);
-    }
-  }
+  // const onPortRequestResult = (requestResult: PortRequestResult) => {
+  //   if (_onConnection !== undefined) {
+  //     _onConnection(requestResult.success);
+  //   }
+  // }
       
 
-  const useQromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
-    onQromaCommResponse,
-    onConnect: () => { console.log("SERIAL CONNECTED"); },
-    onDisconnect: () => { console.log("SERIAL DISCONNECTED"); },
-    onPortRequestResult,
+  // const useQromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
+  //   onQromaCommResponse,
+  //   onConnect: () => { console.log("SERIAL CONNECTED"); },
+  //   onDisconnect: () => { console.log("SERIAL DISCONNECTED"); },
+  //   onPortRequestResult,
+  // }
+
+  // const qromaCommWebSerial = useQromaCommWebSerial(useQromaCommWebSerialInputs);
+
+  const onConnectionChange = (latestConnectionState: IQromaConnectionState) => {
+    if (_onConnection !== undefined) {
+      _onConnection(latestConnectionState.isPortConnected);
+    }
   }
 
-  const qromaCommWebSerial = useQromaCommWebSerial(useQromaCommWebSerialInputs);
+  const qromaCommWebSerial = useQromaCommWebSerial(onQromaCommResponse, onConnectionChange);
 
 
   const waitForResponse = async <T,>(filter: (message: QromaCommResponse) => T, timeoutInMs: number) : Promise<T | undefined> => {
