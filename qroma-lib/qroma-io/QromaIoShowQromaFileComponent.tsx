@@ -1,21 +1,15 @@
-import React, { useState } from "react"
-import { MessageType } from "@protobuf-ts/runtime";
-import { IQromaAppWebSerial } from "../webserial/QromaAppWebSerial";
+import React from "react"
 import { QromaIoShowQromaFileUiComponent } from "./QromaIoShowQromaFileUiComponent";
 
 
-interface IQromaIoShowQromaFileComponentProps<T extends object, U extends object> {
-  responseMessageType: MessageType<U>
-  qromaWebSerial: IQromaAppWebSerial<T>
-}
+interface IQromaIoShowQromaFileComponentProps { }
 
-export const QromaIoShowQromaFileComponent = <T extends object, U extends object>(
-  props: IQromaIoShowQromaFileComponentProps<T, U>
+export const QromaIoShowQromaFileComponent = (
+  props: IQromaIoShowQromaFileComponentProps
 ) => {
 
   return (
     <QromaIoShowQromaFileUiComponent
-      // qromaCommFileSystemApi={qromaCommFileSystemApi}
       />
   )
 }

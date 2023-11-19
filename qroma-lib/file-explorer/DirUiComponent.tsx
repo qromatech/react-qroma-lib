@@ -2,6 +2,7 @@ import React from "react";
 import { DirItem } from "../../qroma-comm-proto/file-system-commands";
 import { useQromaCommFileSystemApi } from "./QromaCommFileSystemApi";
 import { NavToDirLink } from "./NavToDirLink";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 
 interface IDirUiComponentProps {
@@ -45,15 +46,13 @@ export const DirUiComponent = (props: IDirUiComponentProps) => {
 
   return (
     <>
-      <ul>
-        <li>
-          d - {itemPath}
-          <button onClick={() => createFileInDirPath(itemPath) }>Create File</button>
-          <NavToDirLink 
-            navToDirPath={itemPath}
-            />
-        </li>
-      </ul>
+      <li>
+        d - {itemPath}
+        <button onClick={() => createFileInDirPath(itemPath) }>Create File</button>
+        <NavToDirLink 
+          navToDirPath={itemPath}
+          />
+      </li>
     </>
   )
 }

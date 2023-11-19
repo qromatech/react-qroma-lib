@@ -1,4 +1,6 @@
 import React from "react";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Link from "@docusaurus/Link";
 
 
 interface INavToDirLinkProps {
@@ -7,10 +9,9 @@ interface INavToDirLinkProps {
 
 
 export const NavToDirLink = (props: INavToDirLinkProps) => {
-  const itemUrl = "./showQromaDir/#" + props.navToDirPath;
+  const itemUrl = useBaseUrl("qroma-io/showQromaDir/#" + props.navToDirPath);
+  
   return (
-    <a href={itemUrl}>
-      {props.navToDirPath}
-    </a>
+    <Link to={itemUrl}>{props.navToDirPath}</Link>
   )
 }

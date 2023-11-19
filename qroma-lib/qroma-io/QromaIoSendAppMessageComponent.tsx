@@ -17,14 +17,12 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
   props: IQromaIoSendAppMessageComponentProps<T, U>
 ) => {
   
-  // const [qromaAppResponse, setQromaAppResponse] = useState(props.responseMessageType.create());
   const [isPortConnected, setIsPortConnected] = useState(false);
 
   const inputs: IUseQromaAppWebSerialInputs<T, U> = {
     onQromaAppResponse: (appMessage: U) => {
       console.log("QromaRequestForm - onQromaAppResponse!!");
       console.log(appMessage);
-      // setQromaAppResponse(appMessage);
     },
     onQromaCommResponse: (message: QromaCommResponse) => {
       console.log("QromaRequestForm - onQromaCommResponse!!");
@@ -46,8 +44,6 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
 
   const isConnected = qromaAppWebSerial.getConnectionState().isConnected;
   
-  // const [isPortConnected, setIsPortConnected] = useState(false);
-
   const location = useLocation();
   console.log(location);
 
@@ -80,12 +76,9 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
   }
 
   const startConnection = () => {
-    console.log("START CONNECTION");
     qromaAppWebSerial.startMonitoring();
-    // console.log("CONNECTION STARTED: " + qromaAppWebSerial.getIsConnected());
   }
 
-  // const isQromaWebSerialConnected = qromaAppWebSerial.getIsConnected();
   const isQromaWebSerialConnected = qromaAppWebSerial.getConnectionState().isConnected;
 
   

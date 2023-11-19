@@ -1,6 +1,6 @@
 import React from "react";
 import { DirItem } from "../../qroma-comm-proto/file-system-commands";
-import { OpenContentsLink } from "./OpenContentsLink";
+import { ShowQromaFileLink } from "./ShowQromaFileLink";
 import { useQromaCommFileSystemApi } from "./QromaCommFileSystemApi";
 
 
@@ -42,15 +42,13 @@ export const FileUiComponent = (props: IFileUiComponentProps) => {
 
 
   return (
-    <ul>
-      <li>
-        f - {itemPath}
-        <button onClick={() => rmFile(itemPath) }>Delete</button>
-        <button onClick={() => showFileContents(itemPath) }>Show</button>
-        <OpenContentsLink 
-          itemPath={itemPath}
-          />
-      </li>
-    </ul>
+    <li>
+      f - {itemPath}
+      <button onClick={() => rmFile(itemPath) }>Delete</button>
+      <button onClick={() => showFileContents(itemPath) }>Show</button>
+      <ShowQromaFileLink 
+        itemPath={itemPath}
+        />
+    </li>
   )
 }

@@ -1,22 +1,60 @@
-import React, { useState } from "react"
-import { MessageType } from "@protobuf-ts/runtime";
-// import { MessageDataViewerComponent } from "./proto-components/message-data-viewer/MessageDataViewerComponent";
-// import { IQromaAppWebSerial, IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
-// import { PortRequestResult } from "./webserial/QromaWebSerial";
-// import { QromaCommResponse } from "../qroma-comm-proto/qroma-comm";
-import { IQromaAppWebSerial } from "../webserial/QromaAppWebSerial";
+import React from "react"
+import { useLocation } from "@docusaurus/router";
+import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
+import { convertBase64ToBinary } from "../utils";
 
 
-interface IQromaIoAddQromaFileComponentProps<T extends object, U extends object> {
-  responseMessageType: MessageType<U>
-  qromaWebSerial: IQromaAppWebSerial<T>
-}
+interface IQromaIoAddQromaFileComponentProps { }
 
-export const QromaIoAddQromaFileComponent = <T extends object, U extends object>(
-  props: IQromaIoAddQromaFileComponentProps<T, U>
+export const QromaIoAddQromaFileComponent = (
+  props: IQromaIoAddQromaFileComponentProps
 ) => {
   
+  const location = useLocation();
+  const qromaCommFileSystemApi = useQromaCommFileSystemApi();
+
+  const hash: string = location.hash;
+
+  const regex = /#(.*)!(.*)/gm;
+  const regex_exec_result = regex.exec(hash)
+  
+  const filePath = regex_exec_result[1];
+  const contentAsB64 = regex_exec_result[2];
+
+  if (filePath === undefined || contentAsB64 === undefined) {
+    return <div>
+      Invalid Qroma file path or content. Paths must start with <b>#/</b> and end with <b>!</b>. Content should then follow, encoded in Base 64.
+    </div>
+  }
+
+  const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
+  const isPortConnected = qromaCommFileSystemApi.connectionState.isPortConnected;
+
+  const sendRequest = async () => {
+    const fileContent = convertBase64ToBinary(contentAsB64);
+    await qromaCommFileSystemApi.writeFileContents(filePath, fileContent);
+  }
+
+  const startConnection = () => {
+    qromaCommFileSystemApi.init();
+  }
+  
   return (
-    <div>QromaIoAddQromaFileComponent!!!</div>
+    <>
+      <div>QromaIoAddQromaFileComponent!!!</div>
+      <div>
+        Going to write bytes below from Base64 to <b>{filePath}</b>
+      </div>
+      <div>
+        Serial Connected? { isConnected ? "Yes" : "No" } / { isPortConnected ? "Yes" : "No" }
+      </div>
+      {isConnected ? 
+        <button onClick={() => sendRequest() }>Add File</button> :
+        <button onClick={() => startConnection() }>Start Connection!</button> 
+      }
+      <div>
+        {contentAsB64}
+      </div>
+    </>
   )
 }

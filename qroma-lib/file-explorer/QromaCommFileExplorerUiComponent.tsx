@@ -1,73 +1,24 @@
 import React, { useState } from "react"
-import { IQromaCommFilesystemApi, useQromaCommFileSystemApi } from "./QromaCommFileSystemApi";
+import { useQromaCommFileSystemApi } from "./QromaCommFileSystemApi";
 import { DirItem, DirItemType } from "../../qroma-comm-proto/file-system-commands";
+import { FileUiComponent } from "./FileUiComponent";
+import { DirUiComponent } from "./DirUiComponent";
 
 // // @ts-ignore
 // import { Buffer } from 'buffer';
 
 
-interface IQromaCommFileExplorerUiComponentProps {
-  // qromaCommFileSystemApi: IQromaCommFilesystemApi
-}
+interface IQromaCommFileExplorerUiComponentProps { }
 
 
 
-// export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUiComponentProps) => {
-export const QromaCommFileExplorerUiComponent = () => {
-  
-  // const [isConnected, setIsConnected] = useState(false);
+export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUiComponentProps) => {
 
   const qromaCommFileSystemApi = useQromaCommFileSystemApi();
 
   const [dirItems, setDirItems] = useState([] as DirItem[]);
   const [activeDirPath, setActiveDirPath] = useState("...");
 
-  
-  const DirUiComponent = ({dirPath, dirItem}: {dirPath: string, dirItem: DirItem}) => {
-    const separator = dirPath.endsWith("/") ? "" : "/";
-    const itemPath = dirPath + separator + dirItem.name;
-    console.log("DIRPATH ITEM - " + itemPath);
-
-    return (
-      <li>
-        <button onClick={() => listDirPath(itemPath)}>D: {dirItem.name}</button>
-        <button onClick={() => rmDir(itemPath) }>Delete</button>
-        <button onClick={() => createFileInDirPath(itemPath) }>Create File</button>
-      </li>
-    )
-  }
-
-  const OpenContentsLink = (props: {itemPath: string}) => {
-    console.log(props.itemPath)
-    const itemUrl = "./qroma-io/showQromaFile/#" + props.itemPath;
-    return (
-      <a href={itemUrl}>
-        {props.itemPath}
-      </a>
-    )
-  }
-
-  const FileUiComponent = ({dirPath, dirItem}: {dirPath: string, dirItem: DirItem}) => {
-    console.log("FILEPATH");
-    console.log(dirPath);
-    console.log(dirItem.name);
-
-    const separator = dirPath.endsWith("/") ? "" : "/";
-    const itemPath = dirPath + separator + dirItem.name;
-    console.log("FILEPATH ITEM - " + itemPath);
-
-    return (
-      <li>
-        <button onClick={() => listDirPath("/" + dirItem.name)}>F: {dirItem.name}</button>
-        <button onClick={() => rmFile(itemPath) }>Delete</button>
-        <button onClick={() => showFileContents(itemPath) }>Show</button>
-        <OpenContentsLink 
-          itemPath={itemPath}
-          />
-      </li>
-    )
-  }
-  
 
   const listDirPath = async (dirPath: string) => {
     const dirResult = await qromaCommFileSystemApi.listDir(dirPath);
@@ -107,85 +58,8 @@ export const QromaCommFileExplorerUiComponent = () => {
     await qromaCommFileSystemApi.writeFileContents(filePath, encoded);
   }
 
-  const createFileInDirPath = async (dirPath: string) => {
-    const fileName = prompt("Enter file name");
-    if (fileName === null) {  
-      return;
-    }
-
-    const fileContent = prompt("Enter file content");
-    if (fileContent === null) {  
-      return;
-    }
-
-    const separator = dirPath.endsWith("/") ? "" : "/";
-    const filePath = dirPath + separator + fileName;
-
-    console.log("CREATING FILE");
-    console.log(filePath);
-
-    const encoder = new TextEncoder();
-    const encoded = encoder.encode(fileContent);
-
-    await qromaCommFileSystemApi.writeFileContents(filePath, encoded);
-  }
-
-  // const readFile = async () => {
-  //   const filePath = prompt("Enter file path");
-  //   if (filePath === null) {  
-  //     return;
-  //   }
-    
-  //   const fileContents = await props.qromaCommFileSystemApi.getFileContents(filePath);
-  //   if (fileContents === undefined) {
-  //     console.log("Unable to read file contents for " + filePath);
-  //     return;
-  //   }
-
-  //   console.log("FILE CONTENTS");
-  //   console.log(fileContents);
-  //   const decoded = new TextDecoder().decode(fileContents.fileBytes);
-
-  //   console.log("FILE CONTENTS");
-  //   console.log(decoded);
-  // }
-
-  const rmFile = async (filePath: string) => {
-    await qromaCommFileSystemApi.rmFile(filePath);
-  }
-
-  const showFileContents = async (filePath: string) => {
-    const fileContents = await qromaCommFileSystemApi.getFileContents(filePath);
-    if (fileContents === undefined) {
-      console.log("Unable to read file contents for " + filePath);
-      return;
-    }
-
-    console.log("FILE CONTENTS");
-    console.log(fileContents);
-    const decoded = new TextDecoder().decode(fileContents.fileBytes);
-
-    console.log("FILE CONTENTS");
-    console.log(decoded);
-
-    alert(decoded);
-  }
-
-  const rmDir = async (dirPath: string) => {
-    await qromaCommFileSystemApi.rmDir(dirPath);
-  }
-
-  // const onConnection = (success: boolean) => {
-  //   console.log("EXPLORER ON CONNECTION");
-  //   console.log(success);
-  //   if (success) {
-  //     setIsConnected(true);
-  //   }
-  // }
-
   const startMonitoring = async () => {
     qromaCommFileSystemApi.init();
-    console.log("INIT CALLED");
   }
 
   const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
@@ -205,7 +79,7 @@ export const QromaCommFileExplorerUiComponent = () => {
       <button onClick={() => listDirPath("/") }>LIST ROOT DIR</button>
       <button onClick={() => createDir() }>CREATE DIR</button>
       <button onClick={() => createFile() }>CREATE FILE</button>
-      {/* <button onClick={() => readFile() }>READ FILE</button> */}
+      
       <div>
         DIR PATH: {activeDirPath}
         <ul>
