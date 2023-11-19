@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useLocation } from "@docusaurus/router";
 import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { convertBinaryToBase64 } from "../utils";
@@ -46,8 +46,6 @@ export const QromaIoShowQromaFileUiComponent = <T extends object, U extends obje
     console.log(decoded);
 
     setBase64Content(convertBinaryToBase64(decoded));
-
-    alert(decoded);
   }
 
   const startConnection = () => {
@@ -55,6 +53,13 @@ export const QromaIoShowQromaFileUiComponent = <T extends object, U extends obje
     console.log("qromaCommFileSystemApi - INIT CALLED");
   }
 
+  useEffect(() => {
+    const loadFileContent = async () => {
+      await showFileContents(filePath);
+    };
+    loadFileContent();
+  }, [filePath]);
+  
   
   return (
     <div>

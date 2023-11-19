@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useLocation } from "@docusaurus/router";
 import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { DirItem, DirItemType, ListDirContentsResponse } from "../../qroma-comm-proto/file-system-commands";
@@ -52,6 +52,13 @@ export const QromaIoShowQromaDirComponent = <T extends object, U extends object>
     qromaCommFileSystemApi.init();
     console.log("qromaCommFileSystemApi - INIT CALLED FROM SHOW QROMA DIR");
   }
+
+  useEffect(() => {
+    const loadDirContent = async () => {
+      await showDirContents(dirPath);
+    };
+    loadDirContent();
+  }, [dirPath]);
 
   
   return (
