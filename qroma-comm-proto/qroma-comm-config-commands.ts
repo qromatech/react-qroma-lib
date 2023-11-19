@@ -13,6 +13,15 @@ import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { Qroma_LogLevel } from "./qroma-types";
 /**
+ * @generated from protobuf message RequestQromaCommConfig
+ */
+export interface RequestQromaCommConfig {
+    /**
+     * @generated from protobuf field: uint32 ignoreMe = 1;
+     */
+    ignoreMe: number;
+}
+/**
  * @generated from protobuf message SetLogLevel
  */
 export interface SetLogLevel {
@@ -22,6 +31,15 @@ export interface SetLogLevel {
     logLevel: Qroma_LogLevel;
 }
 /**
+ * @generated from protobuf message SetHeartbeatInterval
+ */
+export interface SetHeartbeatInterval {
+    /**
+     * @generated from protobuf field: uint32 heartbeatIntervalInMs = 1;
+     */
+    heartbeatIntervalInMs: number;
+}
+/**
  * @generated from protobuf message QromaCommConfigCommand
  */
 export interface QromaCommConfigCommand {
@@ -29,15 +47,87 @@ export interface QromaCommConfigCommand {
      * @generated from protobuf oneof: command
      */
     command: {
+        oneofKind: "requestQromaCommConfig";
+        /**
+         * @generated from protobuf field: RequestQromaCommConfig requestQromaCommConfig = 1;
+         */
+        requestQromaCommConfig: RequestQromaCommConfig;
+    } | {
         oneofKind: "setLogLevel";
         /**
-         * @generated from protobuf field: SetLogLevel setLogLevel = 1;
+         * @generated from protobuf field: SetLogLevel setLogLevel = 2;
          */
         setLogLevel: SetLogLevel;
+    } | {
+        oneofKind: "setHeartbeatInterval";
+        /**
+         * @generated from protobuf field: SetHeartbeatInterval setHeartbeatInterval = 3;
+         */
+        setHeartbeatInterval: SetHeartbeatInterval;
     } | {
         oneofKind: undefined;
     };
 }
+/**
+ * @generated from protobuf message QromaCommConfigResponse
+ */
+export interface QromaCommConfigResponse {
+    /**
+     * @generated from protobuf field: Qroma_LogLevel logLevel = 1;
+     */
+    logLevel: Qroma_LogLevel;
+    /**
+     * @generated from protobuf field: uint32 heartbeatIntervalInMs = 2;
+     */
+    heartbeatIntervalInMs: number;
+}
+// @generated message type with reflection information, may provide speed optimized methods
+class RequestQromaCommConfig$Type extends MessageType<RequestQromaCommConfig> {
+    constructor() {
+        super("RequestQromaCommConfig", [
+            { no: 1, name: "ignoreMe", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RequestQromaCommConfig>): RequestQromaCommConfig {
+        const message = { ignoreMe: 0 };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<RequestQromaCommConfig>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RequestQromaCommConfig): RequestQromaCommConfig {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* uint32 ignoreMe */ 1:
+                    message.ignoreMe = reader.uint32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RequestQromaCommConfig, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* uint32 ignoreMe = 1; */
+        if (message.ignoreMe !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.ignoreMe);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message RequestQromaCommConfig
+ */
+export const RequestQromaCommConfig = new RequestQromaCommConfig$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SetLogLevel$Type extends MessageType<SetLogLevel> {
     constructor() {
@@ -86,10 +176,59 @@ class SetLogLevel$Type extends MessageType<SetLogLevel> {
  */
 export const SetLogLevel = new SetLogLevel$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class SetHeartbeatInterval$Type extends MessageType<SetHeartbeatInterval> {
+    constructor() {
+        super("SetHeartbeatInterval", [
+            { no: 1, name: "heartbeatIntervalInMs", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SetHeartbeatInterval>): SetHeartbeatInterval {
+        const message = { heartbeatIntervalInMs: 0 };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<SetHeartbeatInterval>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SetHeartbeatInterval): SetHeartbeatInterval {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* uint32 heartbeatIntervalInMs */ 1:
+                    message.heartbeatIntervalInMs = reader.uint32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SetHeartbeatInterval, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* uint32 heartbeatIntervalInMs = 1; */
+        if (message.heartbeatIntervalInMs !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.heartbeatIntervalInMs);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message SetHeartbeatInterval
+ */
+export const SetHeartbeatInterval = new SetHeartbeatInterval$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class QromaCommConfigCommand$Type extends MessageType<QromaCommConfigCommand> {
     constructor() {
         super("QromaCommConfigCommand", [
-            { no: 1, name: "setLogLevel", kind: "message", oneof: "command", T: () => SetLogLevel }
+            { no: 1, name: "requestQromaCommConfig", kind: "message", oneof: "command", T: () => RequestQromaCommConfig },
+            { no: 2, name: "setLogLevel", kind: "message", oneof: "command", T: () => SetLogLevel },
+            { no: 3, name: "setHeartbeatInterval", kind: "message", oneof: "command", T: () => SetHeartbeatInterval }
         ]);
     }
     create(value?: PartialMessage<QromaCommConfigCommand>): QromaCommConfigCommand {
@@ -104,10 +243,22 @@ class QromaCommConfigCommand$Type extends MessageType<QromaCommConfigCommand> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* SetLogLevel setLogLevel */ 1:
+                case /* RequestQromaCommConfig requestQromaCommConfig */ 1:
+                    message.command = {
+                        oneofKind: "requestQromaCommConfig",
+                        requestQromaCommConfig: RequestQromaCommConfig.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).requestQromaCommConfig)
+                    };
+                    break;
+                case /* SetLogLevel setLogLevel */ 2:
                     message.command = {
                         oneofKind: "setLogLevel",
                         setLogLevel: SetLogLevel.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).setLogLevel)
+                    };
+                    break;
+                case /* SetHeartbeatInterval setHeartbeatInterval */ 3:
+                    message.command = {
+                        oneofKind: "setHeartbeatInterval",
+                        setHeartbeatInterval: SetHeartbeatInterval.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).setHeartbeatInterval)
                     };
                     break;
                 default:
@@ -122,9 +273,15 @@ class QromaCommConfigCommand$Type extends MessageType<QromaCommConfigCommand> {
         return message;
     }
     internalBinaryWrite(message: QromaCommConfigCommand, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* SetLogLevel setLogLevel = 1; */
+        /* RequestQromaCommConfig requestQromaCommConfig = 1; */
+        if (message.command.oneofKind === "requestQromaCommConfig")
+            RequestQromaCommConfig.internalBinaryWrite(message.command.requestQromaCommConfig, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* SetLogLevel setLogLevel = 2; */
         if (message.command.oneofKind === "setLogLevel")
-            SetLogLevel.internalBinaryWrite(message.command.setLogLevel, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+            SetLogLevel.internalBinaryWrite(message.command.setLogLevel, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* SetHeartbeatInterval setHeartbeatInterval = 3; */
+        if (message.command.oneofKind === "setHeartbeatInterval")
+            SetHeartbeatInterval.internalBinaryWrite(message.command.setHeartbeatInterval, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -135,3 +292,57 @@ class QromaCommConfigCommand$Type extends MessageType<QromaCommConfigCommand> {
  * @generated MessageType for protobuf message QromaCommConfigCommand
  */
 export const QromaCommConfigCommand = new QromaCommConfigCommand$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QromaCommConfigResponse$Type extends MessageType<QromaCommConfigResponse> {
+    constructor() {
+        super("QromaCommConfigResponse", [
+            { no: 1, name: "logLevel", kind: "enum", T: () => ["Qroma_LogLevel", Qroma_LogLevel] },
+            { no: 2, name: "heartbeatIntervalInMs", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<QromaCommConfigResponse>): QromaCommConfigResponse {
+        const message = { logLevel: 0, heartbeatIntervalInMs: 0 };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<QromaCommConfigResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QromaCommConfigResponse): QromaCommConfigResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* Qroma_LogLevel logLevel */ 1:
+                    message.logLevel = reader.int32();
+                    break;
+                case /* uint32 heartbeatIntervalInMs */ 2:
+                    message.heartbeatIntervalInMs = reader.uint32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: QromaCommConfigResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* Qroma_LogLevel logLevel = 1; */
+        if (message.logLevel !== 0)
+            writer.tag(1, WireType.Varint).int32(message.logLevel);
+        /* uint32 heartbeatIntervalInMs = 2; */
+        if (message.heartbeatIntervalInMs !== 0)
+            writer.tag(2, WireType.Varint).uint32(message.heartbeatIntervalInMs);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message QromaCommConfigResponse
+ */
+export const QromaCommConfigResponse = new QromaCommConfigResponse$Type();

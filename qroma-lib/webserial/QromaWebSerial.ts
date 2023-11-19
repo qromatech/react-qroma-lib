@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 
 const qromaWebSerialContext = {
   initialized: false,
@@ -12,24 +10,92 @@ export interface PortRequestResult {
   success: boolean
 }
 
-export interface IUseQromaWebSerialInputs {
-  onData: (data: Uint8Array) => void;
-  onConnect?: () => void;
-  onDisconnect?: () => void;
-  onPortRequestResult: ((requestResult: PortRequestResult) => void);
+
+export interface IQromaConnectionState {
+  isConnected: boolean
+  isPortConnected: boolean
+  isMonitorOn: boolean
 }
 
 export interface IQromaWebSerial {
-  // requestPort(): any
   sendBytes(data: Uint8Array): void
   sendString(data: string): void
-  getIsConnected(): boolean
+
   startMonitoring(): void
   stopMonitoring(): void  
+
+  getConnectionState(): IQromaConnectionState
+
+  unsubscribe: () => void
 }
 
 
-export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSerial => {
+let _qromaWebSerial: IQromaWebSerial | undefined = undefined;
+
+
+
+interface IQromaWebSerialSubscription {
+  onData: (data: Uint8Array) => void
+  onConnectionChange?: (latestConnectionState: IQromaConnectionState) => void
+}
+
+const subscriptions = [] as IQromaWebSerialSubscription[];
+
+const subscriberInputs = {
+  onData: (data: Uint8Array) => {
+    subscriptions.forEach(s => {
+      try {
+        s.onData(data);
+      } catch (e) {
+        console.log("SUBSCRIBER EXCEPTION - ON DATA");
+        console.log(e);
+      }
+    });
+  },
+  onConnectionChange: (latestConnectionState: IQromaConnectionState) => {
+    subscriptions.forEach(s => {
+      if (s.onConnectionChange) {
+        try {
+          s.onConnectionChange(latestConnectionState);
+        } catch (e) {
+          console.log("SUBSCRIBER EXCEPTION - ON CONNECTION CHANGE");
+          console.log(e);
+        }
+      }
+    });
+  }
+}
+
+
+export const useQromaWebSerial = (
+  onData: (data: Uint8Array) => void, 
+  onConnectionChange: (latestConnectionState: IQromaConnectionState) => void
+): IQromaWebSerial => {
+
+  const newSubscription = {
+    onData,
+    onConnectionChange,
+  };
+  subscriptions.push(newSubscription);
+  
+  const unsubscribe = () => {
+    const index = subscriptions.indexOf(newSubscription, 0);
+    const toRemove = subscriptions[index];
+
+    console.log(`UNSUBSCRIBING SUBSCRIPTION - INDEX ${index}`);
+    console.log(toRemove);
+
+    if (index > -1) {
+      subscriptions.splice(index, 1);
+    }
+  }
+
+  if (_qromaWebSerial !== undefined) {
+    return {
+      ..._qromaWebSerial,
+      unsubscribe,
+    };
+  }
 
   if (!window) {
     throw Error("Not running in a browser");
@@ -44,67 +110,55 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
     throw new Error("Unable to get serial from window.navigator!");
   }
 
-  useEffect(() => {
+  const _connectionState: IQromaConnectionState = {
+    isConnected: false,
+    isPortConnected: false,
+    isMonitorOn: false
+  };
 
-    const initPort = async() => {
-      console.log("INITIALIZING CONTEXT - ")
-      if (qromaWebSerialContext.initialized) {
-        return;
-      }
-     
-      qromaWebSerialContext.initialized = true;
-    }
-    initPort();
-  });
+  const updateConnectionState = (newState: IQromaConnectionState) => {
+    _connectionState.isConnected = newState.isConnected;
+    _connectionState.isMonitorOn = newState.isMonitorOn;
+    _connectionState.isPortConnected = newState.isPortConnected;
+
+    subscriberInputs.onConnectionChange({
+      ..._connectionState
+    });
+  }
+
+  const getConnectionState = () => {
+    return {
+      ..._connectionState,
+    };
+  }
 
   const _onConnect = () => {
-    if (inputs.onConnect) {
-      inputs.onConnect();
-    }
+    console.log("QWS _onConnect")
+    updateConnectionState({
+      ..._connectionState,
+      isConnected: true,
+    });
   }
 
   const _onDisconnect = () => {
-    if (inputs.onDisconnect) {
-      inputs.onDisconnect();
-    }
+    updateConnectionState({
+      ..._connectionState,
+      isConnected: false,
+    });
   }
 
-  console.log("PREx USEEFFECT - LISTNERS");
-  useEffect(() => {
-    console.log("USEEFFECT - LISTENERS");
-    qSerial.addEventListener("connect", _onConnect)
-    qSerial.addEventListener("disconnect", _onDisconnect)
-    return () => {
-      qSerial.removeEventListener("connect", _onConnect)
-      qSerial.removeEventListener("disconnect", _onDisconnect)
-    }
-  });
-  console.log("POST USEEFFECT - LISTNERS");
+  console.log("ADDING EVENT LISTENERS");
+  qSerial.addEventListener("connect", _onConnect)
+  qSerial.addEventListener("disconnect", _onDisconnect)
+  console.log("DONE ADDING EVENT LISTNERS");
 
-
-  // let isConnected = false;
-  if (!globalThis.qromaInitComplete) {
-    console.log("INITIALIZING isConnected");
-    globalThis.isConnected = false;
-  }
-  globalThis.qromaInitComplete = true;
-  
-  const getIsConnected = () => {
-    console.log("GETTING isConnected: " + globalThis.isConnected);
-    return globalThis.isConnected;
-  }
-  const setIsConnected = (c: boolean) => {
-    console.log("SETTING isConnected: " + c);
-    globalThis.isConnected = c;
-  }
 
   const requestPort = async () => {
-    // await initPort();
     
     console.log("In requestPort()");
 
     try {
-      if (qromaWebSerialContext.port && globalThis.isConnected) {
+      if (qromaWebSerialContext.port && _connectionState.isConnected) {
         return qromaWebSerialContext.port;
       }
 
@@ -123,8 +177,11 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
 
       qromaWebSerialContext.port = port;
 
-      setIsConnected(true);
-      inputs.onPortRequestResult({success: true});
+      updateConnectionState({
+        ..._connectionState,
+        isConnected: true,
+        isPortConnected: true
+      });
 
       return port;
     } catch (e: any) {
@@ -135,7 +192,10 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
       console.log("IS PORT OPEN?");
       console.log(portOpen);
 
-      inputs.onPortRequestResult({success: false});
+      updateConnectionState({
+        ..._connectionState,
+        isPortConnected: false
+      });
     }
   }
 
@@ -154,15 +214,13 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
     await sendBytes(encoded);
   }
 
-  // const startMonitoring = async (onData: (data: Uint8Array) => void) => {
   const startMonitoring = async () => {
     console.log("START MONITORING: startMonitoring");
 
     await requestPort();
 
-    if (!getIsConnected()) {
-      // throw new Error("Can't start monitor - no connection");
-      return;
+    if (!getConnectionState().isConnected) {
+      throw new Error("Can't start monitor - no connection");
     }
 
     const port = qromaWebSerialContext.port!;
@@ -184,7 +242,7 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
           break;
         }
 
-        inputs.onData(value);
+        subscriberInputs.onData(value);
       } catch (error) {
         // Handle |error|...
       } finally {
@@ -199,13 +257,17 @@ export const useQromaWebSerial = (inputs: IUseQromaWebSerialInputs): IQromaWebSe
     qromaWebSerialContext.monitorOn = false;
   }
 
-  return {
-    // requestPort,
+  _qromaWebSerial = {
     sendBytes,
     sendString,
-    getIsConnected,
+
     startMonitoring,
     stopMonitoring,
-    // onData: (_: Uint8Array) => { },
+
+    getConnectionState,
+
+    unsubscribe,
   };
+
+  return _qromaWebSerial;
 }
