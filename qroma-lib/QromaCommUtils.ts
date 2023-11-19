@@ -18,7 +18,6 @@ export const QcuCreateQromaCommMessageForAppCommand = <TCommand extends object>(
       [appCommandType]: appCommand[appCommandType],
     }
   } as TCommand;
-  // appCommand.oneofKind = Object.keys(appCommand)[0];
 
   console.log("APP COMMAND");
   console.log(command);
@@ -29,8 +28,6 @@ export const QcuCreateQromaCommMessageForAppCommand = <TCommand extends object>(
   const appMessageBytes = commandMessageType.toBinary(command);
   console.log("BYTES DONE");
   console.log(appMessageBytes);
-  // const parsed = inputs.commandMessageType.fromBinary(appMessageBytes);
-  // console.log(parsed);
 
   const qromaCommCommand: QromaCommCommand = {
     command: {

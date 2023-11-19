@@ -3,24 +3,14 @@ import { IQromaConnectionState, PortRequestResult, useQromaWebSerial } from "./Q
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
 
 
-// export interface IUseQromaCommWebSerialInputs {
-//   onQromaCommResponse: (message: QromaCommResponse) => void;
-//   onConnect?: () => void;
-//   onDisconnect?: () => void;
-//   onPortRequestResult: ((requestResult: PortRequestResult) => void);
-// }
-
 export interface IQromaCommWebSerial {
-  // requestPort: () => any
   startMonitoring: () => void
-  // getIsConnected(): boolean
   getConnectionState(): IQromaConnectionState
   stopMonitoring: () => void
   sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
 }
 
 
-// export const useQromaCommWebSerial = (inputs: IUseQromaCommWebSerialInputs): IQromaCommWebSerial => {
 export const useQromaCommWebSerial = (
   onQromaCommResponse: (message: QromaCommResponse) => void,
   onConnectionChange: (latestConnection: IQromaConnectionState) => void
@@ -79,14 +69,11 @@ export const useQromaCommWebSerial = (
     setRxBuffer(currentRxBuffer);
   }
 
-  // const startMonitoring = async (onConnection: (success: boolean) => void) => {
   const startMonitoring = async () => {
     try {
       console.log("COMM WEB SERIAL - START");
-      // qromaWebSerial.startMonitoring(onData);
       qromaWebSerial.startMonitoring();
       console.log("COMM WEB SERIAL - START - CONNECTED");
-      // onConnection(true);
     } catch (e) {
       console.log("COMM WEB SERIAL - ON CONNECTION FALSE");
       console.log(e);
@@ -108,42 +95,15 @@ export const useQromaCommWebSerial = (
     console.log(requestB64.length);
 
     await qromaWebSerial.sendString(requestB64);
-
-    // const port = await qromaWebSerial.requestPort();
-    // console.log(port);
-    // const writer = port.writable.getWriter();
-
-    // const encoder = new TextEncoder();
-    // const encoded = encoder.encode(requestB64);
-    // await writer.write(encoded);
-    // writer.releaseLock();
   }
-
-  // const onPortRequestResult = (requestResult: PortRequestResult): void => {
-  //   if (requestResult.success) {
-  //     console.log("WEB SERIAL - PORT REQUEST SUCCESS");
-  //     inputs.onPortRequestResult(requestResult);
-  //   } else {
-  //     console.log("WEB SERIAL - PORT REQUEST FAIL");
-  //     inputs.onPortRequestResult(requestResult);
-  //   }
-  // }
-
-  // const onConnectionChange = (latestConnection: IQromaConnectionState) => {
-  //   if ()
-  // }
 
   console.log("CALLING useQromaWebSerial");
   const qromaWebSerial = useQromaWebSerial(
     onData,
     onConnectionChange,
-    // onConnect: inputs.onConnect,
-    // onDisconnect: inputs.onDisconnect,
-    // onPortRequestResult,
   );
 
   return {
-    // requestPort: qromaWebSerial.requestPort,
     startMonitoring: startMonitoring,
     getConnectionState: qromaWebSerial.getConnectionState,
     stopMonitoring: qromaWebSerial.stopMonitoring,

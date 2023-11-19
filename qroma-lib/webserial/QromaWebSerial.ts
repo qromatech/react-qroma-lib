@@ -1,5 +1,3 @@
-// import { useEffect } from "react";
-
 
 const qromaWebSerialContext = {
   initialized: false,
@@ -11,13 +9,6 @@ const qromaWebSerialContext = {
 export interface PortRequestResult {
   success: boolean
 }
-
-// export interface IUseQromaWebSerialInputs {
-//   onData: (data: Uint8Array) => void;
-//   onConnect?: () => void;
-//   onDisconnect?: () => void;
-//   onPortRequestResult: ((requestResult: PortRequestResult) => void);
-// }
 
 
 export interface IQromaConnectionState {
@@ -73,27 +64,6 @@ const subscriberInputs = {
       }
     });
   }
-  
-  // onConnect: () => {
-  //   console.log("QPA ON CONNECT")
-  //   subscriptions.forEach(s => {
-  //     if (s.onConnect) {
-  //       s.onConnect();
-  //     }
-  //   })
-  // },
-  // onDisconnect: () => {
-  //   subscriptions.forEach(s => {
-  //     if (s.onDisconnect) {
-  //       s.onDisconnect();
-  //     }
-  //   })
-  // },
-  // onPortRequestResult: (requestResult: PortRequestResult) => {
-  //   console.log("QPA onPortRequestResult")
-  //   console.log(subscriptions)
-  //   subscriptions.forEach(s => s.onPortRequestResult(requestResult));
-  // },
 }
 
 
@@ -107,8 +77,6 @@ export const useQromaWebSerial = (
     onConnectionChange,
   };
   subscriptions.push(newSubscription);
-
-  // console.log("NEED TO ACCOUNT FOR UNSUBSCRIBING");
   
   const unsubscribe = () => {
     const index = subscriptions.indexOf(newSubscription, 0);
@@ -170,8 +138,6 @@ export const useQromaWebSerial = (
       ..._connectionState,
       isConnected: true,
     });
-    // _connectionState.isConnected = true;
-    // subscriberInputs.onConnect();
   }
 
   const _onDisconnect = () => {
@@ -179,8 +145,6 @@ export const useQromaWebSerial = (
       ..._connectionState,
       isConnected: false,
     });
-    // _connectionState.isConnected = false;
-    // subscriberInputs.onDisconnect();
   }
 
   console.log("ADDING EVENT LISTENERS");
@@ -218,9 +182,6 @@ export const useQromaWebSerial = (
         isConnected: true,
         isPortConnected: true
       });
-      // _connectionState.isConnected = true;
-      // _connectionState.isPortConnected = true;
-      // subscriberInputs.onPortRequestResult({success: true});
 
       return port;
     } catch (e: any) {
@@ -235,9 +196,6 @@ export const useQromaWebSerial = (
         ..._connectionState,
         isPortConnected: false
       });
-
-      // subscriberInputs.onPortRequestResult({success: false});
-      // _connectionState.isPortConnected = false;
     }
   }
 
@@ -263,7 +221,6 @@ export const useQromaWebSerial = (
 
     if (!getConnectionState().isConnected) {
       throw new Error("Can't start monitor - no connection");
-      // return;
     }
 
     const port = qromaWebSerialContext.port!;
@@ -310,8 +267,6 @@ export const useQromaWebSerial = (
     getConnectionState,
 
     unsubscribe,
-
-    // onData: (_: Uint8Array) => { },
   };
 
   return _qromaWebSerial;

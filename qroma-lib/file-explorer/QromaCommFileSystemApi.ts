@@ -38,20 +38,6 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
   } as IQromaConnectionState);
 
   let _latestResponse: QromaCommResponse | undefined = undefined;
-  // let _latestConnectionState: IQromaConnectionState = {
-  //   isConnected: false,
-  //   isPortConnected: false,
-  //   isMonitorOn: false
-  // };
-  
-  // // let latestResponse: QromaCommResponse | undefined = undefined;
-  // // let _onConnection: ((success: boolean) => void) | undefined = undefined; 
-
-  // const _onConnection = (latestConnectionState: IQromaConnectionState) => {
-  //   _latestConnectionState.isConnected = latestConnectionState.isConnected;
-  //   _latestConnectionState.isMonitorOn = latestConnectionState.isMonitorOn;
-  //   _latestConnectionState.isPortConnected = latestConnectionState.isPortConnected;
-  // }
 
   const clearLatestResponse = () => {
     _latestResponse = undefined;
@@ -69,38 +55,6 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
     qromaCommWebSerial.startMonitoring();
   }
   
-  // const startMonitoring = (onConnection: (success: boolean) => void) => {
-  //   _onConnection = onConnection;
-
-  //   if (qromaCommWebSerial) {
-  //     setTimeout(() => {
-  //       qromaCommWebSerial.startMonitoring();
-  //     }, 0);
-  //   }
-  // }
-
-  // const onPortRequestResult = (requestResult: PortRequestResult) => {
-  //   if (_onConnection !== undefined) {
-  //     _onConnection(requestResult.success);
-  //   }
-  // }
-      
-
-  // const useQromaCommWebSerialInputs: IUseQromaCommWebSerialInputs = {
-  //   onQromaCommResponse,
-  //   onConnect: () => { console.log("SERIAL CONNECTED"); },
-  //   onDisconnect: () => { console.log("SERIAL DISCONNECTED"); },
-  //   onPortRequestResult,
-  // }
-
-  // const qromaCommWebSerial = useQromaCommWebSerial(useQromaCommWebSerialInputs);
-
-  // const onConnectionChange = (latestConnectionState: IQromaConnectionState) => {
-  //   if (_onConnection !== undefined) {
-  //     _onConnection(latestConnectionState.isPortConnected);
-  //   }
-  // }
-
   const onConnectionChange = (latestConnectionState: IQromaConnectionState) => {
     setConnectionState(latestConnectionState);
   }
