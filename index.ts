@@ -26,6 +26,7 @@ export * from './qroma-lib/file-explorer/QromaCommFileExplorerComponent'
 
 export * from './qroma-lib/qroma-io/QromaIoAddQromaFileComponent'
 export * from './qroma-lib/qroma-io/QromaIoSendAppMessageComponent'
+export * from './qroma-lib/qroma-io/QromaIoSendQromaCommMessageComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaFileComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaDirComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaFileAsMessageTypeComponent'
