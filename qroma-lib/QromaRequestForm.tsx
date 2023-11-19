@@ -1,15 +1,12 @@
+import React, { useState } from "react"
 import { Buffer } from 'buffer';
 import { FieldInfo, IMessageType } from "@protobuf-ts/runtime"
-import React, { useState } from "react"
 import { MessageInputComponent } from "./proto-components/message-builder/MessageInputComponent"
 import { MessageDataViewerComponent } from './proto-components/message-data-viewer/MessageDataViewerComponent';
 import { IQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
-import { MyAppCommand } from "../../qroma-proto/hello-qroma";
 import { QromaCommCommand, QromaCommResponse } from "../qroma-comm-proto/qroma-comm";
-import { QcuCreateQromaCommMessageForAppCommand } from './QromaCommUtils';
 import { convertBinaryToBase64 } from './utils';
-// import { IUseQromaAppWebSerialInputs, useQromaAppWebSerial } from './webserial/QromaAppWebSerial';
-// import { QromaCommResponse } from '../qroma-comm-proto/qroma-comm';
+import { QromaAppCommandLink } from './QromaAppCommandLink';
 
 
 interface IQromaRequestFormProps<TCommand extends object, TResponse extends object> {
@@ -17,6 +14,7 @@ interface IQromaRequestFormProps<TCommand extends object, TResponse extends obje
   responseMessageType: IMessageType<TResponse>
   qromaWebSerial: IQromaAppWebSerial<TCommand>
 }
+
 
 export const QromaRequestForm = <TCommand extends object, TResponse extends object>(props: IQromaRequestFormProps<TCommand, TResponse>) => {
   const m = props.requestMessageType;
@@ -195,6 +193,9 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
       </div>
       <div>
         App Command B64: {requestObjectJsonDataToB64(requestObjectData)}
+      </div>
+      <div>
+        App Command Link: <QromaAppCommandLink commandAsBase64={requestObjectJsonDataToB64(requestObjectData)} />
       </div>
       <div>
         QC Command: {QromaCommCommand.toJsonString(qromaCommCommand)}
