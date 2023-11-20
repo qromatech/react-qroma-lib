@@ -1,16 +1,11 @@
-import React, { useContext, useState } from "react"
-// import { useLocation } from "@docusaurus/router";
-import { IQromaCommFilesystemApi, useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
+import React, { useState } from "react"
+import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { MessageType } from "@protobuf-ts/runtime";
-import { QromaAppMessageTypes } from "../../../qroma-app/QromaAppMessageTypes";
-import { QromaPageAppContext } from "../page-app/QromaPageAppContext";
-
 
 
 interface IQromaIoShowQromaFileAsMessageTypeUiComponentProps<T extends object> {
   fileMessageType: MessageType<T>
   filePath: string
-  // qromaCommFileSystemApi: IQromaCommFilesystemApi
 }
 
 
@@ -20,7 +15,6 @@ export const QromaIoShowQromaFileAsMessageTypeUiComponent = <T extends object>(
 
   const [fileMessageJson, setFileMessageJson] = useState("");
 
-  // const qromaPageApp = useContext(QromaPageAppContext);
   const fileMessageType = props.fileMessageType;
 
   const filePath = props.filePath;

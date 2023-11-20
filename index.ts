@@ -30,4 +30,6 @@ export * from './qroma-lib/qroma-io/QromaIoSendQromaCommMessageComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaFileComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaDirComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaFileAsMessageTypeComponent'
+export * from './qroma-lib/qroma-io/QromaIoConfigureQromaCommComponent'
+
 export * from './qroma-lib/page-app/QromaAppMessageTypesRegistry'
