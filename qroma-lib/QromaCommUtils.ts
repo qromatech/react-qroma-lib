@@ -23,22 +23,30 @@ export const QcuCreateQromaCommMessageForAppCommand = <TCommand extends object>(
   console.log(command);
   console.log("APP MESSAGE TYPE");
   console.log(commandMessageType);
-  const appMessageJson = commandMessageType.toJson(command);
-  console.log(appMessageJson);
-  const appMessageBytes = commandMessageType.toBinary(command);
-  console.log("BYTES DONE");
-  console.log(appMessageBytes);
+  try {
+    const appMessageJson = commandMessageType.toJson(command);
+    console.log(appMessageJson);
 
-  const qromaCommCommand: QromaCommCommand = {
-    command: {
-      oneofKind: 'appCommandBytes',
-      appCommandBytes: appMessageBytes,
+    const appMessageBytes = commandMessageType.toBinary(command);
+    console.log("BYTES DONE");
+    console.log(appMessageBytes);
+  
+    const qromaCommCommand: QromaCommCommand = {
+      command: {
+        oneofKind: 'appCommandBytes',
+        appCommandBytes: appMessageBytes,
+      }
     }
+  
+    console.log("QROMA COMM COMMAND READY");
+    console.log(qromaCommCommand);
+    console.log(appCommand);
+  
+    return qromaCommCommand;
+  
+  } catch (e) {
+    console.log("UNABLE TO JSON FROM COMMAND MESSAGE")
+    console.log(e)
+    return;
   }
-
-  console.log("QROMA COMM COMMAND READY");
-  console.log(qromaCommCommand);
-  console.log(appCommand);
-
-  return qromaCommCommand;
 }
