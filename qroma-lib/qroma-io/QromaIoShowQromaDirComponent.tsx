@@ -30,7 +30,7 @@ export const QromaIoShowQromaDirComponent = <T extends object, U extends object>
   }
 
   const qromaCommFileSystemApi = useQromaCommFileSystemApi();
-  const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
+  const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   console.log("DIRECTORY CONTENTS")
   console.log(dirItems);

@@ -76,7 +76,7 @@ export const useQromaAppWebSerial =
   }
 
   const onConnectionChange = (latestConnection: IQromaConnectionState) => {
-    inputs.onPortRequestResult({success: latestConnection.isPortConnected});
+    inputs.onPortRequestResult({success: latestConnection.isWebSerialConnected});
   }
 
   console.log("CALLING useQromaCommWebSerial");

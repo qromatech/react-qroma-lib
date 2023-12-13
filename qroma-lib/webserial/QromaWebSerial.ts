@@ -2,7 +2,6 @@
 const qromaWebSerialContext = {
   initialized: false,
   port: null as any,
-  monitorOn: false,
 };
 
 
@@ -12,9 +11,9 @@ export interface PortRequestResult {
 
 
 export interface IQromaConnectionState {
-  isConnected: boolean
-  isPortConnected: boolean
-  isMonitorOn: boolean
+  isWebSerialConnected: boolean
+  keepQromaMonitoringOn: boolean
+  isQromaMonitoringOn: boolean
 }
 
 export interface IQromaWebSerial {
@@ -111,15 +110,15 @@ export const useQromaWebSerial = (
   }
 
   const _connectionState: IQromaConnectionState = {
-    isConnected: false,
-    isPortConnected: false,
-    isMonitorOn: false
+    isWebSerialConnected: false,
+    keepQromaMonitoringOn: false,
+    isQromaMonitoringOn: false,
   };
 
   const updateConnectionState = (newState: IQromaConnectionState) => {
-    _connectionState.isConnected = newState.isConnected;
-    _connectionState.isMonitorOn = newState.isMonitorOn;
-    _connectionState.isPortConnected = newState.isPortConnected;
+    _connectionState.isWebSerialConnected = newState.isWebSerialConnected;
+    _connectionState.keepQromaMonitoringOn = newState.keepQromaMonitoringOn;
+    _connectionState.isQromaMonitoringOn = newState.isQromaMonitoringOn;
 
     subscriberInputs.onConnectionChange({
       ..._connectionState
@@ -136,14 +135,14 @@ export const useQromaWebSerial = (
     console.log("QWS _onConnect")
     updateConnectionState({
       ..._connectionState,
-      isConnected: true,
+      isWebSerialConnected: true,
     });
   }
 
   const _onDisconnect = () => {
     updateConnectionState({
       ..._connectionState,
-      isConnected: false,
+      isWebSerialConnected: false,
     });
   }
 
@@ -158,7 +157,7 @@ export const useQromaWebSerial = (
     console.log("In requestPort()");
 
     try {
-      if (qromaWebSerialContext.port && _connectionState.isConnected) {
+      if (qromaWebSerialContext.port && _connectionState.isWebSerialConnected) {
         return qromaWebSerialContext.port;
       }
 
@@ -179,8 +178,7 @@ export const useQromaWebSerial = (
 
       updateConnectionState({
         ..._connectionState,
-        isConnected: true,
-        isPortConnected: true
+        isWebSerialConnected: true
       });
 
       return port;
@@ -194,7 +192,7 @@ export const useQromaWebSerial = (
 
       updateConnectionState({
         ..._connectionState,
-        isPortConnected: false
+        isWebSerialConnected: false
       });
     }
   }
@@ -219,25 +217,36 @@ export const useQromaWebSerial = (
 
     await requestPort();
 
-    if (!getConnectionState().isConnected) {
-      throw new Error("Can't start monitor - no connection");
+    if (!getConnectionState().isWebSerialConnected) {
+      throw new Error("Can't start monitor - no webserial connection");
     }
 
     const port = qromaWebSerialContext.port!;
-    qromaWebSerialContext.monitorOn = true;
+      updateConnectionState({
+        ..._connectionState,
+        keepQromaMonitoringOn: true
+      });
 
     console.log(qromaWebSerialContext);
     console.log(port);
     console.log(port.readable);
     
-    while (port.readable && qromaWebSerialContext.monitorOn) {
+    while (port.readable && 
+           _connectionState.isWebSerialConnected &&
+           _connectionState.keepQromaMonitoringOn) 
+    {
+      updateConnectionState({
+        ..._connectionState,
+        isQromaMonitoringOn: true,
+      });
+
+
       const reader = port.readable.getReader();
 
       try {
         const { value, done } = await reader.read();
         if (done) {
           // |reader| has been canceled.
-          qromaWebSerialContext.monitorOn = false;
           console.log("READER CANCELED")
           break;
         }
@@ -250,11 +259,19 @@ export const useQromaWebSerial = (
       }
     }
 
+    updateConnectionState({
+      ..._connectionState,
+      isQromaMonitoringOn: false,
+    });
+
     console.log("DONE MONITORING: startMonitoring");
   }
 
   const stopMonitoring = () => {
-    qromaWebSerialContext.monitorOn = false;
+    updateConnectionState({
+      ..._connectionState,
+      keepQromaMonitoringOn: false,
+    });
   }
 
   _qromaWebSerial = {

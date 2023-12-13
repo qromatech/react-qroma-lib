@@ -42,7 +42,7 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
   }
   const qromaAppWebSerial = useQromaAppWebSerial(inputs);
 
-  const isConnected = qromaAppWebSerial.getConnectionState().isConnected;
+  const isConnected = qromaAppWebSerial.getConnectionState().isWebSerialConnected;
   
   const location = useLocation();
   console.log(location);
@@ -79,7 +79,7 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
     qromaAppWebSerial.startMonitoring();
   }
 
-  const isQromaWebSerialConnected = qromaAppWebSerial.getConnectionState().isConnected;
+  const isQromaWebSerialConnected = qromaAppWebSerial.getConnectionState().isWebSerialConnected;
 
   
   return (

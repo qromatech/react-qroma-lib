@@ -69,8 +69,8 @@ export const QromaIoSendQromaCommMessageComponent = (
     qromaCommWebSerial.startMonitoring();
   }
 
-  const isConnected = qromaCommWebSerial.getConnectionState().isConnected;
-  const isQromaWebSerialConnected = qromaCommWebSerial.getConnectionState().isConnected;
+  const isConnected = qromaCommWebSerial.getConnectionState().isWebSerialConnected;
+  const isQromaWebSerialConnected = qromaCommWebSerial.getConnectionState().isWebSerialConnected;
 
   
   return (

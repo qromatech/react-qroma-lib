@@ -28,7 +28,7 @@ export const QromaIoShowQromaFileUiComponent = <T extends object, U extends obje
   }
 
   const qromaCommFileSystemApi = useQromaCommFileSystemApi();
-  const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
+  const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   const showFileContents = async (filePath: string) => {
     console.log("SHOWING FILE CONTENTS FOR " + filePath);

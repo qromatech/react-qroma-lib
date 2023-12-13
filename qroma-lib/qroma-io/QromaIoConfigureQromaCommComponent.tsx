@@ -41,7 +41,7 @@ export const QromaIoConfigureQromaCommComponent = (
   }
 
   const qromaCommWebSerial = useQromaCommWebSerial(onQromaCommResponse, onConnectionChange);
-  const isConnected = qromaCommWebSerial.getConnectionState().isConnected;
+  const isConnected = qromaCommWebSerial.getConnectionState().isWebSerialConnected;
 
 
   const showConfig = () => {

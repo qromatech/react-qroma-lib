@@ -62,7 +62,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
     qromaCommFileSystemApi.init();
   }
 
-  const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
+  const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   
   if (!isConnected) {
