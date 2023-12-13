@@ -27,8 +27,8 @@ export const QromaIoAddQromaFileComponent = (
     </div>
   }
 
-  const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
-  const isPortConnected = qromaCommFileSystemApi.connectionState.isPortConnected;
+  const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
+  const isPortConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   const sendRequest = async () => {
     const fileContent = convertBase64ToBinary(contentAsB64);

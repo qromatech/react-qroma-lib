@@ -21,7 +21,7 @@ export const QromaIoShowQromaFileAsMessageTypeUiComponent = <T extends object>(
 
   const qromaCommFileSystemApi = useQromaCommFileSystemApi();
 
-  const isConnected = qromaCommFileSystemApi.connectionState.isConnected;
+  const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   if (fileMessageType === undefined) {
     return <div>
