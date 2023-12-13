@@ -7,11 +7,29 @@ export const NavbarConnectionComponent = () => {
   const qromaPageApp = useContext(QromaPageAppContext);
   const qromaConnectionState = qromaPageApp.qromaConnectionState;
 
+  console.log("RENDING NavbarConnectionComponent")
+  console.log(qromaConnectionState)
+
+  const getMonitoringLabel = () => {
+    if (qromaConnectionState.keepQromaMonitoringOn) {
+      if (qromaConnectionState.isQromaMonitoringOn) {
+        return "Yes";
+      }
+      return "Should be on, but isn't";
+    }
+
+    if (!qromaConnectionState.keepQromaMonitoringOn) {
+      if (!qromaConnectionState.isQromaMonitoringOn) {
+        return "No"
+      }
+      return "Should not be on, but it is"
+    }
+  }
+
   return (
     <div>
-      <div>Port Connected: {qromaConnectionState.isConnected ? "Yes" : "No"}</div>
-      <div>QromaWS Connected: {qromaConnectionState.isPortConnected ? "Yes" : "No"}</div>
-      <div>Monitoring: {qromaConnectionState.isMonitorOn ? "Yes" : "No"}</div>
+      <div>WebSerial Connected: {qromaConnectionState.isWebSerialConnected ? "Yes" : "No"}</div>
+      <div>Monitoring: {getMonitoringLabel()}</div>
     </div>
   )
 }

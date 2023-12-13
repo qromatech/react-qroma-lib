@@ -13,17 +13,17 @@ export interface IQromaPageApp {
 
 export const _createQromaPageApp = (): IQromaPageApp => {  
 
-  const [isConnected, setIsConnected] = useState(false);
-  const [isPortConnected, setIsPortConnected] = useState(false);
-  const [isMonitorOn, setIsMonitorOn] = useState(false);
+  const [isWebSerialConnected, setIsWebSerialConnected] = useState(false);
+  const [keepQromaMonitoringOn, setKeepQromaMonitoringOn] = useState(false);
+  const [isQromaMonitoringOn, setIsQromaMonitoringOn] = useState(false);
 
   const [qromaAppMessageTypes, setQromaAppMessageTypes] = useState({} as Record<string, MessageInfo>);
 
 
   const onConnectionChange = (latestConnectionState: IQromaConnectionState) => {
-    setIsConnected(latestConnectionState.isConnected);
-    setIsPortConnected(latestConnectionState.isPortConnected);
-    setIsMonitorOn(latestConnectionState.isMonitorOn);
+    setIsWebSerialConnected(latestConnectionState.isWebSerialConnected);
+    setKeepQromaMonitoringOn(latestConnectionState.keepQromaMonitoringOn);
+    setIsQromaMonitoringOn(latestConnectionState.isQromaMonitoringOn);
   }
 
   const qromaPageSerial = useQromaWebSerial(() => { }, onConnectionChange);
@@ -33,9 +33,9 @@ export const _createQromaPageApp = (): IQromaPageApp => {
     qromaPageSerial,
 
     qromaConnectionState: {
-      isConnected,
-      isPortConnected,
-      isMonitorOn,
+      isWebSerialConnected,
+      keepQromaMonitoringOn,
+      isQromaMonitoringOn,
     },
 
     qromaAppMessageTypesRegistry,

@@ -38,7 +38,7 @@ export const QromaCommandDeviceApp = <T extends object, U extends object>(props:
   }
   const qromaAppWebSerial = useQromaAppWebSerial(inputs);
 
-  const isConnected = qromaAppWebSerial.getConnectionState().isConnected;
+  const isConnected = qromaAppWebSerial.getConnectionState().isWebSerialConnected;
   
   return (
     <>
