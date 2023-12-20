@@ -17,6 +17,8 @@ export interface IQromaConnectionState {
 }
 
 export interface IQromaWebSerial {
+  isBrowserSupported: boolean
+
   sendBytes(data: Uint8Array): void
   sendString(data: string): void
 
@@ -30,7 +32,6 @@ export interface IQromaWebSerial {
 
 
 let _qromaWebSerial: IQromaWebSerial | undefined = undefined;
-
 
 
 interface IQromaWebSerialSubscription {
@@ -62,6 +63,36 @@ const subscriberInputs = {
         }
       }
     });
+  }
+}
+
+const _createDummyQromaWebSerial = (): IQromaWebSerial => {
+  let shouldMonitor = false;
+
+  return {
+    isBrowserSupported: false,
+
+    sendBytes: (data: Uint8Array) => console.log("Dummy Qroma Web Serial sendBytes() - " + data.length),
+    sendString: (data: string) => console.log("Dummy Qroma Web Serial sendString() - " + data),
+  
+    startMonitoring: () => {
+      console.log("Dummy Qroma Web Serial startMonitoring()"),
+      shouldMonitor = true;
+    },
+    stopMonitoring: () => {
+      console.log("Dummy Qroma Web Serial stopMonitoring()")
+      shouldMonitor = false;
+    },
+  
+    getConnectionState: () => {
+      return {
+        isWebSerialConnected: false,
+        keepQromaMonitoringOn: shouldMonitor,
+        isQromaMonitoringOn: false,
+      }
+    },
+  
+    unsubscribe: () => console.log("Dummy Qroma Web Serial unsubscribe()"),
   }
 }
 
@@ -102,6 +133,10 @@ export const useQromaWebSerial = (
 
   console.log("useQromaCommWebSerial");
   const qNavigator: any = window.navigator;
+  if (qNavigator.serial === undefined) {
+    _qromaWebSerial = _createDummyQromaWebSerial();
+    return _qromaWebSerial;
+  }
   const qSerial = qNavigator.serial;
 
   console.log(qSerial);
@@ -275,6 +310,8 @@ export const useQromaWebSerial = (
   }
 
   _qromaWebSerial = {
+    isBrowserSupported: true,
+    
     sendBytes,
     sendString,
 
