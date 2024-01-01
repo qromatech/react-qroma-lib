@@ -25,9 +25,11 @@ export const MessageInputComponent = <T extends object>(props: IMessageInputComp
     console.log(field);
     console.log(newValue);
 
+    const valueToSet = field.kind === 'enum' ? field.no : newValue;
+
     const newRequestObjectData = JSON.parse(JSON.stringify(requestObjectData));
     console.log(requestObjectData);
-    newRequestObjectData[field.name] = newValue;
+    newRequestObjectData[field.name] = valueToSet;
     setRequestObjectData(newRequestObjectData);
     console.log(newRequestObjectData);
 
@@ -39,8 +41,6 @@ export const MessageInputComponent = <T extends object>(props: IMessageInputComp
     console.log(oneof);
     console.log(oneofSelection);
     console.log(newValue);
-
-    // props.onChange()
   }
 
   const clearParentFieldValue = (fieldName: string) => {

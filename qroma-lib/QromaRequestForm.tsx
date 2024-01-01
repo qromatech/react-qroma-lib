@@ -162,7 +162,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
   try {
     qcCommandJsonStr = QromaCommCommand.toJsonString(qromaCommCommand);
   } catch (e) {
-    console.log("ERROR SETTING APP COMMAND JSON STR");
+    console.log("ERROR SETTING QROMA COMM APP COMMAND JSON STR");
     console.log(e);
   }
 
