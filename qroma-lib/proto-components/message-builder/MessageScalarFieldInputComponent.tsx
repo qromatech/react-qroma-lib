@@ -53,6 +53,7 @@ export const getScalarValue = (scalarType: ScalarType, strValue: string): any =>
 
 
 interface IMessageScalarFieldInputComponentProps {
+  value: any
   field: FieldInfo
   onChange: <T>(field: FieldInfo, newValue: T) => void
 }
@@ -61,18 +62,22 @@ interface IMessageScalarFieldInputComponentProps {
 export const MessageScalarFieldInputComponent = (props: IMessageScalarFieldInputComponentProps) => {
   const field = props.field;
 
+  console.log("MessageScalarFieldInputComponent")
+  console.log(props)
+
   if (field.kind !== 'scalar') {
     return <div>Non-scalar input field provided: {field.name}</div>
   }
 
   const doOnChange = (e) => {
+    console.log("MessageScalarFieldInputComponent on change")
     const updatedValue = getScalarValue(field.T, e.target.value);
     props.onChange(field, updatedValue);
   }
 
   return (
     <div>
-      {field.name} [{getScalarTypeName(field.T)}] <input onChange={doOnChange}/>
+      {field.name} [{getScalarTypeName(field.T)}] <input onChange={doOnChange} value={props.value}/>
     </div>
   )
 }

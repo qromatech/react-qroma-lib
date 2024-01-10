@@ -1,89 +1,86 @@
-import React from "react";
-import { FieldInfo } from "@protobuf-ts/runtime";
-import { MessageSingleFieldInputComponent } from "./MessageSingleFieldInputComponent";
-import { MessageOneofInputComponent } from "./MessageOneofInputComponent";
+// import React from "react";
+// import { FieldInfo } from "@protobuf-ts/runtime";
+// import { MessageSingleFieldInputComponent } from "./MessageSingleFieldInputComponent";
+// import { MessageOneofInputComponent } from "./MessageOneofInputComponent";
+// import { EnumItem, OneofGroup } from "./defs";
 
 
 
-export interface OneofGroup {
-  parentGroupField: FieldInfo
-  oneofFieldName: string
-  oneofFields: FieldInfo[]
-}
 
-interface IMessageAllFieldsInputsComponentProps {
-  messageTypeName: string
-  fields: readonly FieldInfo[]
-  onChange: <T>(field: FieldInfo, newValue: T) => void
-  onOneofChange: <T>(oneofGroup: OneofGroup, subOneofSelection: string, newValue: T) => void
-  clearParentFieldValue: (fieldName: string) => void
-}
+// interface IMessageAllFieldsInputsComponentProps {
+//   messageTypeName: string
+//   fields: readonly FieldInfo[]
+//   onChange: <T>(field: FieldInfo, newValue: T) => void
+//   onOneofChange: <T>(oneofGroup: OneofGroup, subOneofSelection: string, newValue: T) => void
+//   onEnumChange: (enumItem: EnumItem, enumStrValue: string, enumIntValue: number) => void
+//   clearParentFieldValue: (fieldName: string) => void
+// }
 
 
-export const MessageAllFieldsInputComponent = (props: IMessageAllFieldsInputsComponentProps) => {
+// export const MessageAllFieldsInputComponent = (props: IMessageAllFieldsInputsComponentProps) => {
 
-  const fields = props.fields;
+//   const fields = props.fields;
   
-  const oneofFields = fields.filter(f => f.oneof);
-  const nonOneofFields = fields.filter(f => !f.oneof);
-  const oneofMap = new Map<string, FieldInfo[]>();
+//   const oneofFields = fields.filter(f => f.oneof);
+//   const nonOneofFields = fields.filter(f => !f.oneof);
+//   const oneofMap = new Map<string, FieldInfo[]>();
 
-  for (var f of oneofFields) {
-    const oneof = f.oneof!;
-    if (oneofMap.has(oneof)) {
-      oneofMap.get(oneof)!.push(f)
-    } else {
-      oneofMap.set(oneof, [f]);
-    }
-  }
+//   for (var f of oneofFields) {
+//     const oneof = f.oneof!;
+//     if (oneofMap.has(oneof)) {
+//       oneofMap.get(oneof)!.push(f)
+//     } else {
+//       oneofMap.set(oneof, [f]);
+//     }
+//   }
 
-  console.log("ONE OF GROUPS");
-  console.log(oneofFields)
-  const oneofGroups = [] as OneofGroup[];
-  for (let [k, v] of oneofMap) {
-    console.log(k);
-    oneofGroups.push({
-      parentGroupField: oneofFields.find(f => f.oneof === k)!,
-      oneofFieldName: k,
-      oneofFields: v,
-    });
-  }
+//   console.log("ONE OF GROUPS");
+//   console.log(oneofFields)
+//   const oneofGroups = [] as OneofGroup[];
+//   for (let [k, v] of oneofMap) {
+//     console.log(k);
+//     oneofGroups.push({
+//       parentGroupField: oneofFields.find(f => f.oneof === k)!,
+//       oneofFieldName: k,
+//       oneofFields: v,
+//     });
+//   }
 
-  const activeOneOfGroups = new Map<string, string>();
-  oneofGroups.forEach(oog => {
-    activeOneOfGroups.set(oog.oneofFieldName, oog.oneofFields[0].name);
-  });
+//   const activeOneOfGroups = new Map<string, string>();
+//   oneofGroups.forEach(oog => {
+//     activeOneOfGroups.set(oog.oneofFieldName, oog.oneofFields[0].name);
+//   });
 
-  return (
-    <div>
-      <ul>
-        {
-          oneofGroups.map(oog => (
-            <MessageOneofInputComponent
-              oneofGroup={oog}
-              oneofName={oog.oneofFieldName}
-              oneofFields={oog.oneofFields}
-              onChange={props.onChange}
-              key={oog.oneofFieldName}
-              clearParentFieldValue={props.clearParentFieldValue}
-            />
-          ))
-        }
-      </ul>
+//   return (
+//     <div>
+//       <ul>
+//         {
+//           oneofGroups.map(oog => (
+//             <MessageOneofInputComponent
+//               oneofGroup={oog}
+//               oneofName={oog.oneofFieldName}
+//               oneofFields={oog.oneofFields}
+//               onChange={props.onChange}
+//               key={oog.oneofFieldName}
+//               clearParentFieldValue={props.clearParentFieldValue}
+//             />
+//           ))
+//         }
+//       </ul>
 
-      <ul>
-        {nonOneofFields.map(f => {
+//       <ul>
+//         {nonOneofFields.map(f => {
 
-          return (
-            <MessageSingleFieldInputComponent
-              field={f}
-              onChange={props.onChange}
-              key={f.name}
-              />
-          )
-        }
-        )}
-      </ul>
-    </div>
-  )
-}
+//           return (
+//             <MessageSingleFieldInputComponent
+//               field={f}
+//               onChange={props.onChange}
+//               key={f.name}
+//               />
+//           )
+//         }
+//         )}
+//       </ul>
+//     </div>
+//   )
+// }

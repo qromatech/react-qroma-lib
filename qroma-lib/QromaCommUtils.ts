@@ -24,10 +24,10 @@ export const QcuCreateQromaCommMessageForAppCommand = <TCommand extends object>(
   console.log("APP MESSAGE TYPE");
   console.log(commandMessageType);
   try {
-    const appMessageJson = commandMessageType.toJson(command);
+    const appMessageJson = commandMessageType.toJson(appCommand);
     console.log(appMessageJson);
 
-    const appMessageBytes = commandMessageType.toBinary(command);
+    const appMessageBytes = commandMessageType.toBinary(appCommand);
     console.log("BYTES DONE");
     console.log(appMessageBytes);
   
