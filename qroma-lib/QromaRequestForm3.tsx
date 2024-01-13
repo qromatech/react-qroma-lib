@@ -207,6 +207,7 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
         messageValue={rootMessage}
         messageValueJsonData={rootMessageJsonData}
         fieldInParent={rootMessageFieldInfo}
+        isFieldUsedAsOneof={false}
         updateFieldInParentMessage={updateRootField}
         updateOneofFieldInParentMessage={updateOneofFieldInParent}
         />

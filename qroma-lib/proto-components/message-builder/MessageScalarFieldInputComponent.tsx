@@ -55,6 +55,7 @@ export const getScalarValue = (scalarType: ScalarType, strValue: string): any =>
 interface IMessageScalarFieldInputComponentProps {
   value: any
   field: FieldInfo
+  isFieldUsedAsOneof: boolean
   updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
 }
 

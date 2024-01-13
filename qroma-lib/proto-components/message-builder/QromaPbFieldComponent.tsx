@@ -1,5 +1,5 @@
 import React from "react"
-import { FieldInfo, JsonObject, JsonValue } from "@protobuf-ts/runtime"
+import { FieldInfo, JsonValue } from "@protobuf-ts/runtime"
 import { QromaPbOneofComponent } from "./QromaPbOneofComponent";
 import { MessageScalarFieldInputComponent } from "./MessageScalarFieldInputComponent";
 import { MessageEnumFieldInputComponent } from "./MessageEnumFieldInputComponent";
@@ -16,18 +16,13 @@ export interface IQromaPbFieldComponentProps {
 }
 
 export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
-  // const field = props.field;
-    
 
   const onScalarValueChange = (objectKey: string, newValue: JsonValue) => {
     console.log("QromaPbFieldComponent - SCALAR ON CHANGE");
     console.log(props)
     console.log(objectKey)
     console.log(newValue)
-
-        // // if (sourceField.kind === 'message') {
-        //   if (props.fieldInParent.kind === 'message') {
-
+    
     props.updateFieldInParentMessage(props.field, newValue);
   }
 
@@ -46,7 +41,6 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
 
     if (sourceField.kind === 'message') {
       const updateMessage = props.messageValueJsonData[props.field.name];
-      // updateMessage[props.field.name] = newValue
       console.log("HAVE PB FIELD MESSAGE UPDATE")
       console.log(props.field)
       console.log(updateMessage)
@@ -57,25 +51,6 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
       console.log(props.field.name)
       console.log(newValue)
       props.updateFieldInParentMessage(props.field, newValue);
-
-
-      // if (props.fieldInParent.kind !== 'message') {
-      //   console.log("HAVE MESSAGE VALUE UPDATE")
-      //   console.log(sourceField)
-      //   console.log(objectValue)
-      //   props.updateFieldInParentMessage(sourceField, objectValue);
-      // } else {
-      //   console.log("HAVE MESSAGE IN MESSAGE UPDATE")
-      //   console.log(sourceField)
-      //   console.log(objectValue)
-      //   console.log(props.messageValueJsonData)
-
-      //   const updateMessage = props.messageValueJsonData;
-      //   updateMessage[sourceField.name] = objectValue
-      //   console.log(updateMessage)
-      //   props.updateFieldInParentMessage(props.fieldInParent, updateMessage);
-      // }
-
     }
   }
 
@@ -144,6 +119,7 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
         <MessageScalarFieldInputComponent
           key={props.field.name}
           field={props.field}
+          isFieldUsedAsOneof={false}
           value={value}
           updateFieldInParent={onScalarValueChange}
           />
@@ -154,6 +130,7 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
         <MessageEnumFieldInputComponent
           key={props.field.name}
           field={props.field}
+          isFieldUsedAsOneof={false}
           value={props.messageValue[fieldNamesPathStr]}
           updateFieldInParent={onEnumValueChange}
           />
@@ -183,6 +160,7 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
             messageValue={subMessageValue}
             messageValueJsonData={subMessageValueJsonData}
             fieldInParent={props.field}
+            isFieldUsedAsOneof={false}
             updateFieldInParentMessage={newValue => onMessageValueChange(props.field, newValue)}
             updateOneofFieldInParentMessage={props.updateOneofFieldInParentMessage}
             />

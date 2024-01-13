@@ -121,6 +121,7 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
 
 interface IMessageEnumFieldInputComponentProps {
   field: FieldInfo
+  isFieldUsedAsOneof: boolean
   // onEnumValueChange: <T>(field: FieldInfo, newValue: T) => void
   updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
   value: any
