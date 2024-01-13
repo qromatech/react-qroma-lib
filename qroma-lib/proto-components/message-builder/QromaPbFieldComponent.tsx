@@ -11,53 +11,72 @@ export interface IQromaPbFieldComponentProps {
   messageValue: any
   messageValueJsonData: JsonValue
   containingMessageFields: readonly FieldInfo[]
-  updateFieldInParentMessage: (sourceField: FieldInfo, objectKey: string, objectValue: JsonValue) => void
+  updateFieldInParentMessage: (sourceField: FieldInfo, objectValue: JsonValue) => void
   updateOneofFieldInParentMessage: (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => void
 }
 
 export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
-  const field = props.field;
+  // const field = props.field;
     
 
   const onScalarValueChange = (objectKey: string, newValue: JsonValue) => {
     console.log("QromaPbFieldComponent - SCALAR ON CHANGE");
+    console.log(props)
     console.log(objectKey)
     console.log(newValue)
 
-    props.updateFieldInParentMessage(props.field, objectKey, newValue);
+        // // if (sourceField.kind === 'message') {
+        //   if (props.fieldInParent.kind === 'message') {
+
+    props.updateFieldInParentMessage(props.field, newValue);
   }
 
 
   const onEnumValueChange = (objectKey: string, newValue: JsonValue) => {
     console.log("QromaPbFieldComponent - ENUM ON CHANGE");
     
-    props.updateFieldInParentMessage(props.field, objectKey, newValue);
-    
-    // props.updateFieldInParent(field.name, newValueInt);
+    props.updateFieldInParentMessage(props.field, newValue);
   }
 
 
   const onMessageValueChange = (sourceField: FieldInfo, newValue: any) => {
     console.log("QromaPbFieldComponent - MESSAGE ON CHANGE");
-    console.log(field)
+    console.log(sourceField)
     console.log(newValue)
 
     if (sourceField.kind === 'message') {
       const updateMessage = props.messageValueJsonData[props.field.name];
-      // updateMessage[sourceField.name] = newValue
+      // updateMessage[props.field.name] = newValue
       console.log("HAVE PB FIELD MESSAGE UPDATE")
       console.log(props.field)
       console.log(updateMessage)
-      props.updateFieldInParentMessage(props.field, props.field.name, updateMessage);
+      props.updateFieldInParentMessage(props.field, updateMessage);
 
     } else {
       console.log("HAVE PB FIELD MESSAGE VALUE UPDATE")
       console.log(props.field.name)
       console.log(newValue)
-      props.updateFieldInParentMessage(props.field, props.field.name, newValue);
-    }
+      props.updateFieldInParentMessage(props.field, newValue);
 
-    // props.updateFieldInParentMessage(props.field, field.name, newValue);
+
+      // if (props.fieldInParent.kind !== 'message') {
+      //   console.log("HAVE MESSAGE VALUE UPDATE")
+      //   console.log(sourceField)
+      //   console.log(objectValue)
+      //   props.updateFieldInParentMessage(sourceField, objectValue);
+      // } else {
+      //   console.log("HAVE MESSAGE IN MESSAGE UPDATE")
+      //   console.log(sourceField)
+      //   console.log(objectValue)
+      //   console.log(props.messageValueJsonData)
+
+      //   const updateMessage = props.messageValueJsonData;
+      //   updateMessage[sourceField.name] = objectValue
+      //   console.log(updateMessage)
+      //   props.updateFieldInParentMessage(props.fieldInParent, updateMessage);
+      // }
+
+    }
   }
 
   
@@ -66,7 +85,7 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     console.log(objectKey)
     console.log(objectValue)
 
-    props.updateFieldInParentMessage(props.field, objectKey, objectValue);
+    props.updateFieldInParentMessage(props.field, objectValue);
   }
 
   
@@ -80,20 +99,20 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     props.updateOneofFieldInParentMessage(fieldToReplace, newFieldName, newFieldValue);
   }
 
-  console.log("RENDERING QROMA PB FIELD COMPONENT - " + field.name)
+  console.log("RENDERING QROMA PB FIELD COMPONENT - " + props.field.name)
   console.log(props)
   console.log(props.messageValue)
-  console.log(props.messageValue[field.name])
+  console.log(props.messageValue[props.field.name])
 
 
-  if (field.oneof !== undefined) {
-    const selectedOneofGroupValue = props.messageValue[field.oneof];
+  if (props.field.oneof !== undefined) {
+    const selectedOneofGroupValue = props.messageValue[props.field.oneof];
 
     console.log("SELECTING ONE OF VALUE");
     console.log(props)
     console.log(selectedOneofGroupValue)
 
-    const relatedOneofFieldsInParent = props.containingMessageFields.filter(f => f.oneof === field.oneof);
+    const relatedOneofFieldsInParent = props.containingMessageFields.filter(f => f.oneof === props.field.oneof);
 
     const selectedOneofGroupKind = selectedOneofGroupValue.oneofKind;
     console.log("SELECTING ONE OF GROUP - KIND");
@@ -101,8 +120,8 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
 
     return (
       <QromaPbOneofComponent
-        key={field.name}
-        activeOneofField={field}
+        key={props.field.name}
+        activeOneofField={props.field}
         activeOneofValue={selectedOneofGroupKind}
         activeOneofValueJsonData={selectedOneofGroupValue[selectedOneofGroupValue.oneofKind]}
         relatedOneofFieldsInParent={relatedOneofFieldsInParent}
@@ -112,19 +131,19 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     )
   }
 
-  const fieldNamesPathStr = field.name;
+  const fieldNamesPathStr = props.field.name;
 
-  switch (field.kind) {
+  switch (props.field.kind) {
     case "scalar":
-      console.log("SCLARA PB FIELD VALUE FOR FIELD " + field.name);
+      console.log("SCLARA PB FIELD VALUE FOR FIELD " + props.field.name);
       const value = props.messageValue[fieldNamesPathStr];
       console.log(props)
       console.log(value)
 
       return (
         <MessageScalarFieldInputComponent
-          key={field.name}
-          field={field}
+          key={props.field.name}
+          field={props.field}
           value={value}
           updateFieldInParent={onScalarValueChange}
           />
@@ -133,8 +152,8 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     case "enum":
       return (
         <MessageEnumFieldInputComponent
-          key={field.name}
-          field={field}
+          key={props.field.name}
+          field={props.field}
           value={props.messageValue[fieldNamesPathStr]}
           updateFieldInParent={onEnumValueChange}
           />
@@ -142,28 +161,29 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
 
     case "message":
       console.log("MESSAGE COMPONENT")
-      console.log(field)
+      console.log(props.field)
 
-      if (field.oneof === undefined) {
+      if (props.field.oneof === undefined) {
 
         console.log("MESSAGES")
         console.log(props.messageValue)
-        const subMessageValue = props.messageValue[field.name];
+        const subMessageValue = props.messageValue[props.field.name];
         if (subMessageValue === undefined) {
           return;
         }
         console.log(subMessageValue)
 
-        const subMessageValueJsonData = props.messageValueJsonData[field.name];
+        const subMessageValueJsonData = props.messageValueJsonData[props.field.name];
 
         return (
           <QromaPbMessageComponent
-            key={field.name}
-            messageName={field.name}
-            messageType={field.T()}
+            key={props.field.name}
+            messageName={props.field.name}
+            messageType={props.field.T()}
             messageValue={subMessageValue}
             messageValueJsonData={subMessageValueJsonData}
-            updateFieldInParentMessage={newValue => onMessageValueChange(field, newValue)}
+            fieldInParent={props.field}
+            updateFieldInParentMessage={newValue => onMessageValueChange(props.field, newValue)}
             updateOneofFieldInParentMessage={props.updateOneofFieldInParentMessage}
             />
         )
@@ -171,9 +191,9 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
 
     default:
       return (
-        <div key={field.name}>
+        <div key={props.field.name}>
           {/* {field.name} - '{props.messageValue[fieldNamesPathStr]}' [{fieldNamesPathStr}] */}
-          {field.name} - [{fieldNamesPathStr}]
+          {props.field.name} - [{fieldNamesPathStr}]
         </div>
       )
   }

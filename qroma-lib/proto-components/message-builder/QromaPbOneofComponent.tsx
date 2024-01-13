@@ -1,5 +1,5 @@
 import React from "react"
-import { FieldInfo, JsonValue } from "@protobuf-ts/runtime"
+import { FieldInfo, JsonObject, JsonValue } from "@protobuf-ts/runtime"
 import { OneofGroup } from "./defs"
 import { createValueForField } from "./builder_utils"
 import { MessageEnumFieldInputComponent } from "./MessageEnumFieldInputComponent"
@@ -69,14 +69,14 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
   }
 
 
-  const onMessageValueChange = (objectKey: string, objectValue: JsonValue) => {
+  const onMessageValueChange = (fieldToReplace: FieldInfo, objectValue: JsonValue) => {
     console.log("TODO - bring this back")
     console.log(props)
-    console.log(objectKey)
+    console.log(fieldToReplace)
     console.log(objectValue)
 
     const updatedMessage = props.activeOneofValueJsonData;
-    updatedMessage[objectKey] = objectValue;
+    updatedMessage[fieldToReplace.name] = objectValue;
 
     props.updateFieldInParent(props.activeOneofValue, updatedMessage);
   }
@@ -149,9 +149,10 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
           key={props.activeOneofField.name}
           messageName={props.activeOneofField.name}
           messageType={props.activeOneofField.T()}
-          messageValue={oneofFieldValue}
+          messageValue={oneofFieldValue as JsonObject}
           messageValueJsonData={props.activeOneofValueJsonData[props.activeOneofField.name]}
-          updateFieldInParentMessage={(objectKey, objectValue) => onMessageValueChange(objectKey, objectValue)}
+          fieldInParent={props.activeOneofField}
+          updateFieldInParentMessage={(fieldToReplace, objectValue) => onMessageValueChange(fieldToReplace, objectValue)}
           updateOneofFieldInParentMessage={onPbChildOneofSelectionChange}
           />;
       break;

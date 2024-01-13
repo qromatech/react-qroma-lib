@@ -8,7 +8,8 @@ interface IMessageInputComponentProps<T extends object> {
   messageName: string
   messageValue: T
   messageValueJsonData: JsonObject
-  updateFieldInParentMessage: (objectKey: string, objectValue: JsonValue) => void
+  fieldInParent: FieldInfo | null
+  updateFieldInParentMessage: (fieldToReplace: FieldInfo, objectValue: JsonValue) => void
   updateOneofFieldInParentMessage: (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => void
 }
 
@@ -29,26 +30,38 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
   console.log(props.messageValue)
   
 
-  const updateMessageField = (sourceField: FieldInfo, objectKey: string, objectValue: JsonValue) => {
-    console.log("QromaPbMessageComponent - UPDATE PARENT FOR " + objectKey);
+  const updateMessageField = (sourceField: FieldInfo, objectValue: JsonValue) => {
+    console.log("QromaPbMessageComponent - UPDATE PARENT FOR " + sourceField.name);
     console.log(props)
     console.log(sourceField)
-    console.log(objectKey);
     console.log(objectValue);
-    
 
+    // if (sourceField.kind === 'message') {
     if (sourceField.kind === 'message') {
-      const updateMessage = props.messageValueJsonData[objectKey];
-      updateMessage[sourceField.name] = objectValue
       console.log("HAVE MESSAGE UPDATE")
+      const updateMessage = props.messageValueJsonData[sourceField.name];
+      // updateMessage[sourceField.name] = objectValue
       console.log(updateMessage)
-      props.updateFieldInParentMessage(objectKey, updateMessage);
+      props.updateFieldInParentMessage(sourceField, updateMessage);
 
     } else {
-      console.log("HAVE MESSAGE VALUE UPDATE")
-      console.log(objectKey)
-      console.log(objectValue)
-      props.updateFieldInParentMessage(objectKey, objectValue);
+      if (props.fieldInParent.kind !== 'message') {
+        console.log("HAVE MESSAGE VALUE UPDATE")
+        console.log(sourceField)
+        console.log(objectValue)
+        props.updateFieldInParentMessage(sourceField, objectValue);
+      } else {
+        console.log("HAVE MESSAGE IN MESSAGE UPDATE")
+        console.log(sourceField)
+        console.log(objectValue)
+        console.log(props.messageValueJsonData)
+
+        const updateMessage = props.messageValueJsonData;
+        updateMessage[sourceField.name] = objectValue
+        console.log("NEW VLUAE")
+        console.log(updateMessage)
+        props.updateFieldInParentMessage(props.fieldInParent, updateMessage);
+      }
     }
 
     // const updateMessage = props.messageValueJsonData[objectKey];

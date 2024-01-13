@@ -54,9 +54,9 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
   const requestB64 = Buffer.from(qromaMessageBytes).toString('base64') + "\n";
 
 
-  const updateRootField = (objectKey: string, objectValue: JsonValue) => {
+  const updateRootField = (fieldToReplace: FieldInfo, objectValue: JsonValue) => {
     console.log("UPDATING ROOT MESSAGE VALUE");
-    console.log(objectKey);
+    console.log(fieldToReplace.name);
     console.log(objectValue);
 
     console.log("OLD ROOT MESSAGE")
@@ -64,7 +64,7 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
 
     const newRootMessageJsonData = {
       ...rootMessageJsonData,
-      [objectKey]: objectValue
+      [fieldToReplace.name]: objectValue
     };
 
     console.log("NEW ROOT MESSAGE")
@@ -193,6 +193,7 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
     console.log(props.requestMessageType.toJsonString(data2))
   }
 
+  const rootMessageFieldInfo = {} as FieldInfo
 
   return (
     <div>
@@ -205,6 +206,7 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
         messageName="rootMessage"
         messageValue={rootMessage}
         messageValueJsonData={rootMessageJsonData}
+        fieldInParent={rootMessageFieldInfo}
         updateFieldInParentMessage={updateRootField}
         updateOneofFieldInParentMessage={updateOneofFieldInParent}
         />

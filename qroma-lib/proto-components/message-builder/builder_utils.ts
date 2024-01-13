@@ -87,7 +87,7 @@ const createValueForScalar = (scalarType: ScalarType) => {
 
 
 export const createValueForField = (field: FieldInfo) => {
-  console.log("Creating value for field: " + field.name)
+  // console.log("Creating value for field: " + field.name)
   if (field.kind === 'scalar') {
     return createValueForScalar(field.T);
   }
@@ -97,16 +97,16 @@ export const createValueForField = (field: FieldInfo) => {
     let firstEnumChoice = undefined;
 
     for (var r in enumValues) {
-      console.log(r)
+      // console.log(r)
       if (firstEnumChoice === undefined) {
         firstEnumChoice = parseInt(r);
       }
     }
 
-    console.log("CREATING ENUM")
-    console.log(field)
-    console.log(enumValues)
-    console.log(firstEnumChoice)
+    // console.log("CREATING ENUM")
+    // console.log(field)
+    // console.log(enumValues)
+    // console.log(firstEnumChoice)
 
     return firstEnumChoice;
   }
@@ -143,8 +143,8 @@ export const createPopulatedMessageObject = <T extends object>(messageType: IMes
           // console.log(subValue)
         }
         oneofsAdded.push(field.oneof)
-        console.log("ADDED ENTRY FOR ONE OF: " + field.oneof + " [" + field.name + "]")
-        console.log(initValue)
+        // console.log("ADDED ENTRY FOR ONE OF: " + field.oneof + " [" + field.name + "]")
+        // console.log(initValue)
       } else {
         // console.log("SKIPPED ADDING ENTRY FOR ONE OF: " + field.oneof + " [" + field.name + "]")
       }
