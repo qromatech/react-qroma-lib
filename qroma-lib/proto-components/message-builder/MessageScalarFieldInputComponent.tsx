@@ -1,5 +1,5 @@
 import React from "react"
-import { FieldInfo, ScalarType } from "@protobuf-ts/runtime"
+import { FieldInfo, JsonValue, ScalarType } from "@protobuf-ts/runtime"
 
 
 export const getScalarTypeName = (scalarType: ScalarType): string => {
@@ -55,14 +55,14 @@ export const getScalarValue = (scalarType: ScalarType, strValue: string): any =>
 interface IMessageScalarFieldInputComponentProps {
   value: any
   field: FieldInfo
-  onChange: <T>(field: FieldInfo, newValue: T) => void
+  updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
 }
 
 
 export const MessageScalarFieldInputComponent = (props: IMessageScalarFieldInputComponentProps) => {
   const field = props.field;
 
-  console.log("MessageScalarFieldInputComponent")
+  console.log("MessageScalarFieldInputComponent for " + props.field.name)
   console.log(props)
 
   if (field.kind !== 'scalar') {
@@ -72,7 +72,7 @@ export const MessageScalarFieldInputComponent = (props: IMessageScalarFieldInput
   const doOnChange = (e) => {
     console.log("MessageScalarFieldInputComponent on change")
     const updatedValue = getScalarValue(field.T, e.target.value);
-    props.onChange(field, updatedValue);
+    props.updateFieldInParent(field.name, updatedValue);
   }
 
   return (

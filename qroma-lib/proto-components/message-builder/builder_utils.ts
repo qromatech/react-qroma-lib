@@ -1,4 +1,4 @@
-import { FieldInfo, IMessageType, ScalarType } from "@protobuf-ts/runtime";
+import { FieldInfo, IMessageType, JsonObject, ScalarType } from "@protobuf-ts/runtime";
 import { OneofGroup } from "./defs";
 import { MyAppCommand, NoArgCommands } from "./hello-qroma";
 
@@ -15,13 +15,19 @@ export const createMessageInstanceWithDefaultValues = <T extends object>(message
   // const initValue = MyAppCommand.fromJsonString(initObjectJsonStr);
   
   
-  const initValue = MyAppCommand.create();
+  // const initValue = MyAppCommand.create();
   // initValue.command.oneofKind = 'helloQromaRequest';
-  initValue.command = {
-    oneofKind: 'helloQromaRequest',
-    helloQromaRequest: {
-      name: "yay"
-    }
+  // initValue.command = {
+  //   oneofKind: 'helloQromaRequest',
+  //   helloQromaRequest: {
+  //     name: "yay"
+  //   }
+  // };
+
+
+  const initValue = {};
+  initValue.helloQromaRequest = {
+    name: "yay"
   };
   initValue.myAppBool = true;
   initValue.myAppInt = 123;
@@ -30,6 +36,7 @@ export const createMessageInstanceWithDefaultValues = <T extends object>(message
     success: true,
     message: "urkkk"
   }
+  initValue.myAppOtherOneof = {abc: "s123"}
   
   console.log(initValue)
 
@@ -80,6 +87,7 @@ const createValueForScalar = (scalarType: ScalarType) => {
 
 
 export const createValueForField = (field: FieldInfo) => {
+  console.log("Creating value for field: " + field.name)
   if (field.kind === 'scalar') {
     return createValueForScalar(field.T);
   }
@@ -111,13 +119,14 @@ export const createValueForField = (field: FieldInfo) => {
   throw Error("Unsupported field kind: " + field.kind);
 }
 
-export const createPopulatedMessageObject = <T extends object>(messageType: IMessageType<T>) => {
+export const createPopulatedMessageObject = <T extends object>(messageType: IMessageType<T>): JsonObject => {
   const initValue = {};
 
   const fields = messageType.fields;
 
-  console.log("IN createPopulatedMessageObject")
-  console.log(fields);
+  // console.log("IN createPopulatedMessageObject")
+  // console.log(messageType)
+  // console.log(fields);
 
   const oneofsAdded: string[] = [];
 
@@ -127,20 +136,29 @@ export const createPopulatedMessageObject = <T extends object>(messageType: IMes
         if (Object.keys(initValue).find(x => x === field.name) === undefined) {
           console.log("HAVE TO ADD " + field.name)
           const subValue = createValueForField(field)
-          initValue[field.oneof] = {
-            oneofKind: field.name,
-            [field.name]: subValue,
-          }
+
+          initValue[field.name] = subValue;
+          // console.log("SETTING SUB " + field.name + " TO...");
+          // console.log(field)
+          // console.log(subValue)
         }
         oneofsAdded.push(field.oneof)
+        console.log("ADDED ENTRY FOR ONE OF: " + field.oneof + " [" + field.name + "]")
+        console.log(initValue)
+      } else {
+        // console.log("SKIPPED ADDING ENTRY FOR ONE OF: " + field.oneof + " [" + field.name + "]")
       }
     } else {
-      initValue[field.name] = createValueForField(field);
+      const fieldValue = createValueForField(field);
+      initValue[field.name] = fieldValue;
+      // console.log("SETTING " + field.name + " TO...");
+      // console.log(field)
+      // console.log(fieldValue)
     }
   })
 
-  console.log("JUST BUILT INITIAL VALUE")
-  console.log(initValue)
+  // console.log("JUST BUILT INITIAL VALUE")
+  // console.log(initValue)
   
   return initValue;
 }

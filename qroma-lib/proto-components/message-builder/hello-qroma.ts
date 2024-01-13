@@ -357,6 +357,54 @@ export interface MyAppCommand {
     } | {
         oneofKind: undefined;
     };
+    /**
+     * @generated from protobuf field: string myAppStr = 10;
+     */
+    myAppStr: string;
+    /**
+     * @generated from protobuf field: bool myAppBool = 11;
+     */
+    myAppBool: boolean;
+    /**
+     * @generated from protobuf field: uint32 myAppInt = 12;
+     */
+    myAppInt: number;
+    /**
+     * @generated from protobuf field: SetBoardLightColorResponse myAppResponse = 13;
+     */
+    myAppResponse?: SetBoardLightColorResponse;
+    /**
+     * @generated from protobuf field: MathOperation myAppEnum = 14;
+     */
+    myAppEnum: MathOperation;
+    /**
+     * @generated from protobuf field: MathResponse myAppOneofMessage = 15;
+     */
+    myAppOneofMessage?: MathResponse;
+    /**
+     * @generated from protobuf oneof: myAppOtherOneof
+     */
+    myAppOtherOneof: {
+        oneofKind: "abc";
+        /**
+         * @generated from protobuf field: string abc = 21;
+         */
+        abc: string;
+    } | {
+        oneofKind: "def";
+        /**
+         * @generated from protobuf field: string def = 22;
+         */
+        def: string;
+    } | {
+        oneofKind: "ghi";
+        /**
+         * @generated from protobuf field: string ghi = 23;
+         */
+        ghi: string;
+    } | {
+        oneofKind: undefined;
+    };
 }
 /**
  * @generated from protobuf message MyAppResponse
@@ -1657,11 +1705,20 @@ class MyAppCommand$Type extends MessageType<MyAppCommand> {
             { no: 5, name: "setUpdateProgressIndicator", kind: "message", oneof: "command", T: () => SetUpdateProgressIndicator },
             { no: 6, name: "pingRequest", kind: "message", oneof: "command", T: () => PingRequest },
             { no: 7, name: "getBoardDetailsRequest", kind: "message", oneof: "command", T: () => GetBoardDetailsRequest },
-            { no: 8, name: "setBoardLightColorRequest", kind: "message", oneof: "command", T: () => SetBoardLightColorRequest }
+            { no: 8, name: "setBoardLightColorRequest", kind: "message", oneof: "command", T: () => SetBoardLightColorRequest },
+            { no: 10, name: "myAppStr", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 11, name: "myAppBool", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 12, name: "myAppInt", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 13, name: "myAppResponse", kind: "message", T: () => SetBoardLightColorResponse },
+            { no: 14, name: "myAppEnum", kind: "enum", T: () => ["MathOperation", MathOperation] },
+            { no: 15, name: "myAppOneofMessage", kind: "message", T: () => MathResponse },
+            { no: 21, name: "abc", kind: "scalar", oneof: "myAppOtherOneof", T: 9 /*ScalarType.STRING*/ },
+            { no: 22, name: "def", kind: "scalar", oneof: "myAppOtherOneof", T: 9 /*ScalarType.STRING*/ },
+            { no: 23, name: "ghi", kind: "scalar", oneof: "myAppOtherOneof", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<MyAppCommand>): MyAppCommand {
-        const message = { command: { oneofKind: undefined } };
+        const message = { command: { oneofKind: undefined }, myAppStr: "", myAppBool: false, myAppInt: 0, myAppEnum: 0, myAppOtherOneof: { oneofKind: undefined } };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<MyAppCommand>(this, message, value);
@@ -1720,6 +1777,42 @@ class MyAppCommand$Type extends MessageType<MyAppCommand> {
                         setBoardLightColorRequest: SetBoardLightColorRequest.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).setBoardLightColorRequest)
                     };
                     break;
+                case /* string myAppStr */ 10:
+                    message.myAppStr = reader.string();
+                    break;
+                case /* bool myAppBool */ 11:
+                    message.myAppBool = reader.bool();
+                    break;
+                case /* uint32 myAppInt */ 12:
+                    message.myAppInt = reader.uint32();
+                    break;
+                case /* SetBoardLightColorResponse myAppResponse */ 13:
+                    message.myAppResponse = SetBoardLightColorResponse.internalBinaryRead(reader, reader.uint32(), options, message.myAppResponse);
+                    break;
+                case /* MathOperation myAppEnum */ 14:
+                    message.myAppEnum = reader.int32();
+                    break;
+                case /* MathResponse myAppOneofMessage */ 15:
+                    message.myAppOneofMessage = MathResponse.internalBinaryRead(reader, reader.uint32(), options, message.myAppOneofMessage);
+                    break;
+                case /* string abc */ 21:
+                    message.myAppOtherOneof = {
+                        oneofKind: "abc",
+                        abc: reader.string()
+                    };
+                    break;
+                case /* string def */ 22:
+                    message.myAppOtherOneof = {
+                        oneofKind: "def",
+                        def: reader.string()
+                    };
+                    break;
+                case /* string ghi */ 23:
+                    message.myAppOtherOneof = {
+                        oneofKind: "ghi",
+                        ghi: reader.string()
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -1756,6 +1849,33 @@ class MyAppCommand$Type extends MessageType<MyAppCommand> {
         /* SetBoardLightColorRequest setBoardLightColorRequest = 8; */
         if (message.command.oneofKind === "setBoardLightColorRequest")
             SetBoardLightColorRequest.internalBinaryWrite(message.command.setBoardLightColorRequest, writer.tag(8, WireType.LengthDelimited).fork(), options).join();
+        /* string myAppStr = 10; */
+        if (message.myAppStr !== "")
+            writer.tag(10, WireType.LengthDelimited).string(message.myAppStr);
+        /* bool myAppBool = 11; */
+        if (message.myAppBool !== false)
+            writer.tag(11, WireType.Varint).bool(message.myAppBool);
+        /* uint32 myAppInt = 12; */
+        if (message.myAppInt !== 0)
+            writer.tag(12, WireType.Varint).uint32(message.myAppInt);
+        /* SetBoardLightColorResponse myAppResponse = 13; */
+        if (message.myAppResponse)
+            SetBoardLightColorResponse.internalBinaryWrite(message.myAppResponse, writer.tag(13, WireType.LengthDelimited).fork(), options).join();
+        /* MathOperation myAppEnum = 14; */
+        if (message.myAppEnum !== 0)
+            writer.tag(14, WireType.Varint).int32(message.myAppEnum);
+        /* MathResponse myAppOneofMessage = 15; */
+        if (message.myAppOneofMessage)
+            MathResponse.internalBinaryWrite(message.myAppOneofMessage, writer.tag(15, WireType.LengthDelimited).fork(), options).join();
+        /* string abc = 21; */
+        if (message.myAppOtherOneof.oneofKind === "abc")
+            writer.tag(21, WireType.LengthDelimited).string(message.myAppOtherOneof.abc);
+        /* string def = 22; */
+        if (message.myAppOtherOneof.oneofKind === "def")
+            writer.tag(22, WireType.LengthDelimited).string(message.myAppOtherOneof.def);
+        /* string ghi = 23; */
+        if (message.myAppOtherOneof.oneofKind === "ghi")
+            writer.tag(23, WireType.LengthDelimited).string(message.myAppOtherOneof.ghi);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

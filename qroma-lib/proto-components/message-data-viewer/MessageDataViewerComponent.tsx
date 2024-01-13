@@ -11,7 +11,8 @@ interface IMessageDataViewerComponentProps<T extends object> {
 
 export const MessageDataViewerComponent = <T extends object>(props: IMessageDataViewerComponentProps<T>) => {
 
-  const messageJson = props.messageType.toJson(props.messageData);
+  // const messageJson = props.messageType.toJson(props.messageData);
+  const messageJson = props.messageData;
   if (!messageJson) {
     return <div>
       Invalid data to convert to JSON for {props.messageType.typeName}

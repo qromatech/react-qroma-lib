@@ -4,7 +4,7 @@ import { FieldInfo } from "@protobuf-ts/runtime";
 export interface OneofGroup {
   parentGroupField: FieldInfo
   oneofFieldName: string
-  oneofFields: FieldInfo[]
+  oneofFieldOptions: FieldInfo[]
   // messageBuilderFn: () => any
 }
 

@@ -1,11 +1,12 @@
 import React, { FormEvent, FormEventHandler, useState } from "react"
-import { EnumInfo, FieldInfo } from "@protobuf-ts/runtime"
+import { EnumInfo, FieldInfo, JsonValue } from "@protobuf-ts/runtime"
 import { EnumItem } from "./defs"
 
 
 interface IEnumerationInputValuesComponentProps {
   enumInfo: EnumInfo
-  onEnumFieldChange: (newValue: string, newValueInt: number) => void
+  // onEnumFieldChange: (newValue: string, newValueInt: number) => void
+  updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
   value: any
 }
 
@@ -92,7 +93,7 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
     console.log(enumItems)
     console.log("NEW VALUE: " + newValue);
     console.log(enumInt);
-    props.onEnumFieldChange(newValue, enumInt);
+    props.updateFieldInParent(newValue, enumInt);
   }
 
   console.log("INIT VALUE NAME")
@@ -121,7 +122,7 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
 interface IMessageEnumFieldInputComponentProps {
   field: FieldInfo
   // onEnumValueChange: <T>(field: FieldInfo, newValue: T) => void
-  onEnumValueChange: (newValue: string, newValueInt: number) => void
+  updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
   value: any
 }
 
@@ -134,11 +135,14 @@ export const MessageEnumFieldInputComponent = (props: IMessageEnumFieldInputComp
   }
 
   const onChange = (newValue: string, newValueInt: number) => {
-    props.onEnumValueChange(newValue, newValueInt);
+    console.log("NEW ENUM VALUE: " + newValueInt)
+    props.updateFieldInParent(field.name, newValueInt);
   }
 
   const enumInfo = field.T();
 
+  console.log("ENUM PROPS")
+  console.log(props)
 
   return (
     <div style={{marginLeft: 20}}>
@@ -149,7 +153,7 @@ export const MessageEnumFieldInputComponent = (props: IMessageEnumFieldInputComp
         /> */}
       <EnumerationInputValuesAsRadioButtonsComponent
         enumInfo={enumInfo}
-        onEnumFieldChange={onChange}
+        updateFieldInParent={onChange}
         value={props.value}
         />
     </div>

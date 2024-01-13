@@ -11,21 +11,28 @@ export const QcuCreateQromaCommMessageForAppCommand = <TCommand extends object>(
     throw Error("sendQromaAppCommand() failure - no commandMessageType provided on IUseQromaAppWebSerialInputs");
   }
 
-  const appCommandType = Object.keys(appCommand)[0];
-  const command = {
-    command: {
-      oneofKind: appCommandType,
-      [appCommandType]: appCommand[appCommandType],
-    }
-  } as TCommand;
+  console.log("RAW APP COMMAND")
+  console.log(appCommand)
 
-  console.log("APP COMMAND");
-  console.log(command);
-  console.log("APP MESSAGE TYPE");
-  console.log(commandMessageType);
+  // const appCommandType = Object.keys(appCommand)[0];
+  // const command = {
+  //   command: {
+  //     oneofKind: appCommandType,
+  //     [appCommandType]: appCommand[appCommandType],
+  //   }
+  // } as TCommand;
+
+  // console.log("APP COMMAND");
+  // console.log(command);
+  // console.log("APP MESSAGE TYPE");
+  // console.log(commandMessageType);
+
+  // const appCommandBytes = commandMessageType.fromJson(appCommand);
+  // const appCommandBytes = appCommand;
+
   try {
-    const appMessageJson = commandMessageType.toJson(appCommand);
-    console.log(appMessageJson);
+    // const appMessageJson = commandMessageType.toJson(appCommand);
+    // console.log(appMessageJson);
 
     const appMessageBytes = commandMessageType.toBinary(appCommand);
     console.log("BYTES DONE");
