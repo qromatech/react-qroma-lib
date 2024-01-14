@@ -11,12 +11,9 @@ export interface IQromaPbFieldComponentProps {
   messageValue: any
   messageValueJsonData: JsonValue
   containingMessageFields: readonly FieldInfo[]
-  // updateFieldInParentMessage: (sourceField: FieldInfo, objectValue: JsonValue) => void
-  // replaceFieldInParentMessage: (originalField: FieldInfo, newFieldName: string, objectValue: JsonValue) => void
-  // updateActiveOneofInParent: (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => void
 
   setFieldValueInParentMessage: (fieldToReplace: FieldInfo, objectValue: JsonValue) => void
-  setActiveOneofFieldInParent: (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => void
+  setActiveOneofFieldInParent: (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => void
 }
 
 export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
@@ -68,14 +65,26 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
   }
 
   
-  const setActiveOneofField = (fieldToReplace: FieldInfo, newFieldName: string, newFieldValue: JsonValue) => {
+  const setActiveOneofField = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
     console.log("WEIRD TIME TO BE CALLING replaceMessageField() IN QromaPbFieldComponent")
     console.log(props)
-    console.log(fieldToReplace)
-    console.log(newFieldName)
+    console.log(oldActiveField)
+    console.log(newActiveField)
     console.log(newFieldValue)
 
-    props.setActiveOneofFieldInParent(fieldToReplace, newFieldName, newFieldValue);
+    // if (props.field.oneof !== undefined) {
+    //   const updateMessageValue = {
+    //     [newActiveField.name]: newFieldValue,
+    //   }
+  
+    //   props.setActiveOneofFieldInParent(oldActiveField, newActiveField, updateMessageValue);
+    // }
+
+    // const updateMessageValue = {
+    //   [newActiveField.name]: newFieldValue,
+    // }
+
+    props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
   }
 
   console.log("RENDERING QROMA PB FIELD COMPONENT - " + props.field.name)

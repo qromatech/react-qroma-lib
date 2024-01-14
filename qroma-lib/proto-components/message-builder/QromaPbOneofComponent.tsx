@@ -13,7 +13,7 @@ export interface IQromaPbOneofComponent {
   activeOneofValue: any
   activeOneofValueJsonData: JsonValue
   updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
-  updateOneofFieldInParent: (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => void
+  updateOneofFieldInParent: (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => void
 }
 
 
@@ -25,9 +25,8 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
 
   const handleOneofSelectionChange = (e: { target: { value: any } }) => {
     const newValue = e.target.value;
-    console.log(newValue);
     console.log("handleOneofSelectionChange - NEW VALUE: " + newValue);
-    console.log("ONEOF NAME >> " + props.activeOneofField.oneof)
+    console.log(props)
 
     var selectedField = props.relatedOneofFieldsInParent.find(f => f.name === newValue);
 
@@ -37,16 +36,15 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
     console.log(selectedFieldInitValue)
     console.log(selectedField)
 
-    const oneofValue = {
-      oneofKind: newValue,
-      [newValue]: selectedFieldInitValue
-    };
+    // const oneofValue = {
+    //   oneofKind: newValue,
+    //   [newValue]: selectedFieldInitValue
+    // };
 
-    console.log("PB ONEOF - handleOneofSelectionChange")
-    console.log(props.activeOneofField.oneof, oneofValue)
+    // console.log("PB ONEOF - handleOneofSelectionChange")
+    // console.log(props.activeOneofField.oneof, oneofValue)
     
-    const newOneofName = selectedField.name;
-    props.updateOneofFieldInParent(props.activeOneofField, newOneofName, selectedFieldInitValue);
+    props.updateOneofFieldInParent(props.activeOneofField, selectedField, selectedFieldInitValue);
   }
 
   
@@ -79,10 +77,10 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
   }
 
 
-  const onPbChildOneofSelectionChange = (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => {
+  const onPbChildOneofSelectionChange = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
     console.log("QromaPbOneofComponent - onPbOneofChildSelectionChange");
-    console.log(fieldToReplace)
-    console.log(newFieldOneofKind)
+    console.log(oldActiveField)
+    console.log(newActiveField)
     console.log(newFieldValue)
 
     // props.updateFieldInParent(objectKey, objectValue);

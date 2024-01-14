@@ -74,19 +74,19 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
   }
 
   
-  const setActiveOneofInRoot = (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => {
+  const setActiveOneofInRoot = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
     console.log("ROOT MESSAGE UPDATE - IN updateOneofFieldInParent()")
-    console.log(fieldToReplace);
-    console.log(newFieldOneofKind)
+    console.log(oldActiveField);
+    console.log(newActiveField)
     console.log(newFieldValue)
 
     console.trace();
 
     const newRootMessageJsonData = {
       ...rootMessageJsonData,
-      [newFieldOneofKind]: newFieldValue
+      [newActiveField.name]: newFieldValue
     };
-    delete newRootMessageJsonData[fieldToReplace.name];
+    delete newRootMessageJsonData[oldActiveField.name];
 
     console.log("PRE ROOT MESSAGE FROM updateOneofFieldInParent()")
     console.log(rootMessageJsonData)

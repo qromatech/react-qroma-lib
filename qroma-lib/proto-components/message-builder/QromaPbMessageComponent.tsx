@@ -11,7 +11,7 @@ interface IMessageInputComponentProps<T extends object> {
   fieldInParent: FieldInfo | null
   isFieldUsedAsOneof: boolean
   setFieldValueInParentMessage: (fieldToReplace: FieldInfo, objectValue: JsonValue) => void
-  setActiveOneofFieldInParent: (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => void
+  setActiveOneofFieldInParent: (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => void
 }
 
 
@@ -85,14 +85,18 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
     }
   }
 
-  const setActiveOneofFieldInParent = (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => {
+  const setActiveOneofFieldInParent = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
     console.log("PB MESSAGE COMPONENT - updateOneofFieldInParentMessage")
     console.log(props)
-    console.log(fieldToReplace)
-    console.log(newFieldOneofKind)
+    console.log(oldActiveField)
+    console.log(newActiveField)
     console.log(newFieldValue)
+
+    const updateMessageValue = {
+      [props.fieldInParent.name]: newFieldValue,
+    }
     
-    props.setActiveOneofFieldInParent(fieldToReplace, newFieldOneofKind, newFieldValue);
+    props.setActiveOneofFieldInParent(oldActiveField, newActiveField, updateMessageValue);
   }
 
 
