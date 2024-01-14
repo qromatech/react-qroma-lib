@@ -151,8 +151,8 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
           messageValueJsonData={props.activeOneofValueJsonData[props.activeOneofField.name]}
           fieldInParent={props.activeOneofField}
           isFieldUsedAsOneof={true}
-          updateFieldInParentMessage={onOneofMessageValueChange}
-          updateOneofFieldInParentMessage={onPbChildOneofSelectionChange}
+          setFieldValueInParentMessage={onOneofMessageValueChange}
+          setActiveOneofFieldInParent={onPbChildOneofSelectionChange}
           />;
       break;
     default:

@@ -1,7 +1,6 @@
 import React from "react"
 import { FieldInfo, IMessageType, JsonObject, JsonValue } from "@protobuf-ts/runtime"
 import { IQromaPbFieldComponentProps, QromaPbFieldComponent } from "./QromaPbFieldComponent"
-import { createPopulatedMessageObject } from "./builder_utils"
 
 
 interface IMessageInputComponentProps<T extends object> {
@@ -11,8 +10,8 @@ interface IMessageInputComponentProps<T extends object> {
   messageValueJsonData: JsonObject
   fieldInParent: FieldInfo | null
   isFieldUsedAsOneof: boolean
-  updateFieldInParentMessage: (fieldToReplace: FieldInfo, objectValue: JsonValue) => void
-  updateOneofFieldInParentMessage: (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => void
+  setFieldValueInParentMessage: (fieldToReplace: FieldInfo, objectValue: JsonValue) => void
+  setActiveOneofFieldInParent: (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => void
 }
 
 
@@ -49,7 +48,7 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
       console.log("NEW ONEOF MESSAGE VALUE")
       console.log(newValueForField)
 
-      props.updateFieldInParentMessage(props.fieldInParent, newValueForField);
+      props.setFieldValueInParentMessage(props.fieldInParent, newValueForField);
       return;
     }
 
@@ -58,11 +57,11 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
         console.log("HAVE MESSAGE UPDATE")
         const updateMessage = props.messageValueJsonData[sourceField.name];
         console.log(updateMessage)
-        props.updateFieldInParentMessage(sourceField, updateMessage);
+        props.setFieldValueInParentMessage(sourceField, updateMessage);
   
       } else {
         console.log("HAVE MESSAGE ONEOF UPDATE")
-        props.updateFieldInParentMessage(sourceField, objectValue);  
+        props.setFieldValueInParentMessage(sourceField, objectValue);  
       }
 
     } else {
@@ -70,7 +69,7 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
         console.log("HAVE MESSAGE VALUE UPDATE")
         console.log(sourceField)
         console.log(objectValue)
-        props.updateFieldInParentMessage(sourceField, objectValue);
+        props.setFieldValueInParentMessage(sourceField, objectValue);
       } else {
         console.log("HAVE MESSAGE IN MESSAGE UPDATE")
         console.log(sourceField)
@@ -81,20 +80,41 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
         updateMessage[sourceField.name] = objectValue
         console.log("NEW VLUAE")
         console.log(updateMessage)
-        props.updateFieldInParentMessage(props.fieldInParent, updateMessage);
+        props.setFieldValueInParentMessage(props.fieldInParent, updateMessage);
       }
     }
   }
 
-  const updateOneofFieldInParentMessage = (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => {
+  const setActiveOneofFieldInParent = (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => {
     console.log("PB MESSAGE COMPONENT - updateOneofFieldInParentMessage")
     console.log(props)
     console.log(fieldToReplace)
     console.log(newFieldOneofKind)
     console.log(newFieldValue)
-
-    props.updateOneofFieldInParentMessage(fieldToReplace, newFieldOneofKind, newFieldValue);
+    
+    props.setActiveOneofFieldInParent(fieldToReplace, newFieldOneofKind, newFieldValue);
   }
+
+
+  // const replaceFieldInParentMessage = (fieldToReplace: FieldInfo, newFieldName: string, newFieldValue: JsonValue) => {
+  //   console.log("WEIRD TIME TO BE CALLING replaceFieldInParentMessage() IN QromaPbFieldComponent")
+  //   console.log(props)
+  //   console.log(fieldToReplace)
+  //   console.log(newFieldName)
+  //   console.log(newFieldValue)
+    
+  //   const updateValue = {
+  //     [newFieldName]: newFieldValue
+  //   };
+
+  //   console.log("USING UPDATE VALUE")
+  //   console.log(updateValue)
+
+
+  //   props.updateOneofFieldInParentMessage(fieldToReplace, newFieldName, updateValue);
+  // }
+
+
 
   const messageFieldComponents = [];
 
@@ -111,8 +131,9 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
       messageValue: props.messageValue,
       messageValueJsonData: props.messageValueJsonData,
       containingMessageFields: fields,
-      updateFieldInParentMessage: updateMessageField,
-      updateOneofFieldInParentMessage,
+      setFieldValueInParentMessage: updateMessageField,
+      // setFieldValueInParentMessage,
+      setActiveOneofFieldInParent,
     };
 
     const messageFieldComponent = 

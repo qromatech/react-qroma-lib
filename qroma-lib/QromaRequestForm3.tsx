@@ -74,13 +74,13 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
   }
 
   
-  const updateOneofFieldInParent = (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => {
+  const setActiveOneofInRoot = (fieldToReplace: FieldInfo, newFieldOneofKind: string, newFieldValue: JsonValue) => {
     console.log("ROOT MESSAGE UPDATE - IN updateOneofFieldInParent()")
     console.log(fieldToReplace);
     console.log(newFieldOneofKind)
     console.log(newFieldValue)
 
-    // console.trace();
+    console.trace();
 
     const newRootMessageJsonData = {
       ...rootMessageJsonData,
@@ -208,8 +208,9 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
         messageValueJsonData={rootMessageJsonData}
         fieldInParent={rootMessageFieldInfo}
         isFieldUsedAsOneof={false}
-        updateFieldInParentMessage={updateRootField}
-        updateOneofFieldInParentMessage={updateOneofFieldInParent}
+        setFieldValueInParentMessage={updateRootField}
+        setActiveOneofFieldInParent={setActiveOneofInRoot}
+        // replaceFieldInParentMessage={setActiveOneofInRoot}
         />
       <div>
         App Command: {appCommandJsonStr}
