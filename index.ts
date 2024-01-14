@@ -2,7 +2,6 @@
 export * from './qroma-lib/EspWebInstallButton'
 export { MessageDataViewerComponent } from './qroma-lib/proto-components/message-data-viewer/MessageDataViewerComponent'
 export { QromaRequestForm } from './qroma-lib/QromaRequestForm'
-export { QromaRequestPage } from './qroma-lib/QromaRequestPage'
 
 export { useQromaWebSerial } from './qroma-lib/webserial/QromaWebSerial'
 export { QromaAppViewMessageTypesComponent } from './qroma-lib/proto-components/QromaAppViewMessageTypesComponent'

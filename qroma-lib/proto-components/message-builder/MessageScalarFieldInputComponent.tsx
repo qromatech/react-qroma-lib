@@ -1,5 +1,5 @@
 import React from "react"
-import { FieldInfo, ScalarType } from "@protobuf-ts/runtime"
+import { FieldInfo, JsonValue, ScalarType } from "@protobuf-ts/runtime"
 
 
 export const getScalarTypeName = (scalarType: ScalarType): string => {
@@ -53,26 +53,33 @@ export const getScalarValue = (scalarType: ScalarType, strValue: string): any =>
 
 
 interface IMessageScalarFieldInputComponentProps {
+  value: any
   field: FieldInfo
-  onChange: <T>(field: FieldInfo, newValue: T) => void
+  isFieldUsedAsOneof: boolean
+  updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
 }
 
 
 export const MessageScalarFieldInputComponent = (props: IMessageScalarFieldInputComponentProps) => {
-  const field = props.field;
 
-  if (field.kind !== 'scalar') {
-    return <div>Non-scalar input field provided: {field.name}</div>
+  if (props.value === undefined) {
+    console.log("VALUE UNDEFINED IN MessageScalarFieldInputComponent FOR " + props.field.name)
+    console.log(props)
+  }
+
+  if (props.field.kind !== 'scalar') {
+    return <div>Non-scalar input field provided: {props.field.name}</div>
   }
 
   const doOnChange = (e) => {
-    const updatedValue = getScalarValue(field.T, e.target.value);
-    props.onChange(field, updatedValue);
+    console.log("MessageScalarFieldInputComponent on change")
+    const updatedValue = getScalarValue(props.field.T, e.target.value);
+    props.updateFieldInParent(props.field.name, updatedValue);
   }
 
   return (
     <div>
-      {field.name} [{getScalarTypeName(field.T)}] <input onChange={doOnChange}/>
+      {props.field.name} [{getScalarTypeName(props.field.T)}] <input onChange={doOnChange} value={props.value}/>
     </div>
   )
 }

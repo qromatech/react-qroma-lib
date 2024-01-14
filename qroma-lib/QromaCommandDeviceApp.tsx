@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { MessageType } from "@protobuf-ts/runtime";
-import { IUseQromaAppWebSerialInputs, PortRequestResult, QromaCommResponse, QromaRequestForm, useQromaAppWebSerial } from "..";
+import { IUseQromaAppWebSerialInputs, PortRequestResult, QromaCommResponse, useQromaAppWebSerial } from "..";
+import { QromaRequestForm } from "./QromaRequestForm";
 
 
 interface IQromaCommandDeviceAppProps<T extends object, U extends object> {
@@ -38,15 +39,9 @@ export const QromaCommandDeviceApp = <T extends object, U extends object>(props:
   }
   const qromaAppWebSerial = useQromaAppWebSerial(inputs);
 
-  const isConnected = qromaAppWebSerial.getConnectionState().isWebSerialConnected;
-  
   return (
     <>
       {props.requestMessageType.typeName} => {props.responseMessageType.typeName}
-
-      <div>
-        Serial Connected? { isConnected ? "Yes" : "No" } / { isPortConnected ? "Yes" : "No" }
-      </div> 
 
       <QromaRequestForm
         requestMessageType={props.requestMessageType}
@@ -55,16 +50,8 @@ export const QromaCommandDeviceApp = <T extends object, U extends object>(props:
         />
 
       <div>
-        QC Response: 
-      </div>
-      <div>
         App Response: {JSON.stringify(qromaAppResponse)}
       </div>
-{/* 
-      <QromaCommMonitor
-        responseMessageType={props.responseMessageType}
-        qromaWebSerial={qromaWebSerial}
-        /> */}
     </>
   )
 }
