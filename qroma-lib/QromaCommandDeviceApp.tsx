@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { MessageType } from "@protobuf-ts/runtime";
-import { IUseQromaAppWebSerialInputs, PortRequestResult, QromaCommResponse, QromaRequestForm2, useQromaAppWebSerial } from "..";
-import { QromaRequestForm3 } from "./QromaRequestForm3";
+import { IUseQromaAppWebSerialInputs, PortRequestResult, QromaCommResponse, useQromaAppWebSerial } from "..";
+import { QromaRequestForm } from "./QromaRequestForm";
 
 
 interface IQromaCommandDeviceAppProps<T extends object, U extends object> {
@@ -10,7 +10,7 @@ interface IQromaCommandDeviceAppProps<T extends object, U extends object> {
 }
 
 
-export const QromaCommandDeviceApp3 = <T extends object, U extends object>(props: IQromaCommandDeviceAppProps<T, U>) => {
+export const QromaCommandDeviceApp = <T extends object, U extends object>(props: IQromaCommandDeviceAppProps<T, U>) => {
   
   const [qromaAppResponse, setQromaAppResponse] = useState(props.responseMessageType.create());
   const [isPortConnected, setIsPortConnected] = useState(false);
@@ -43,7 +43,7 @@ export const QromaCommandDeviceApp3 = <T extends object, U extends object>(props
     <>
       {props.requestMessageType.typeName} => {props.responseMessageType.typeName}
 
-      <QromaRequestForm3
+      <QromaRequestForm
         requestMessageType={props.requestMessageType}
         responseMessageType={props.responseMessageType}
         qromaWebSerial={qromaAppWebSerial}

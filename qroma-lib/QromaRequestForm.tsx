@@ -3,7 +3,7 @@ import { Buffer } from 'buffer';
 import { FieldInfo, IMessageType, JsonValue } from "@protobuf-ts/runtime"
 import { MessageDataViewerComponent } from './proto-components/message-data-viewer/MessageDataViewerComponent';
 import { IQromaAppWebSerial } from "./webserial/QromaAppWebSerial";
-import { QromaCommCommand, QromaCommResponse } from "../qroma-comm-proto/qroma-comm";
+import { QromaCommCommand } from "../qroma-comm-proto/qroma-comm";
 import { convertBinaryToBase64 } from './utils';
 import { QromaAppCommandLink } from './QromaAppCommandLink';
 import { createPopulatedMessageObject } from "./proto-components/message-builder/builder_utils";
@@ -17,7 +17,7 @@ interface IQromaRequestFormProps<TCommand extends object, TResponse extends obje
 }
 
 
-export const QromaRequestForm3 = <TCommand extends object, TResponse extends object>(props: IQromaRequestFormProps<TCommand, TResponse>) => {
+export const QromaRequestForm = <TCommand extends object, TResponse extends object>(props: IQromaRequestFormProps<TCommand, TResponse>) => {
   const m = props.requestMessageType;
   console.log("REQUEST MESSAGE TYPE");
   console.log(m)

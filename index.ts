@@ -1,9 +1,7 @@
 
 export * from './qroma-lib/EspWebInstallButton'
 export { MessageDataViewerComponent } from './qroma-lib/proto-components/message-data-viewer/MessageDataViewerComponent'
-// export { QromaRequestForm } from './qroma-lib/QromaRequestForm'
-// export { QromaRequestForm2 } from './qroma-lib/QromaRequestForm2'
-// export { QromaRequestPage } from './qroma-lib/QromaRequestPage'
+export { QromaRequestForm } from './qroma-lib/QromaRequestForm'
 
 export { useQromaWebSerial } from './qroma-lib/webserial/QromaWebSerial'
 export { QromaAppViewMessageTypesComponent } from './qroma-lib/proto-components/QromaAppViewMessageTypesComponent'
@@ -14,9 +12,7 @@ export { useQromaCommWebSerial } from './qroma-lib/webserial/QromaCommWebSerial'
 export { sleep } from './qroma-lib/utils'
 
 
-// export * from './qroma-lib/QromaCommandDeviceApp';
-// export * from './qroma-lib/QromaCommandDeviceApp2';
-export * from './qroma-lib/QromaCommandDeviceApp3';
+export * from './qroma-lib/QromaCommandDeviceApp';
 export * from './qroma-lib/webserial/QromaWebSerial';
 export * from './qroma-lib/webserial/QromaAppWebSerial';
 
