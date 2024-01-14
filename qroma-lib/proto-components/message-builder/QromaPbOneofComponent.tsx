@@ -18,10 +18,6 @@ export interface IQromaPbOneofComponent {
 
 export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
 
-  console.log("QromaPbOneofComponent PROPS")
-  console.log(props)
-
-
   const handleOneofSelectionChange = (e: { target: { value: any } }) => {
     const newValue = e.target.value;
     console.log("handleOneofSelectionChange - NEW VALUE: " + newValue);
@@ -69,13 +65,7 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
 
 
   const onPbChildOneofSelectionChange = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
-    console.log("QromaPbOneofComponent - onPbOneofChildSelectionChange");
-    console.log(oldActiveField)
-    console.log(newActiveField)
-    console.log(newFieldValue)
-
-    // props.updateFieldInParent(objectKey, objectValue);
-    // props.updateOneofFieldInParent()
+    console.log("QromaPbOneofComponent - onPbChildOneofSelectionChange should not be called")
   }
 
   
@@ -86,10 +76,10 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
   const oneofKind = props.activeOneofField.name;
   const oneofFieldValue = props.activeOneofValueJsonData
 
-  console.log("SELECT VALUE SHOULD BE " + oneofKind)
-  console.log(props)
-  console.log(props.activeOneofField)
-  console.log(oneofFieldValue)
+  // console.log("SELECT VALUE SHOULD BE " + oneofKind)
+  // console.log(props)
+  // console.log(props.activeOneofField)
+  // console.log(oneofFieldValue)
 
   const oneofSelect = 
     <select value={oneofKind} onChange={handleOneofSelectionChange}>
@@ -104,8 +94,8 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
       }
     </select>
 
-  console.log("PB ONE OF fieldForSelectedOneof")
-  console.log(props);
+  // console.log("PB ONE OF fieldForSelectedOneof")
+  // console.log(props);
 
 
   let oneofValueComponent = <></>;

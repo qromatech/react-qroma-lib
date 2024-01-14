@@ -92,19 +92,10 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
   if (props.field.oneof !== undefined) {
     const selectedOneofGroupValue = props.messageValue[props.field.oneof];
 
-    console.log("SELECTING ONE OF VALUE");
-    console.log(props)
-    console.log(selectedOneofGroupValue)
-
     const relatedOneofFieldsInParent = props.containingMessageFields.filter(f => f.oneof === props.field.oneof);
 
     const selectedOneofGroupKind = selectedOneofGroupValue.oneofKind;
     const activeOneofValueJsonData = props.messageValueJsonData[props.field.name];
-
-    console.log("SELECTING ONE OF GROUP - KIND");
-    console.log(selectedOneofGroupKind)
-    console.log(activeOneofValueJsonData)
-
 
     return (
       <QromaPbOneofComponent
@@ -121,10 +112,7 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
 
   switch (props.field.kind) {
     case "scalar":
-      console.log("SCLARA PB FIELD VALUE FOR FIELD " + props.field.name);
       const value = props.messageValue[props.field.name];
-      console.log(props)
-      console.log(value)
 
       return (
         <MessageScalarFieldInputComponent
@@ -148,11 +136,7 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
       )
 
     case "message":
-      console.log("MESSAGE COMPONENT")
-      console.log(props.field)
-
       if (props.field.oneof === undefined) {
-
         const subMessageValue = props.messageValue[props.field.name];
         if (subMessageValue === undefined) {
           console.log("SUB MESSAGE VALUE UNDEFINED")

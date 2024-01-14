@@ -17,19 +17,10 @@ interface IMessageInputComponentProps<T extends object> {
 
 export const QromaPbMessageComponent = <T extends object>(props: IMessageInputComponentProps<T>) => {
 
-  console.log("RENDERING QromaPbMessageComponent (top)")
-  console.log(props)
-
   if (props.messageValue === undefined) {
     console.log("UNDEFINED MESSAGE VALUE IN PB MESSAGE COMPONENT")
     console.log(props.messageName)
   }
-
-  const fields = props.messageType.fields;
-  
-  console.log("RENDERING QromaPbMessageComponent - " + props.messageName)
-  console.log(props.messageValue)
-  
 
   const updateMessageField = (sourceField: FieldInfo, objectValue: JsonValue) => {
     console.log("QromaPbMessageComponent - UPDATE PARENT FOR " + sourceField.name);
@@ -99,7 +90,6 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
     console.log(newActiveField)
     console.log(newFieldValue)
 
-    // works for no arg commands
     if (props.fieldInParent.oneof === undefined) {
       console.log("SETTING AS VALUE")
 
@@ -128,19 +118,18 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
 
   const messageFieldComponents = [];
 
-  fields.forEach(field => {
+  props.messageType.fields.forEach(field => {
     if (field.oneof !== undefined) {
       if (props.messageValueJsonData[field.name] === undefined) {
         return;
       }
-      console.log("CREATING ONEOF FIELD COMPONENT FOR MESSAGE - " + field.name)
     }
 
     const fieldComponentProps: IQromaPbFieldComponentProps = {
       field,
       messageValue: props.messageValue,
       messageValueJsonData: props.messageValueJsonData,
-      containingMessageFields: fields,
+      containingMessageFields: props.messageType.fields,
       setFieldValueInParentMessage: updateMessageField,
       setActiveOneofFieldInParent,
     };

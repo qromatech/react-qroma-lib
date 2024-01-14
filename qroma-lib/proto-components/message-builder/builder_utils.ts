@@ -69,7 +69,6 @@ export const createPopulatedMessageObject = <T extends object>(messageType: IMes
     if (field.oneof !== undefined) {
       if (oneofsAdded.find(x => x === field.oneof) === undefined) {
         if (Object.keys(initValue).find(x => x === field.name) === undefined) {
-          console.log("HAVE TO ADD " + field.name)
           const subValue = createValueForField(field)
 
           initValue[field.name] = subValue;

@@ -97,9 +97,9 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
   }
 
   const radioButtonName = props.field.name + "-" + enumName;
-  console.log("INIT VALUE NAME")
-  console.log(props.value)
-  console.log(radioButtonName)
+  // console.log("INIT VALUE NAME")
+  // console.log(props.value)
+  // console.log(radioButtonName)
 
   const getInputId = (enumItem: EnumItem): string => {
     return radioButtonName + "-" + enumItem.valueName;
@@ -147,24 +147,19 @@ export const MessageEnumFieldInputComponent = (props: IMessageEnumFieldInputComp
 
   const enumInfo = field.T();
 
-  console.log("ENUM PROPS")
-  console.log(props)
-
   return (
-    // <div>
-      <fieldset>
-        {field.name} [{field.kind}: {enumInfo[0]}] -- {props.value}
-        {/* <EnumerationInputValuesAsDropdownComponent
-          enumInfo={enumInfo}
-          onChange={onChange}
-          /> */}
-        <EnumerationInputValuesAsRadioButtonsComponent
-          field={props.field}
-          enumInfo={enumInfo}
-          updateFieldInParent={onChange}
-          value={props.value}
-          />
-      </fieldset>
-    // </div>
+    <fieldset>
+      {field.name} [{field.kind}: {enumInfo[0]}] -- {props.value}
+      {/* <EnumerationInputValuesAsDropdownComponent
+        enumInfo={enumInfo}
+        onChange={onChange}
+        /> */}
+      <EnumerationInputValuesAsRadioButtonsComponent
+        field={props.field}
+        enumInfo={enumInfo}
+        updateFieldInParent={onChange}
+        value={props.value}
+        />
+    </fieldset>
   )
 }
