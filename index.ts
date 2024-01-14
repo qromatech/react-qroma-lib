@@ -14,8 +14,8 @@ export { useQromaCommWebSerial } from './qroma-lib/webserial/QromaCommWebSerial'
 export { sleep } from './qroma-lib/utils'
 
 
-export * from './qroma-lib/QromaCommandDeviceApp';
-export * from './qroma-lib/QromaCommandDeviceApp2';
+// export * from './qroma-lib/QromaCommandDeviceApp';
+// export * from './qroma-lib/QromaCommandDeviceApp2';
 export * from './qroma-lib/QromaCommandDeviceApp3';
 export * from './qroma-lib/webserial/QromaWebSerial';
 export * from './qroma-lib/webserial/QromaAppWebSerial';

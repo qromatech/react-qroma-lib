@@ -1,11 +1,11 @@
-import React, { FormEvent, FormEventHandler, useState } from "react"
+import React from "react"
 import { EnumInfo, FieldInfo, JsonValue } from "@protobuf-ts/runtime"
 import { EnumItem } from "./defs"
 
 
 interface IEnumerationInputValuesComponentProps {
+  field: FieldInfo
   enumInfo: EnumInfo
-  // onEnumFieldChange: (newValue: string, newValueInt: number) => void
   updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
   value: any
 }
@@ -96,8 +96,10 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
     props.updateFieldInParent(newValue, enumInt);
   }
 
+  const radioButtonName = props.field.name + ":" + enumName;
   console.log("INIT VALUE NAME")
   console.log(props.value)
+  console.log(radioButtonName)
 
   return (
     <fieldset style={{marginLeft: 20}}>
@@ -105,7 +107,7 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
         <div key={enumItem.valueName}>
           <input
             type="radio"
-            name={enumName}
+            name={radioButtonName}
             id={enumItem.valueName} 
             value={enumItem.valueName}
             onChange={handleChange}
@@ -122,7 +124,6 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
 interface IMessageEnumFieldInputComponentProps {
   field: FieldInfo
   isFieldUsedAsOneof: boolean
-  // onEnumValueChange: <T>(field: FieldInfo, newValue: T) => void
   updateFieldInParent: (objectKey: string, objectValue: JsonValue) => void
   value: any
 }
@@ -154,6 +155,7 @@ export const MessageEnumFieldInputComponent = (props: IMessageEnumFieldInputComp
           onChange={onChange}
           /> */}
         <EnumerationInputValuesAsRadioButtonsComponent
+          field={props.field}
           enumInfo={enumInfo}
           updateFieldInParent={onChange}
           value={props.value}
