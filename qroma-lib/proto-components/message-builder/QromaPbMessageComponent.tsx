@@ -39,7 +39,6 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
 
     if (props.isFieldUsedAsOneof) {
       try {
-        // const newValueForField = props.messageType.toJson(props.messageValue);
         const newValueForField = props.messageValue;
 
         console.log("PRE NEW ONEOF MESSAGE VALUE")

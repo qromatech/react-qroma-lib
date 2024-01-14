@@ -5,7 +5,6 @@ export interface OneofGroup {
   parentGroupField: FieldInfo
   oneofFieldName: string
   oneofFieldOptions: FieldInfo[]
-  // messageBuilderFn: () => any
 }
 
 

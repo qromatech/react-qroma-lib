@@ -83,10 +83,10 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
   }
 
-  console.log("RENDERING QROMA PB FIELD COMPONENT - " + props.field.name)
-  console.log(props)
-  console.log(props.messageValue)
-  console.log(props.messageValue[props.field.name])
+  // console.log("RENDERING QROMA PB FIELD COMPONENT - " + props.field.name)
+  // console.log(props)
+  // console.log(props.messageValue)
+  // console.log(props.messageValue[props.field.name])
 
 
   if (props.field.oneof !== undefined) {
