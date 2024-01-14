@@ -1,58 +1,4 @@
 import { FieldInfo, IMessageType, JsonObject, ScalarType } from "@protobuf-ts/runtime";
-import { OneofGroup } from "./defs";
-import { MyAppCommand, NoArgCommands } from "./hello-qroma";
-
-
-// export const createMessageInstanceWithDefaultValues = <T extends object>(messageType: IMessageType<T>) => {
-export const createMessageInstanceWithDefaultValues = <T extends object>(messageType: IMessageType<T>) => {
-
-  // const initJsonStr = '{"helloQromaRequest":{"name":"yay"}}';
-  // const initObject = {helloQromaRequest:{name:"boy"}};
-  // const initObject = {noArgCommand:'Nac_GetBoardDetailsRequest'};
-
-  // const initObject = {noArgCommand:0};
-  // const initObjectJsonStr = JSON.stringify(initObject);
-  // const initValue = MyAppCommand.fromJsonString(initObjectJsonStr);
-  
-  
-  // const initValue = MyAppCommand.create();
-  // initValue.command.oneofKind = 'helloQromaRequest';
-  // initValue.command = {
-  //   oneofKind: 'helloQromaRequest',
-  //   helloQromaRequest: {
-  //     name: "yay"
-  //   }
-  // };
-
-
-  const initValue = {};
-  initValue.helloQromaRequest = {
-    name: "yay"
-  };
-  initValue.myAppBool = true;
-  initValue.myAppInt = 123;
-  initValue.myAppStr = "abc";
-  initValue.myAppResponse = {
-    success: true,
-    message: "urkkk"
-  }
-  initValue.myAppOtherOneof = {abc: "s123"}
-  
-  console.log(initValue)
-
-  
-  // const initValue = MyAppCommand.create();
-  // // initValue.command.oneofKind = 'helloQromaRequest';
-  // initValue.command = {
-  //   oneofKind: 'noArgCommand',
-  //   noArgCommand: NoArgCommands.Nac_GetBoardDetailsRequest,
-  // };
-  // console.log(initValue)
-
-  console.log("INIT MESSAGE VALUE")
-  console.log(initValue)
-  return initValue;
-}
 
 
 const createValueForScalar = (scalarType: ScalarType) => {
@@ -87,7 +33,6 @@ const createValueForScalar = (scalarType: ScalarType) => {
 
 
 export const createValueForField = (field: FieldInfo) => {
-  // console.log("Creating value for field: " + field.name)
   if (field.kind === 'scalar') {
     return createValueForScalar(field.T);
   }
@@ -97,17 +42,11 @@ export const createValueForField = (field: FieldInfo) => {
     let firstEnumChoice = undefined;
 
     for (var r in enumValues) {
-      // console.log(r)
       if (firstEnumChoice === undefined) {
         firstEnumChoice = parseInt(r);
       }
     }
-
-    // console.log("CREATING ENUM")
-    // console.log(field)
-    // console.log(enumValues)
-    // console.log(firstEnumChoice)
-
+    
     return firstEnumChoice;
   }
 
@@ -124,10 +63,6 @@ export const createPopulatedMessageObject = <T extends object>(messageType: IMes
 
   const fields = messageType.fields;
 
-  // console.log("IN createPopulatedMessageObject")
-  // console.log(messageType)
-  // console.log(fields);
-
   const oneofsAdded: string[] = [];
 
   fields.forEach(field => {
@@ -138,66 +73,19 @@ export const createPopulatedMessageObject = <T extends object>(messageType: IMes
           const subValue = createValueForField(field)
 
           initValue[field.name] = subValue;
-          // console.log("SETTING SUB " + field.name + " TO...");
-          // console.log(field)
-          // console.log(subValue)
         }
         oneofsAdded.push(field.oneof)
-        // console.log("ADDED ENTRY FOR ONE OF: " + field.oneof + " [" + field.name + "]")
-        // console.log(initValue)
       } else {
         // console.log("SKIPPED ADDING ENTRY FOR ONE OF: " + field.oneof + " [" + field.name + "]")
       }
     } else {
       const fieldValue = createValueForField(field);
       initValue[field.name] = fieldValue;
-      // console.log("SETTING " + field.name + " TO...");
-      // console.log(field)
-      // console.log(fieldValue)
     }
   })
-
-  // console.log("JUST BUILT INITIAL VALUE")
-  // console.log(initValue)
   
   return initValue;
 }
-
-
-// export const updateMessageOneofField = (messageValue: any, oneof: OneofGroup, oneofSelection: string) => {
-//   console.log("PRE UPDATE MESSAGE ONEOF")
-//   console.log(messageValue)
-//   console.log(oneof);
-//   console.log(oneofSelection)
-
-//   let newOneofValue = undefined;
-
-//   const newOneofField = oneof.oneofFields.find(f => f.name === oneofSelection);
-//   if (newOneofField.kind === "message") {
-//     newOneofValue = newOneofField.T().create();
-//     // console.log(newOneofValue);
-
-//   } else if (newOneofField.kind === "enum") {
-//     const enumInfo = newOneofField.T();
-//     const enumName = enumInfo[0];
-//     const enumValues = enumInfo[1];
-//     console.log(enumInfo);
-//     for (const e in enumValues) {
-//       newOneofValue = e;
-//     }
-
-//   } else if (newOneofField.kind === 'scalar') {
-//     const scalarType = newOneofField.T;
-//     newOneofValue = 0;
-//   }
-
-//   console.log("newOneofValue")
-//   console.log(newOneofValue)
-
-//   messageValue[oneof.oneofFieldName] = newOneofValue;
-
-//   return messageValue;
-// }
 
 
 export const getScalarValueFromParentObject = (field: FieldInfo, parentObject: any) => {

@@ -1,6 +1,5 @@
 import React from "react"
 import { FieldInfo, JsonObject, JsonValue } from "@protobuf-ts/runtime"
-import { OneofGroup } from "./defs"
 import { createValueForField } from "./builder_utils"
 import { MessageEnumFieldInputComponent } from "./MessageEnumFieldInputComponent"
 import { MessageScalarFieldInputComponent } from "./MessageScalarFieldInputComponent"
@@ -35,14 +34,6 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
     console.log("NEW VALUE FOR SELECTED FIELD")
     console.log(selectedFieldInitValue)
     console.log(selectedField)
-
-    // const oneofValue = {
-    //   oneofKind: newValue,
-    //   [newValue]: selectedFieldInitValue
-    // };
-
-    // console.log("PB ONEOF - handleOneofSelectionChange")
-    // console.log(props.activeOneofField.oneof, oneofValue)
     
     props.updateOneofFieldInParent(props.activeOneofField, selectedField, selectedFieldInitValue);
   }

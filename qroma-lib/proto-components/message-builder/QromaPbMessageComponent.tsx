@@ -120,26 +120,6 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
   }
 
 
-  // const replaceFieldInParentMessage = (fieldToReplace: FieldInfo, newFieldName: string, newFieldValue: JsonValue) => {
-  //   console.log("WEIRD TIME TO BE CALLING replaceFieldInParentMessage() IN QromaPbFieldComponent")
-  //   console.log(props)
-  //   console.log(fieldToReplace)
-  //   console.log(newFieldName)
-  //   console.log(newFieldValue)
-    
-  //   const updateValue = {
-  //     [newFieldName]: newFieldValue
-  //   };
-
-  //   console.log("USING UPDATE VALUE")
-  //   console.log(updateValue)
-
-
-  //   props.updateOneofFieldInParentMessage(fieldToReplace, newFieldName, updateValue);
-  // }
-
-
-
   const messageFieldComponents = [];
 
   fields.forEach(field => {
@@ -156,7 +136,6 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
       messageValueJsonData: props.messageValueJsonData,
       containingMessageFields: fields,
       setFieldValueInParentMessage: updateMessageField,
-      // setFieldValueInParentMessage,
       setActiveOneofFieldInParent,
     };
 

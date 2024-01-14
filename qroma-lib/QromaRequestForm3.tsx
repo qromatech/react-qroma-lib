@@ -23,13 +23,8 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
   console.log(m)
 
   const initMessageJsonData = createPopulatedMessageObject(props.requestMessageType);
-  console.log("ROOT initMessageJsonData")
-  console.log(initMessageJsonData)
-
-
   const [rootMessageJsonData, setRootMessageJsonData] = useState(initMessageJsonData);
-  console.log("LATEST ROOT rootMessageJsonData")
-  console.log(rootMessageJsonData)
+
 
   const getRootMessageFromJson = () => {
     try {
@@ -46,8 +41,6 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
   }
 
   const rootMessage = getRootMessageFromJson();
-  console.log("LATEST rootMessage")
-  console.log(rootMessage)
   
   const qromaCommCommand = props.qromaWebSerial.createQromaCommMessageForAppCommand(rootMessage);
   const qromaMessageBytes = QromaCommCommand.toBinary(qromaCommCommand);
@@ -80,7 +73,7 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
     console.log(newActiveField)
     console.log(newFieldValue)
 
-    console.trace();
+    // console.trace();
 
     const newRootMessageJsonData = {
       ...rootMessageJsonData,
@@ -88,10 +81,10 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
     };
     delete newRootMessageJsonData[oldActiveField.name];
 
-    console.log("PRE ROOT MESSAGE FROM updateOneofFieldInParent()")
+    console.log("setActiveOneofInRoot MESSAGE FROM updateOneofFieldInParent()")
     console.log(rootMessageJsonData)
 
-    console.log("NEW ROOT MESSAGE FROM updateOneofFieldInParent()")
+    console.log("setActiveOneofInRoot MESSAGE FROM updateOneofFieldInParent()")
     console.log(newRootMessageJsonData)
 
     setRootMessageJsonData(newRootMessageJsonData);
@@ -140,8 +133,6 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
   const isQromaWebSerialConnected = props.qromaWebSerial.getConnectionState().isWebSerialConnected;
   console.log("isQromaWebSerialConnected: " + isQromaWebSerialConnected);
 
-  console.log("++++++++")
-
   let appCommandJsonStr = "";
   try {
     appCommandJsonStr = props.requestMessageType.toJsonString(props.requestMessageType.fromJson(rootMessageJsonData));
@@ -162,44 +153,10 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
   console.log(rootMessage)
 
 
-
-
-  
-
-  const doTest1 = () => {
-    console.log("TEST 1")
-
-    const m1 = {
-      command: {noArgCommand: 0}
-    };
-    const m2 = {
-      noArgCommand: 0
-    };
-
-    const s1 = JSON.stringify(m2)
-    console.log(s1)
-    console.log("DONE TEST 1")
-
-
-    const data = props.requestMessageType.fromJsonString(s1);
-    console.log(data)
-    console.log(props.requestMessageType.toJsonString(data))
-
-    const parsedMessageJsonStr = JSON.parse(props.requestMessageType.toJsonString(data))
-    console.log(parsedMessageJsonStr)
-
-    const data2 = props.requestMessageType.fromJsonString(props.requestMessageType.toJsonString(data))
-    console.log(data2)
-    console.log(props.requestMessageType.toJsonString(data2))
-  }
-
   const rootMessageFieldInfo = {} as FieldInfo
 
   return (
     <div>
-      <div>
-        <button onClick={() => doTest1()}>Test 1</button>
-      </div>
       <QromaPbMessageComponent
         key={m.typeName}
         messageType={m}
@@ -210,7 +167,6 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
         isFieldUsedAsOneof={false}
         setFieldValueInParentMessage={updateRootField}
         setActiveOneofFieldInParent={setActiveOneofInRoot}
-        // replaceFieldInParentMessage={setActiveOneofInRoot}
         />
       <div>
         App Command: {appCommandJsonStr}

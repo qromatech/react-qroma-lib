@@ -74,24 +74,13 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
 
   
   const setActiveOneofField = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
-    console.log("WEIRD TIME TO BE CALLING replaceMessageField() IN QromaPbFieldComponent")
+    console.log("setActiveOneofField() IN QromaPbFieldComponent")
     console.log(props)
     console.log(oldActiveField)
     console.log(newActiveField)
     console.log(newFieldValue)
 
     props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
-
-    // if (props.field.oneof !== undefined) {
-    //   const updateMessageValue = {
-    //     [newActiveField.name]: newFieldValue,
-    //   }
-  
-    //   props.setActiveOneofFieldInParent(oldActiveField, newActiveField, updateMessageValue);
-    // } else {
-
-    //   props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
-    // }
   }
 
   console.log("RENDERING QROMA PB FIELD COMPONENT - " + props.field.name)
