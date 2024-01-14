@@ -66,6 +66,10 @@ export const MessageScalarFieldInputComponent = (props: IMessageScalarFieldInput
   console.log("MessageScalarFieldInputComponent for " + props.field.name)
   console.log(props)
 
+  if (props.value === undefined) {
+    console.log("VALUE UNDEFINED IN MessageScalarFieldInputComponent FOR " + props.field.name)
+  }
+
   if (field.kind !== 'scalar') {
     return <div>Non-scalar input field provided: {field.name}</div>
   }

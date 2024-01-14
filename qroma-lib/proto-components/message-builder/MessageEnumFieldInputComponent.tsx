@@ -96,10 +96,14 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
     props.updateFieldInParent(newValue, enumInt);
   }
 
-  const radioButtonName = props.field.name + ":" + enumName;
+  const radioButtonName = props.field.name + "-" + enumName;
   console.log("INIT VALUE NAME")
   console.log(props.value)
   console.log(radioButtonName)
+
+  const getInputId = (enumItem: EnumItem): string => {
+    return radioButtonName + "-" + enumItem.valueName;
+  }
 
   return (
     <fieldset style={{marginLeft: 20}}>
@@ -108,12 +112,12 @@ const EnumerationInputValuesAsRadioButtonsComponent = (props: IEnumerationInputV
           <input
             type="radio"
             name={radioButtonName}
-            id={enumItem.valueName} 
+            id={getInputId(enumItem)} 
             value={enumItem.valueName}
             onChange={handleChange}
             defaultChecked={props.value === enumItem.enumInt}
           />
-          <label htmlFor={enumItem.valueName}>{enumItem.valueName} [{enumItem.enumInt}]</label>
+          <label htmlFor={getInputId(enumItem)}>{enumItem.valueName} [{enumItem.enumInt}]</label>
         </div>
       ))}
     </fieldset>

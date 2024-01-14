@@ -38,17 +38,24 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
     console.log(objectValue);
 
     if (props.isFieldUsedAsOneof) {
-      const newValueForField = props.messageType.toJson(props.messageValue);
+      try {
+        // const newValueForField = props.messageType.toJson(props.messageValue);
+        const newValueForField = props.messageValue;
 
-      console.log("PRE NEW ONEOF MESSAGE VALUE")
-      console.log(newValueForField)
-
-      newValueForField[sourceField.name] = objectValue;
-
-      console.log("NEW ONEOF MESSAGE VALUE")
-      console.log(newValueForField)
-
-      props.setFieldValueInParentMessage(props.fieldInParent, newValueForField);
+        console.log("PRE NEW ONEOF MESSAGE VALUE")
+        console.log(newValueForField)
+  
+        newValueForField[sourceField.name] = objectValue;
+  
+        console.log("NEW ONEOF MESSAGE VALUE")
+        console.log(newValueForField)
+  
+        props.setFieldValueInParentMessage(props.fieldInParent, newValueForField);
+  
+      } catch (e) {
+        console.log("ERROR UPDATING MESSAGE FIELD")
+        console.log(e)
+      }
       return;
     }
 
