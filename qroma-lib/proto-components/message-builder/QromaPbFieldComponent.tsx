@@ -118,12 +118,10 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     )
   }
 
-  const fieldNamesPathStr = props.field.name;
-
   switch (props.field.kind) {
     case "scalar":
       console.log("SCLARA PB FIELD VALUE FOR FIELD " + props.field.name);
-      const value = props.messageValue[fieldNamesPathStr];
+      const value = props.messageValue[props.field.name];
       console.log(props)
       console.log(value)
 
@@ -143,7 +141,7 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
           key={props.field.name}
           field={props.field}
           isFieldUsedAsOneof={false}
-          value={props.messageValue[fieldNamesPathStr]}
+          value={props.messageValue[props.field.name]}
           updateFieldInParent={onEnumValueChange}
           />
       )
@@ -181,8 +179,7 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     default:
       return (
         <div key={props.field.name}>
-          {/* {field.name} - '{props.messageValue[fieldNamesPathStr]}' [{fieldNamesPathStr}] */}
-          {props.field.name} - [{fieldNamesPathStr}]
+          {props.field.name} - [{props.field.name}]
         </div>
       )
   }

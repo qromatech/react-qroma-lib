@@ -180,9 +180,11 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
 
   return (
     <div>
-      {props.messageName} [{props.messageType.typeName}] +++
       <fieldset>
-        {messageFieldComponents}
+        {props.messageName} [{props.messageType.typeName}] +++
+        <div style={{marginLeft: 20}}>
+          {messageFieldComponents}
+        </div>
       </fieldset>
     </div>
   )

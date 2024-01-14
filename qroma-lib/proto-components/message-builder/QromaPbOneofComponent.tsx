@@ -161,7 +161,7 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
   return (
     <div>
       <fieldset style={{backgroundColor: 'lightblue'}}>
-        {props.activeOneofField.name} [oneof]
+        {props.activeOneofField.oneof} [oneof]
         {oneofSelect}
         <div>
           { oneofValueComponent }

@@ -146,17 +146,19 @@ export const MessageEnumFieldInputComponent = (props: IMessageEnumFieldInputComp
   console.log(props)
 
   return (
-    <div style={{marginLeft: 20}}>
-      {field.name} [{field.kind}: {enumInfo[0]}] -- {props.value}
-      {/* <EnumerationInputValuesAsDropdownComponent
-        enumInfo={enumInfo}
-        onChange={onChange}
-        /> */}
-      <EnumerationInputValuesAsRadioButtonsComponent
-        enumInfo={enumInfo}
-        updateFieldInParent={onChange}
-        value={props.value}
-        />
-    </div>
+    // <div>
+      <fieldset>
+        {field.name} [{field.kind}: {enumInfo[0]}] -- {props.value}
+        {/* <EnumerationInputValuesAsDropdownComponent
+          enumInfo={enumInfo}
+          onChange={onChange}
+          /> */}
+        <EnumerationInputValuesAsRadioButtonsComponent
+          enumInfo={enumInfo}
+          updateFieldInParent={onChange}
+          value={props.value}
+          />
+      </fieldset>
+    // </div>
   )
 }
