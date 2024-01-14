@@ -35,23 +35,31 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
   }
 
 
-  const onMessageValueChange = (newValue: any) => {
+  const onMessageValueChange = (fieldToReplace: FieldInfo, objectValue: JsonValue) => {
     console.log("QromaPbFieldComponent - MESSAGE ON CHANGE");
     console.log(props)
-    console.log(newValue)
+    console.log(fieldToReplace)
+    console.log(objectValue)
 
     if (props.field.kind === 'message') {
-      const updateMessage = props.messageValueJsonData[props.field.name];
-      console.log("HAVE PB FIELD MESSAGE UPDATE")
-      console.log(props.field)
-      console.log(updateMessage)
-      props.setFieldValueInParentMessage(props.field, updateMessage);
+      if (fieldToReplace.oneof === undefined) {
+        props.setFieldValueInParentMessage(props.field, objectValue);
+
+      } else {
+        console.log("HAVE PB FIELD MESSAGE UPDATE")
+        console.log(props.field)
+
+        const updateMessage = props.messageValueJsonData[props.field.name];
+        updateMessage[fieldToReplace.name] = objectValue;
+        console.log(updateMessage)
+        props.setFieldValueInParentMessage(props.field, updateMessage);
+      }
 
     } else {
       console.log("HAVE PB FIELD MESSAGE VALUE UPDATE")
       console.log(props.field.name)
-      console.log(newValue)
-      props.setFieldValueInParentMessage(props.field, newValue);
+      console.log(objectValue)
+      props.setFieldValueInParentMessage(props.field, objectValue);
     }
   }
 
@@ -102,15 +110,19 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     const relatedOneofFieldsInParent = props.containingMessageFields.filter(f => f.oneof === props.field.oneof);
 
     const selectedOneofGroupKind = selectedOneofGroupValue.oneofKind;
+    const activeOneofValueJsonData = props.messageValueJsonData[props.field.name];
+
     console.log("SELECTING ONE OF GROUP - KIND");
     console.log(selectedOneofGroupKind)
+    console.log(activeOneofValueJsonData)
+
 
     return (
       <QromaPbOneofComponent
         key={props.field.name}
         activeOneofField={props.field}
         activeOneofValue={selectedOneofGroupKind}
-        activeOneofValueJsonData={selectedOneofGroupValue[selectedOneofGroupValue.oneofKind]}
+        activeOneofValueJsonData={activeOneofValueJsonData}
         relatedOneofFieldsInParent={relatedOneofFieldsInParent}
         updateFieldInParent={onPbOneofChange}
         updateOneofFieldInParent={setActiveOneofField}

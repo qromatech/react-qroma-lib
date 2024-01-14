@@ -56,7 +56,7 @@ export const QromaRequestForm3 = <TCommand extends object, TResponse extends obj
 
   const updateRootField = (fieldToReplace: FieldInfo, objectValue: JsonValue) => {
     console.log("UPDATING ROOT MESSAGE VALUE");
-    console.log(fieldToReplace.name);
+    console.log(fieldToReplace);
     console.log(objectValue);
 
     console.log("OLD ROOT MESSAGE")

@@ -57,6 +57,7 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
         console.log("HAVE MESSAGE UPDATE")
         const updateMessage = props.messageValueJsonData[sourceField.name];
         console.log(updateMessage)
+        console.log(objectValue)
         props.setFieldValueInParentMessage(sourceField, updateMessage);
   
       } else {
@@ -92,32 +93,22 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
     console.log(newActiveField)
     console.log(newFieldValue)
 
-    // const updateMessage = props.messageValueJsonData;
-    // updateMessage[newActiveField.name] = newFieldValue
-    // console.log("NEW VLUxAE")
-    // console.log(updateMessage)
-    
-
-    // props.setActiveOneofFieldInParent(props.fieldInParent, oldActiveField, updateMessage);
-
-
-    // if (props.fieldInParent.oneof === undefined) {
-    //   console.log("SETTING AS VALUE")
-    //   props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
-    // } else {
-    //   const updateMessageValue = {
-    //     [props.fieldInParent.name]: newFieldValue,
-    //   }
-      
-    //   console.log("SETTING AS ONEOF")
-    //   props.setFieldValueInParentMessage(props.fieldInParent, updateMessageValue);
-    // }
-
-
     // works for no arg commands
     if (props.fieldInParent.oneof === undefined) {
       console.log("SETTING AS VALUE")
-      props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
+
+      if (props.fieldInParent.kind === 'message') {
+        const updateMessageValue = props.messageValueJsonData;
+        updateMessageValue[newActiveField.name] = newFieldValue;
+        delete updateMessageValue[oldActiveField.name];
+        console.log(updateMessageValue)
+
+        props.setFieldValueInParentMessage(props.fieldInParent, updateMessageValue);
+
+      } else {
+        props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
+      }
+
     } else {
       const updateMessageValue = {
         [props.fieldInParent.name]: newFieldValue,
