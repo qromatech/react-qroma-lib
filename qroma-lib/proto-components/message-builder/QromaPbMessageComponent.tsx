@@ -92,11 +92,40 @@ export const QromaPbMessageComponent = <T extends object>(props: IMessageInputCo
     console.log(newActiveField)
     console.log(newFieldValue)
 
-    const updateMessageValue = {
-      [props.fieldInParent.name]: newFieldValue,
-    }
+    // const updateMessage = props.messageValueJsonData;
+    // updateMessage[newActiveField.name] = newFieldValue
+    // console.log("NEW VLUxAE")
+    // console.log(updateMessage)
     
-    props.setActiveOneofFieldInParent(oldActiveField, newActiveField, updateMessageValue);
+
+    // props.setActiveOneofFieldInParent(props.fieldInParent, oldActiveField, updateMessage);
+
+
+    // if (props.fieldInParent.oneof === undefined) {
+    //   console.log("SETTING AS VALUE")
+    //   props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
+    // } else {
+    //   const updateMessageValue = {
+    //     [props.fieldInParent.name]: newFieldValue,
+    //   }
+      
+    //   console.log("SETTING AS ONEOF")
+    //   props.setFieldValueInParentMessage(props.fieldInParent, updateMessageValue);
+    // }
+
+
+    // works for no arg commands
+    if (props.fieldInParent.oneof === undefined) {
+      console.log("SETTING AS VALUE")
+      props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
+    } else {
+      const updateMessageValue = {
+        [props.fieldInParent.name]: newFieldValue,
+      }
+      
+      console.log("SETTING AS ONEOF")
+      props.setFieldValueInParentMessage(props.fieldInParent, updateMessageValue);
+    }
   }
 
 

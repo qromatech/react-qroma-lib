@@ -72,19 +72,18 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
     console.log(newActiveField)
     console.log(newFieldValue)
 
+    props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
+
     // if (props.field.oneof !== undefined) {
     //   const updateMessageValue = {
     //     [newActiveField.name]: newFieldValue,
     //   }
   
     //   props.setActiveOneofFieldInParent(oldActiveField, newActiveField, updateMessageValue);
-    // }
+    // } else {
 
-    // const updateMessageValue = {
-    //   [newActiveField.name]: newFieldValue,
+    //   props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
     // }
-
-    props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
   }
 
   console.log("RENDERING QROMA PB FIELD COMPONENT - " + props.field.name)
