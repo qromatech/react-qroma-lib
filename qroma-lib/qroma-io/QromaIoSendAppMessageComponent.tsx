@@ -81,13 +81,18 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
 
   const isQromaWebSerialConnected = qromaAppWebSerial.getConnectionState().isWebSerialConnected;
 
+  let appCommandJsonStr = "";
+  try {
+    appCommandJsonStr = props.requestMessageType.toJsonString(requestObject);
+  } catch (e) {
+    console.log("ERROR SETTING APP COMMAND JSON STR");
+    console.log(e);
+  }
   
   return (
     <div>
-      <div>
-        Serial Connected? { isConnected ? "Yes" : "No" } / { isPortConnected ? "Yes" : "No" }
-      </div> 
-
+      <div>App Command: {appCommandJsonStr}</div>
+<div></div>
       <div>B64Content: {b64Content}</div>
       <div>Location: {location.pathname}</div>
       <div>Hash: <b>{location.hash}</b></div>
