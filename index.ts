@@ -4,7 +4,6 @@ export { MessageDataViewerComponent } from './qroma-lib/proto-components/message
 export { QromaRequestForm } from './qroma-lib/QromaRequestForm'
 
 export { useQromaWebSerial } from './qroma-lib/webserial/QromaWebSerial'
-export { QromaAppViewMessageTypesComponent } from './qroma-lib/proto-components/QromaAppViewMessageTypesComponent'
 export { QromaCommMonitor } from './qroma-lib/QromaCommMonitor'
 export { QromaStrMonitor } from './qroma-lib/QromaStrMonitor'
 

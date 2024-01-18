@@ -17,8 +17,6 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
   props: IQromaIoSendAppMessageComponentProps<T, U>
 ) => {
   
-  const [isPortConnected, setIsPortConnected] = useState(false);
-
   const inputs: IUseQromaAppWebSerialInputs<T, U> = {
     onQromaAppResponse: (appMessage: U) => {
       console.log("QromaRequestForm - onQromaAppResponse!!");
@@ -30,20 +28,10 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
     },
     commandMessageType: props.requestMessageType,
     responseMessageType: props.responseMessageType,
-    onPortRequestResult: (requestResult: PortRequestResult) => { 
-      console.log("PORT REQUEST RESULT");
-      console.log(requestResult);
-      if (requestResult.success) {
-        setIsPortConnected(true);
-      } else {
-        setIsPortConnected(false);
-      }
-    }
+    onPortRequestResult: (requestResult: PortRequestResult) => { }
   }
   const qromaAppWebSerial = useQromaAppWebSerial(inputs);
 
-  const isConnected = qromaAppWebSerial.getConnectionState().isWebSerialConnected;
-  
   const location = useLocation();
   console.log(location);
 
@@ -92,7 +80,7 @@ export const QromaIoSendAppMessageComponent = <T extends object, U extends objec
   return (
     <div>
       <div>App Command: {appCommandJsonStr}</div>
-<div></div>
+
       <div>B64Content: {b64Content}</div>
       <div>Location: {location.pathname}</div>
       <div>Hash: <b>{location.hash}</b></div>
