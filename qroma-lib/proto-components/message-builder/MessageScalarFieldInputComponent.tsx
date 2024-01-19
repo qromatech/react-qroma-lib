@@ -1,5 +1,6 @@
 import React from "react"
 import { FieldInfo, JsonValue, ScalarType } from "@protobuf-ts/runtime"
+import { BoolComponent, FloatComponent, IntComponent, StringComponent } from "./MessageScalarFieldTypeComponents";
 
 
 export const getScalarTypeName = (scalarType: ScalarType): string => {
@@ -19,34 +20,6 @@ export const getScalarTypeName = (scalarType: ScalarType): string => {
     case ScalarType.SFIXED64: return "sfixed64";
     case ScalarType.SINT32: return "sint32";
     case ScalarType.SINT64: return "sint64";
-  }
-}
-
-export const getScalarValue = (scalarType: ScalarType, strValue: string): any => {
-  switch (scalarType) {
-    case ScalarType.STRING: 
-      return strValue;
-
-    case ScalarType.FLOAT:
-    case ScalarType.DOUBLE: 
-      return parseFloat(strValue)
-    
-    case ScalarType.UINT32: 
-    case ScalarType.INT64:
-    case ScalarType.UINT64:
-    case ScalarType.INT32:
-    case ScalarType.FIXED64:
-    case ScalarType.FIXED32:
-    case ScalarType.SFIXED32:
-    case ScalarType.SFIXED64:
-    case ScalarType.SINT32:
-    case ScalarType.SINT64:
-      return parseInt(strValue);
-    
-    case ScalarType.BOOL: 
-      return strValue.toLowerCase() !== "false";
-
-    // case ScalarType.BYTES: return "bytes";
   }
 }
 
@@ -71,15 +44,76 @@ export const MessageScalarFieldInputComponent = (props: IMessageScalarFieldInput
     return <div>Non-scalar input field provided: {props.field.name}</div>
   }
 
-  const doOnChange = (e) => {
-    console.log("MessageScalarFieldInputComponent on change")
-    const updatedValue = getScalarValue(props.field.T, e.target.value);
+  const doOnChange = (updatedValue: any) => {
     props.updateFieldInParent(props.field.name, updatedValue);
   }
 
+  const updateFieldValue = (validValue: string) => {
+    props.updateFieldInParent(props.field.name, validValue);
+  }
+
+  
+  switch (props.field.T) {
+    case ScalarType.BOOL:
+      return (
+        <BoolComponent
+          value={props.value}
+          field={props.field}
+          updateFieldValue={updateFieldValue}
+          />
+        )
+
+    case ScalarType.STRING:
+      return (
+        <StringComponent
+          value={props.value}
+          field={props.field}
+          updateFieldValue={updateFieldValue}
+          />
+        )
+
+    case ScalarType.FLOAT:
+    case ScalarType.DOUBLE:
+      return (
+        <FloatComponent
+          value={props.value}
+          field={props.field}
+          updateFieldValue={updateFieldValue}
+          />
+        )
+
+    case ScalarType.UINT32: 
+    case ScalarType.UINT64:
+      return (
+        <IntComponent
+          value={props.value}
+          field={props.field}
+          updateFieldValue={updateFieldValue}
+          unsigned={true}
+          />
+        )
+
+    case ScalarType.INT64:
+    case ScalarType.INT32:
+    case ScalarType.FIXED64:
+    case ScalarType.FIXED32:
+    case ScalarType.SFIXED32:
+    case ScalarType.SFIXED64:
+    case ScalarType.SINT32:
+    case ScalarType.SINT64:
+      return (
+        <IntComponent
+          value={props.value}
+          field={props.field}
+          updateFieldValue={updateFieldValue}
+          />
+        )
+  }
+
+
   return (
     <div>
-      {props.field.name} [{getScalarTypeName(props.field.T)}] <input onChange={doOnChange} value={props.value}/>
+      {props.field.name} [{getScalarTypeName(props.field.T)}] --- Unsupported scalar field
     </div>
   )
 }
