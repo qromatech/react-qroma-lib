@@ -113,7 +113,6 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
   switch (props.field.kind) {
     case "scalar":
       const value = props.messageValue[props.field.name];
-
       return (
         <MessageScalarFieldInputComponent
           key={props.field.name}
@@ -143,8 +142,8 @@ export const QromaPbFieldComponent = (props: IQromaPbFieldComponentProps) => {
           console.log(props)
           return;
         }
-
-        const subMessageValueJsonData = props.messageValueJsonData[props.field.name];
+        
+        const subMessageValueJsonData = props.messageValue[props.field.name];
 
         return (
           <QromaPbMessageComponent
