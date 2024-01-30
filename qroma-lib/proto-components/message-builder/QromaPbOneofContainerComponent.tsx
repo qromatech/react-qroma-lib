@@ -102,7 +102,7 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
 
     const valueToSet = {
       // ...props.oneofValue[activeOneofSelection],
-      [activeOneofSelectionField.name]: newFieldValue,
+      [newActiveField.name]: newFieldValue,
     }
     delete valueToSet[oldActiveField.name];
 

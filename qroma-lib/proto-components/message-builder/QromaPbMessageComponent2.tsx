@@ -72,11 +72,11 @@ export const QromaPbMessageComponent2 = <T extends object>(props: IMessageInputC
     console.log(sourceField)
     console.log(objectValue)
 
-    const valueToSet = {
-      // ...props.oneofValue[activeOneofSelection],
-      [sourceField.name]: objectValue,
-    }
-    // delete valueToSet[oldActiveField.name];
+    // const valueToSet = {
+    //   // ...props.oneofValue[activeOneofSelection],
+    //   [sourceField.name]: objectValue,
+    // }
+    // // delete valueToSet[oldActiveField.name];
 
     console.log("HAVE PB FIELD MESSAGE VALUE UPDATE")
     console.log(sourceField.name)
