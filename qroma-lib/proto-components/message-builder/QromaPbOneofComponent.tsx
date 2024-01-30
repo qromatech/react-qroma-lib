@@ -94,8 +94,31 @@ export const QromaPbOneofComponent = (props: IQromaPbOneofComponent) => {
       }
     </select>
 
-  // console.log("PB ONE OF fieldForSelectedOneof")
-  // console.log(props);
+  console.log("PB ONE OF fieldForSelectedOneof")
+  console.log(props);
+
+
+  // if (props.activeOneofField.oneof !== undefined) {
+  //   console.log("WE HAGVE A ONEOF SITUATIO NHERE")
+  //   console.log(props)
+  //   console.log(props.activeOneofField)
+
+  //   const selectedOneofGroupValue = props.activeOneofValue[props.activeOneofField.oneof];
+  //   // const relatedOneofFieldsInParent = props.containingMessageFields.filter(f => f.oneof === props.field.oneof);
+
+  //   const selectedOneofGroupKind = selectedOneofGroupValue.oneofKind;
+  //   const activeOneofValueJsonData = props.activeOneofValueJsonData[props.activeOneofField.name];
+
+  //   return <QromaPbOneofComponent
+  //             key={props.activeOneofField.name}
+  //             activeOneofField={props.activeOneofField}
+  //             activeOneofValue={selectedOneofGroupKind}
+  //             activeOneofValueJsonData={activeOneofValueJsonData}
+  //             relatedOneofFieldsInParent={relatedOneofFieldsInParent}
+  //             updateFieldInParent={onPbChildOneofSelectionChange}
+  //             updateOneofFieldInParent={onPbChildOneofSelectionChange}
+  //             />
+  // }
 
 
   let oneofValueComponent = <></>;
