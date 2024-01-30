@@ -7,7 +7,6 @@ import { QromaCommCommand } from "../qroma-comm-proto/qroma-comm";
 import { convertBinaryToBase64 } from './utils';
 import { QromaAppCommandLink } from './QromaAppCommandLink';
 import { createPopulatedMessageObject } from "./proto-components/message-builder/builder_utils";
-import { QromaPbMessageComponent } from "./proto-components/message-builder/QromaPbMessageComponent";
 import { QromaPbMessageComponent2 } from "./proto-components/message-builder/QromaPbMessageComponent2";
 
 
@@ -37,8 +36,7 @@ export const QromaRequestForm2 = <TCommand extends object, TResponse extends obj
       console.log(props.requestMessageType)
       console.log(rootMessageJsonData)
       throw e;
-    }
-  
+    }  
   }
 
   const rootMessage = getRootMessageFromJson();
@@ -47,25 +45,6 @@ export const QromaRequestForm2 = <TCommand extends object, TResponse extends obj
   const qromaMessageBytes = QromaCommCommand.toBinary(qromaCommCommand);
   const requestB64 = Buffer.from(qromaMessageBytes).toString('base64') + "\n";
 
-
-  // const updateRootField = (fieldToReplace: FieldInfo, objectValue: JsonValue) => {
-  //   console.log("UPDATING ROOT MESSAGE VALUE");
-  //   console.log(fieldToReplace);
-  //   console.log(objectValue);
-
-  //   console.log("OLD ROOT MESSAGE")
-  //   console.log(rootMessageJsonData)
-
-  //   const newRootMessageJsonData = {
-  //     ...rootMessageJsonData,
-  //     [fieldToReplace.name]: objectValue
-  //   };
-
-  //   console.log("NEW ROOT MESSAGE")
-  //   console.log(newRootMessageJsonData)
-
-  //   setRootMessageJsonData(newRootMessageJsonData);
-  // }
 
   const updateRootField = (fieldToReplace: FieldInfo, objectValue: JsonValue) => {
     console.log("UPDATING ROOT MESSAGE VALUE");
@@ -186,7 +165,7 @@ export const QromaRequestForm2 = <TCommand extends object, TResponse extends obj
         fieldInParent={rootMessageFieldInfo}
         isFieldUsedAsOneof={false}
         setFieldValueInParentMessage={updateRootField}
-        // setActiveOneofFieldInParent={setActiveOneofInRoot}
+        setActiveOneofFieldInParentMessage={setActiveOneofInRoot}
         />
       <div>
         App Command: {appCommandJsonStr}
