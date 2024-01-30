@@ -69,15 +69,23 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
     console.log(field)
     console.log(objectValue)
 
-    const newValue = {[field.name]: objectValue}
-    // console.log(objectKey);
-    // console.log(objectValue)
-    console.log(newValue)
+    // const newValue = {[field.name]: objectValue}
+    // // console.log(objectKey);
+    // // console.log(objectValue)
+    // console.log(newValue)
 
-    const valueToSet = {
-      ...props.oneofValue[activeOneofSelection],
-      [field.name]: objectValue,
+    let valueToSet;
+    if (field.kind === 'message') {
+      valueToSet = {
+        [field.name]: objectValue,
+      }
+    } else {
+      valueToSet = {
+        ...props.oneofValue[activeOneofSelection],
+        [field.name]: objectValue,
+      }
     }
+
     console.log(valueToSet)
 
     props.updateOneofFieldValueInParent(activeOneofSelectionField, valueToSet);
