@@ -3,7 +3,7 @@ import { FieldInfo, JsonObject, JsonValue } from "@protobuf-ts/runtime"
 import { createValueForField } from "./builder_utils"
 import { MessageEnumFieldInputComponent } from "./MessageEnumFieldInputComponent"
 import { MessageScalarFieldInputComponent } from "./MessageScalarFieldInputComponent"
-import { QromaPbMessageComponent2 } from "./QromaPbMessageComponent2"
+import { QromaPbMessageComponent2 } from "./QromaPbMessageComponent"
 
 
 

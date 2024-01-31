@@ -7,7 +7,7 @@ import { QromaCommCommand } from "../qroma-comm-proto/qroma-comm";
 import { convertBinaryToBase64 } from './utils';
 import { QromaAppCommandLink } from './QromaAppCommandLink';
 import { createPopulatedMessageObject } from "./proto-components/message-builder/builder_utils";
-import { QromaPbMessageComponent } from "./proto-components/message-builder/QromaPbMessageComponent";
+import { QromaPbMessageComponent2 } from "./proto-components/message-builder/QromaPbMessageComponent";
 
 
 interface IQromaRequestFormProps<TCommand extends object, TResponse extends object> {
@@ -36,8 +36,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
       console.log(props.requestMessageType)
       console.log(rootMessageJsonData)
       throw e;
-    }
-  
+    }  
   }
 
   const rootMessage = getRootMessageFromJson();
@@ -157,7 +156,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
 
   return (
     <div>
-      <QromaPbMessageComponent
+      <QromaPbMessageComponent2
         key={m.typeName}
         messageType={m}
         messageName="rootMessage"
@@ -166,7 +165,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
         fieldInParent={rootMessageFieldInfo}
         isFieldUsedAsOneof={false}
         setFieldValueInParentMessage={updateRootField}
-        setActiveOneofFieldInParent={setActiveOneofInRoot}
+        setActiveOneofFieldInParentMessage={setActiveOneofInRoot}
         />
       <div>
         App Command: {appCommandJsonStr}
