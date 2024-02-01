@@ -90,3 +90,8 @@ export const createPopulatedMessageObject = <T extends object>(messageType: IMes
 export const getScalarValueFromParentObject = (field: FieldInfo, parentObject: any) => {
   return parentObject[field.name];
 }
+
+
+export const isFieldOneof = (field: FieldInfo) => {
+  return field.oneof !== undefined;
+}
