@@ -36,8 +36,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
       console.log(props.requestMessageType)
       console.log(rootMessageJsonData)
       throw e;
-    }
-  
+    }  
   }
 
   const rootMessage = getRootMessageFromJson();
@@ -48,12 +47,16 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
 
 
   const updateRootField = (fieldToReplace: FieldInfo, objectValue: JsonValue) => {
-    console.log("UPDATING ROOT MESSAGE VALUE");
+    console.log("UPDATING ROOT MESSAGE VALUE IN " + props.responseMessageType.typeName);
     console.log(fieldToReplace);
     console.log(objectValue);
 
     console.log("OLD ROOT MESSAGE")
     console.log(rootMessageJsonData)
+
+    if (Object.keys(rootMessageJsonData).find(f => f === fieldToReplace.name) === undefined) {
+      throw new Error("UNABLE TO UPDATE ROOT VALUE FoR " + fieldToReplace.name);
+    }
 
     const newRootMessageJsonData = {
       ...rootMessageJsonData,
@@ -68,26 +71,76 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
 
   
   const setActiveOneofInRoot = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
-    console.log("ROOT MESSAGE UPDATE - IN updateOneofFieldInParent()")
+    console.log("ROOT MESSAGE UPDATE - IN setActiveOneofInRoot() FOR " + props.requestMessageType.typeName)
     console.log(oldActiveField);
     console.log(newActiveField)
     console.log(newFieldValue)
 
-    // console.trace();
+    if (newActiveField.kind === 'message') {
+      console.log("QROMA PB ROOT MESSAGE UPDATE - IN setActiveOneofInMessage() FOR MESSAGE")
 
-    const newRootMessageJsonData = {
-      ...rootMessageJsonData,
-      [newActiveField.name]: newFieldValue
-    };
-    delete newRootMessageJsonData[oldActiveField.name];
+      const newMessageJsonData = {
+        ...rootMessageJsonData,
+        [newActiveField.name]: newFieldValue,
+      }
+      delete newMessageJsonData[oldActiveField.name];
 
-    console.log("setActiveOneofInRoot MESSAGE FROM updateOneofFieldInParent()")
-    console.log(rootMessageJsonData)
+      console.log(rootMessageJsonData)
+      console.log(newMessageJsonData);
+      
+      setRootMessageJsonData(newMessageJsonData);
 
-    console.log("setActiveOneofInRoot MESSAGE FROM updateOneofFieldInParent()")
-    console.log(newRootMessageJsonData)
+    } else {
+      console.log("QROMA PB ROOT MESSAGE UPDATE - IN setActiveOneofInMessage() FOR NONMESSAGE")
+      console.log(newFieldValue)
 
-    setRootMessageJsonData(newRootMessageJsonData);
+      const newMessageJsonData = {
+        ...rootMessageJsonData,
+        [newActiveField.name]: newFieldValue,
+      }
+      delete newMessageJsonData[oldActiveField.name];
+
+      // props.setActiveOneofFieldInParentMessage(oldActiveField, newActiveField, newFieldValue);
+      setRootMessageJsonData(newMessageJsonData);
+    }
+
+    // // console.trace();
+
+    // const newRootMessageJsonData = newActiveField.kind === 'message' ? 
+    //   {
+    //     ...rootMessageJsonData,
+    //     ...newFieldValue,
+    //   } :
+    //   {
+    //     ...rootMessageJsonData,
+    //     [newActiveField.name]: newFieldValue,
+    //   };
+    
+    // delete newRootMessageJsonData[oldActiveField.name];
+
+    // // if (newActiveField.kind === 'message') {
+    // //   const newRootMessageJsonData = {
+    // //     ...rootMessageJsonData,
+    // //     ...newFieldValue,
+    // //   };
+    // //   delete newRootMessageJsonData[oldActiveField.name];
+  
+    // // } else {
+    // //   const newRootMessageJsonData = {
+    // //     ...rootMessageJsonData,
+    // //     [newActiveField.name]: newFieldValue,
+    // //   };
+    // //   delete newRootMessageJsonData[oldActiveField.name];
+  
+    // // }
+
+    // console.log("setActiveOneofInRoot MESSAGE - rootMessageJsonData")
+    // console.log(rootMessageJsonData)
+
+    // console.log("setActiveOneofInRoot MESSAGE - newRootMessageJsonData")
+    // console.log(newRootMessageJsonData)
+
+    // setRootMessageJsonData(newRootMessageJsonData);
   }
 
 
@@ -160,13 +213,13 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
       <QromaPbMessageComponent
         key={m.typeName}
         messageType={m}
-        messageName="rootMessage"
+        messageName="__rootMessage__"
         messageValue={rootMessage}
         messageValueJsonData={rootMessageJsonData}
         fieldInParent={rootMessageFieldInfo}
-        isFieldUsedAsOneof={false}
-        setFieldValueInParentMessage={updateRootField}
-        setActiveOneofFieldInParent={setActiveOneofInRoot}
+        // isFieldUsedAsOneof={false}
+        updateFieldValueInParentMessage={updateRootField}
+        setActiveOneofFieldInParentMessage={setActiveOneofInRoot}
         />
       <div>
         App Command: {appCommandJsonStr}

@@ -1,6 +1,9 @@
 import React from "react"
 import { FieldInfo, IMessageType, JsonObject, JsonValue } from "@protobuf-ts/runtime"
-import { IQromaPbFieldComponentProps, QromaPbFieldComponent } from "./QromaPbFieldComponent"
+import { isFieldOneof } from "./builder_utils"
+import { MessageScalarFieldInputComponent } from "./MessageScalarFieldInputComponent"
+import { MessageEnumFieldInputComponent } from "./MessageEnumFieldInputComponent"
+import { QromaPbOneofContainerComponent } from "./QromaPbOneofContainerComponent"
 
 
 interface IMessageInputComponentProps<T extends object> {
@@ -9,173 +12,213 @@ interface IMessageInputComponentProps<T extends object> {
   messageValue: T
   messageValueJsonData: JsonObject
   fieldInParent: FieldInfo | null
-  isFieldUsedAsOneof: boolean
-  setFieldValueInParentMessage: (fieldToReplace: FieldInfo, objectValue: JsonValue) => void
-  setActiveOneofFieldInParent: (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => void
+
+  updateFieldValueInParentMessage: (fieldToUpdate: FieldInfo, objectValue: JsonValue) => void
+  setActiveOneofFieldInParentMessage: (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => void
 }
 
 
 export const QromaPbMessageComponent = <T extends object>(props: IMessageInputComponentProps<T>) => {
 
   if (props.messageValue === undefined) {
-    console.log("UNDEFINED MESSAGE VALUE IN PB MESSAGE COMPONENT")
+    console.log("UNDEFINED MESSAGE VALUE IN PB MESSAGE 2 COMPONENT")
     console.log(props.messageName)
   }
 
+  const onScalarValueChange = (sourceField: FieldInfo, objectKey: string, newValue: JsonValue) => {
+    // console.log("QromaPbMessageComponent2 - SCALAR ON CHANGE");
+    // console.log(props)
+    // console.log(objectKey)
+    // console.log(newValue)
+    
+    updateMessageField(sourceField, newValue);
+  }
+
+
+  const onEnumValueChange = (sourceField: FieldInfo, objectKey: string, newValue: JsonValue) => {
+    // console.log("QromaPbMessageComponent2 - ENUM ON CHANGE");
+    // console.log(props)
+    // console.log(sourceField)
+    // console.log(objectKey)
+    // console.log(newValue)
+    
+    updateMessageField(sourceField, newValue);
+  }
+
+
   const updateMessageField = (sourceField: FieldInfo, objectValue: JsonValue) => {
-    console.log("QromaPbMessageComponent - UPDATE PARENT FOR " + sourceField.name);
-    console.log(props)
-    console.log(sourceField)
-    console.log(objectValue);
+    // console.log("QromaPbMessageComponent2 - MESSAGE ON CHANGE");
+    // console.log(props)
+    // console.log(sourceField)
+    // console.log(objectValue)
 
-    if (props.isFieldUsedAsOneof) {
-      try {
-        const newValueForField = props.messageValue;
+    if (props.messageName === "__rootMessage__") {
+      // console.log("ROOT MESSAGE UPDATING")
+      // console.log(props)
+      // console.log(sourceField)
+      // console.log(objectValue)
 
-        console.log("PRE NEW ONEOF MESSAGE VALUE")
-        console.log(newValueForField)
-  
-        newValueForField[sourceField.name] = objectValue;
-  
-        console.log("NEW ONEOF MESSAGE VALUE")
-        console.log(newValueForField)
-  
-        props.setFieldValueInParentMessage(props.fieldInParent, newValueForField);
-  
-      } catch (e) {
-        console.log("ERROR UPDATING MESSAGE FIELD")
-        console.log(e)
-      }
-      return;
-    }
-
-    if (sourceField.kind === 'message') {
-      if (sourceField.oneof === undefined) {
-        console.log("HAVE MESSAGE UPDATE")
-        const updateMessage = props.messageValueJsonData[sourceField.name];
-        console.log(updateMessage)
-        console.log(objectValue)
-        props.setFieldValueInParentMessage(sourceField, updateMessage);
-  
-      } else {
-        console.log("HAVE MESSAGE ONEOF UPDATE")
-        props.setFieldValueInParentMessage(sourceField, objectValue);  
-      }
-
+      props.updateFieldValueInParentMessage(sourceField, objectValue);
     } else {
-      if (props.fieldInParent.kind !== 'message') {
-        console.log("HAVE MESSAGE VALUE UPDATE")
-        console.log(sourceField)
-        console.log(objectValue)
-        props.setFieldValueInParentMessage(sourceField, objectValue);
-      } else {
-        console.log("HAVE MESSAGE IN MESSAGE UPDATE")
-        console.log(sourceField)
-        console.log(objectValue)
-        console.log(props.messageValueJsonData)
+      const messageJsonStr = props.messageType.toJsonString(props.messageValue);
+      const messageJsonData = JSON.parse(messageJsonStr);
+      // console.log(messageJsonData)
 
-        const updateMessage = props.messageValueJsonData;
-        updateMessage[sourceField.name] = objectValue
-        console.log("NEW VLUAE")
-        console.log(updateMessage)
-        props.setFieldValueInParentMessage(props.fieldInParent, updateMessage);
+      const myUpdatedValue = {
+        ...messageJsonData,
+        [sourceField.name]: objectValue,
       }
+
+      // console.log("MESSAGE UPDATING PARENT")
+      // console.log(props)
+      // console.log(myUpdatedValue)
+
+      props.updateFieldValueInParentMessage(props.fieldInParent, myUpdatedValue);
     }
   }
 
-  const setActiveOneofFieldInParent = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
-    console.log("PB MESSAGE COMPONENT - updateOneofFieldInParentMessage")
+  const setActiveOneofInMessage = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
+    console.log("setActiveOneofField() IN QromaPbMessageComponent: " + props.messageType.typeName)
     console.log(props)
     console.log(oldActiveField)
     console.log(newActiveField)
     console.log(newFieldValue)
 
-    if (props.fieldInParent.oneof === undefined) {
-      console.log("SETTING AS VALUE")
+    console.log("QROMA PB MESSAGE UPDATE - IN setActiveOneofInMessage() FOR NON MESSAGE")
+    console.log(newFieldValue)
 
-      if (props.fieldInParent.kind === 'message') {
-        const updateMessageValue = props.messageValueJsonData;
-        updateMessageValue[newActiveField.name] = newFieldValue;
-        delete updateMessageValue[oldActiveField.name];
-        console.log(updateMessageValue)
-
-        props.setFieldValueInParentMessage(props.fieldInParent, updateMessageValue);
-
-      } else {
-        props.setActiveOneofFieldInParent(oldActiveField, newActiveField, newFieldValue);
-      }
-
+    if (props.messageName === "__rootMessage__") {
+      props.setActiveOneofFieldInParentMessage(oldActiveField, newActiveField, newFieldValue);
     } else {
-      const updateMessageValue = {
-        [props.fieldInParent.name]: newFieldValue,
+      const messageJsonStr = props.messageType.toJsonString(props.messageValue);
+      const messageJsonData = JSON.parse(messageJsonStr);
+      console.log(JSON.parse(messageJsonStr))
+
+      if (newActiveField.kind === 'message') {
+        console.log("QROMA NONROOT MESSAGE UPDATE - IN setActiveOneofInMessage() FOR MESSAGE")
+  
+        const newMessageJsonData = {
+          ...messageJsonData,
+          [newActiveField.name]: newFieldValue,
+        }
+        delete newMessageJsonData[oldActiveField.name];
+  
+        console.log(messageJsonData)
+        console.log(newMessageJsonData);
+
+        props.updateFieldValueInParentMessage(props.fieldInParent, newMessageJsonData);
+  
+      } else {
+        console.log("QROMA PB NONROOT MESSAGE UPDATE - IN setActiveOneofInMessage() FOR NONMESSAGE")
+        console.log(newFieldValue)
+  
+        const newMessageJsonData = {
+          ...messageJsonData,
+          [newActiveField.name]: newFieldValue,
+        }
+        delete newMessageJsonData[oldActiveField.name];
+  
+        props.updateFieldValueInParentMessage(props.fieldInParent, newMessageJsonData);
       }
-      
-      console.log("SETTING AS ONEOF")
-      props.setFieldValueInParentMessage(props.fieldInParent, updateMessageValue);
     }
   }
 
 
   const messageFieldComponents = [];
 
-  console.log("RENDERING MESSAGE PB COMPONENT")
-  console.log(props)
+  // console.log("RENDERING 2 MESSAGE PB COMPONENT")
+  // console.log(props)
+
+  const renderedOneofFieldNames = [] as string[];
 
   props.messageType.fields.forEach(field => {
-    if (field.oneof !== undefined) {
-      if (props.messageValueJsonData === undefined) {
-        console.log("UNDEFINED MESSAGE VALUE JSON DATA")
-        console.log(props)
-        console.log(field)
 
-        if (props.messageValue[field.name] !== undefined) {
-          console.log("FOUND FIELD")
-          console.log(props.messageValue)
-        }
+    if (!isFieldOneof(field)) {
 
-        // props.messageType.fields.forEach(mtf => {
-        //   if (mtf.)
-        // })
+      // console.log("NOT ONE OF")
+      // console.log(field)
 
-        const fieldComponentProps: IQromaPbFieldComponentProps = {
-          field,
-          messageValue: props.messageValue,
-          messageValueJsonData: props.messageValueJsonData,
-          containingMessageFields: props.messageType.fields,
-          setFieldValueInParentMessage: updateMessageField,
-          setActiveOneofFieldInParent,
-        };
-        const messageFieldComponent = 
-          <QromaPbFieldComponent
+      switch (field.kind) {
+        case "scalar":
+          const value = props.messageValue[field.name];
+          messageFieldComponents.push (
+            <MessageScalarFieldInputComponent
+              key={field.name}
+              field={field}
+              isFieldUsedAsOneof={false}
+              value={value}
+              updateFieldInParent={(objectKey, newValue) => onScalarValueChange(field, objectKey, newValue)}
+              />
+          )
+          break;
+    
+        case "enum":
+          messageFieldComponents.push (
+            <MessageEnumFieldInputComponent
+              key={field.name}
+              field={field}
+              isFieldUsedAsOneof={false}
+              value={props.messageValue[field.name]}
+              updateFieldInParent={(objectKey, newValue) => onEnumValueChange(field, objectKey, newValue)}
+              />
+          )
+          break;
+    
+        case "message":
+          // console.log("MAKE MESSAGE")
+          // console.log(field)
+
+          const subMessageValue = props.messageValue[field.name];
+          const subMessageValueJsonData = props.messageValue[field.name];
+    
+          messageFieldComponents.push (
+            <QromaPbMessageComponent
+              key={field.name}
+              messageName={field.name}
+              messageType={field.T()}
+              messageValue={subMessageValue}
+              messageValueJsonData={subMessageValueJsonData}
+              fieldInParent={field}
+              updateFieldValueInParentMessage={(fieldToReplace, objectValue) => updateMessageField(fieldToReplace, objectValue)}
+              setActiveOneofFieldInParentMessage={setActiveOneofInMessage}
+              />
+            )
+            break;
+          // }
+    
+        default:
+          return (
+            <div key={field.name}>
+              {field.name} - [{field.name}]
+            </div>
+          )
+      }
+
+    } else {
+      // this is a oneof property
+      if (renderedOneofFieldNames.find(f => f === field.oneof) === undefined) {
+        // console.log("RENDERING ONEOF")
+        // console.log(field)
+        // console.log(props.messageValue)
+
+        const oneofValue = props.messageValue[field.oneof];
+        // console.log(oneofValue)
+
+        messageFieldComponents.push (
+          <QromaPbOneofContainerComponent
             key={field.name}
-            {...fieldComponentProps}
-            />;
-        messageFieldComponents.push(messageFieldComponent);
-
-        return
+            allFieldsInParent={props.messageType.fields}
+            oneofFieldName={field.oneof}
+            oneofValue={oneofValue}
+            // updateOneofFieldValueInParent={onChildOneofValueChange}
+            updateFieldValueInParentMessage={updateMessageField}
+            setActiveOneofFieldInParentMessage={setActiveOneofInMessage}
+            />
+        )
+        renderedOneofFieldNames.push(field.oneof);
       }
-      if (props.messageValueJsonData[field.name] === undefined) {
-        return;
-      }
-      console.log("HANDLE ONE OF IN MESSAGE FIELD")
-      console.log(field)
+      
     }
-
-    const fieldComponentProps: IQromaPbFieldComponentProps = {
-      field,
-      messageValue: props.messageValue,
-      messageValueJsonData: props.messageValueJsonData,
-      containingMessageFields: props.messageType.fields,
-      setFieldValueInParentMessage: updateMessageField,
-      setActiveOneofFieldInParent,
-    };
-
-    const messageFieldComponent = 
-      <QromaPbFieldComponent
-        key={field.name}
-        {...fieldComponentProps}
-        />;
-    messageFieldComponents.push(messageFieldComponent);
   });
 
 
