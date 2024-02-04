@@ -27,25 +27,25 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
     
   const handleOneofSelectionChange = (e: { target: { value: any } }) => {
     const newValue = e.target.value;
-    console.log("handleOneofSelectionChange - NEW VALUE: " + newValue);
-    console.log(props)
-    console.log(activeOneofSelectionField)
+    // console.log("handleOneofSelectionChange - NEW VALUE: " + newValue);
+    // console.log(props)
+    // console.log(activeOneofSelectionField)
 
     var selectedField = props.allFieldsInParent.find(f => f.name === newValue);
 
     const selectedFieldInitValue = createValueForField(selectedField);
 
-    console.log("NEW VALUE FOR SELECTED FIELD")
-    console.log(selectedFieldInitValue)
-    console.log(selectedField)
+    // console.log("NEW VALUE FOR SELECTED FIELD")
+    // console.log(selectedFieldInitValue)
+    // console.log(selectedField)
     
     props.setActiveOneofFieldInParentMessage(activeOneofSelectionField, selectedField, selectedFieldInitValue);
   }
 
   const onOneofScalarValueChange = (field: FieldInfo, newValue: JsonValue) => {
-    console.log("QromaPbOneofContainerComponent - SCALAR ON CHANGE");
-    console.log(field)
-    console.log(newValue)
+    // console.log("QromaPbOneofContainerComponent - SCALAR ON CHANGE");
+    // console.log(field)
+    // console.log(newValue)
 
     // const updateValue = {[field.name]: newValue};
     
@@ -69,58 +69,45 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
   }
 
   const onOneofMessageValueUpdate = (field: FieldInfo, objectValue: JsonValue) => {
-    console.log("QromaPbOneofContainerComponent - MESSAGE ON UPDATE");
+    // console.log("QromaPbOneofContainerComponent - MESSAGE ON UPDATE");
 
-    console.log(props)
-    console.log(activeOneofSelectionField)
-    console.log(field)
-    console.log(objectValue)
+    // console.log(props)
+    // console.log(activeOneofSelectionField)
+    // console.log(field)
+    // console.log(objectValue)
 
     let valueToSet;
 
 
-    console.log("ACTTIVE ONE OF SELECTION FIELD", activeOneofSelectionField)
+    // console.log("ACTTIVE ONE OF SELECTION FIELD", activeOneofSelectionField)
 
-    // works for setting qroma strip brightness
     if (field.kind === 'message') {
-
-      // const messageJsonStr = props.messageType.toJsonString(props.messageValue);
-      // const messageJsonData = JSON.parse(messageJsonStr);
-      // console.log(JSON.parse(messageJsonStr))
-
-      // valueToSet = {
-      //   [field.name]: objectValue,
-      // }
       valueToSet = objectValue;
 
       props.updateFieldValueInParentMessage(field, valueToSet);
     } else {
       valueToSet = {
-        // ...props.oneofValue[activeOneofSelection],
         [field.name]: objectValue,
       }
 
       props.updateFieldValueInParentMessage(activeOneofSelectionField, valueToSet);
     }
 
-    console.log("QromaPbOneofContainerComponent.onOneofMessageValueChange() - CALLING updateOneofFieldValueInParent")
-    console.log(activeOneofSelectionField)
-    console.log("VALUE TO SET", activeOneofSelectionField, valueToSet)
+    // console.log("QromaPbOneofContainerComponent.onOneofMessageValueChange() - CALLING updateOneofFieldValueInParent")
+    // console.log(activeOneofSelectionField)
+    // console.log("VALUE TO SET", activeOneofSelectionField, valueToSet)
 
-    // props.updateOneofFieldValueInParent(activeOneofSelectionField, valueToSet);
-    
-    
     props.updateFieldValueInParentMessage(activeOneofSelectionField, valueToSet);
   }
 
   const handleSubOneofActiveSelectionChange = (oldActiveField: FieldInfo, newActiveField: FieldInfo, newFieldValue: JsonValue) => {
     console.log("QromaPbOneofContainerComponent - ACTIVE SUB ONE OF ON CHANGE");
 
-    console.log(props)
-    console.log(activeOneofSelectionField)
-    console.log(oldActiveField)
-    console.log(newActiveField)
-    console.log(newFieldValue)
+    // console.log(props)
+    // console.log(activeOneofSelectionField)
+    // console.log(oldActiveField)
+    // console.log(newActiveField)
+    // console.log(newFieldValue)
 
     const valueToSet = {
       // ...props.oneofValue[activeOneofSelection],
@@ -132,7 +119,6 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
     console.log(valueToSet) 
 
     props.setActiveOneofFieldInParentMessage(activeOneofSelectionField, newActiveField, newFieldValue);
-    // props.updateOneofFieldValueInParent(activeOneofSelectionField, valueToSet);
   }
 
 
@@ -149,10 +135,10 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
       }
     </select>
 
-  console.log("PB ONE OF fieldForSelectedOneof")
-  console.log(props);
-  console.log(activeOneofSelection)
-  console.log(activeOneofSelectionField)
+  // console.log("PB ONE OF fieldForSelectedOneof")
+  // console.log(props);
+  // console.log(activeOneofSelection)
+  // console.log(activeOneofSelectionField)
 
 
   let oneofValueComponent = <></>;
@@ -168,9 +154,9 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
           updateFieldInParent={(objectKey, objectValue) => onOneofEnumValueChange(activeOneofSelectionField, objectValue)}
           />;
       break;
+
     case 'scalar':
       const scalarValue = props.oneofValue[activeOneofSelection];
-      // const scalarValueJsonData = msgValue[activeOneofSelectionField.name]
 
       oneofValueComponent = 
         <MessageScalarFieldInputComponent
@@ -181,11 +167,14 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
           updateFieldInParent={(objectKey, objectValue) => onOneofScalarValueChange(activeOneofSelectionField, objectValue)}
           />;
       break;
+
     case 'message':
       const msgValue = props.oneofValue[activeOneofSelection];
-      const msgValueJsonData = msgValue[activeOneofSelectionField.name]
-      console.log("PB ONE OF CONTAINER MSG VALUE JSON DATA")
-      console.log(msgValueJsonData)
+      const msgValueJsonData = msgValue[activeOneofSelectionField.name];
+
+      // console.log("PB ONE OF CONTAINER MSG VALUE JSON DATA")
+      // console.log(msgValueJsonData)
+      
       oneofValueComponent = 
         <QromaPbMessageComponent
           key={activeOneofSelectionField.name}
@@ -194,10 +183,10 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
           messageValue={msgValue as JsonObject}
           messageValueJsonData={msgValueJsonData}
           fieldInParent={activeOneofSelectionField}
-          // isFieldUsedAsOneof={true}
           updateFieldValueInParentMessage={(fieldToReplace, objectValue) => onOneofMessageValueUpdate(fieldToReplace, objectValue)}
           setActiveOneofFieldInParentMessage={(oldActiveField, newActiveField, newFieldValue) => handleSubOneofActiveSelectionChange(oldActiveField, newActiveField, newFieldValue)}
           />;
+
       break;
     default:
       throw new Error("Unhandled field kind");
@@ -212,9 +201,6 @@ export const QromaPbOneofContainerComponent = (props: IQromaPbOneofContainerComp
           ONEOF: {props.oneofFieldName} [{activeOneofSelection}] - {JSON.stringify(props.oneofValue)}
           { oneofValueComponent }
         </div>
-        {/* <div>
-          ONEOF: {props.oneofFieldName} [{activeOneofSelection}] - {JSON.stringify(props.oneofValue)}
-        </div> */}
       </fieldset>
     </div>
   )
