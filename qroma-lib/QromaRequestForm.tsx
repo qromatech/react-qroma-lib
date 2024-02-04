@@ -87,7 +87,7 @@ export const QromaRequestForm = <TCommand extends object, TResponse extends obje
 
       console.log(rootMessageJsonData)
       console.log(newMessageJsonData);
-      // props.setActiveOneofFieldInParentMessage(oldActiveField, newActiveField, newMessageJsonData);
+      
       setRootMessageJsonData(newMessageJsonData);
 
     } else {
