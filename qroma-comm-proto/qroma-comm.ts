@@ -11,8 +11,10 @@ import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
+import { QromaStreamResponse } from "./qroma-streams";
 import { QromaCommConfigResponse } from "./qroma-comm-config-commands";
 import { FileSystemResponse } from "./file-system-commands";
+import { QromaStreamCommand } from "./qroma-streams";
 import { QromaCommConfigCommand } from "./qroma-comm-config-commands";
 import { FileSystemCommand } from "./file-system-commands";
 /**
@@ -40,6 +42,12 @@ export interface QromaCommCommand {
          * @generated from protobuf field: QromaCommConfigCommand commConfigCommand = 3;
          */
         commConfigCommand: QromaCommConfigCommand;
+    } | {
+        oneofKind: "streamCommand";
+        /**
+         * @generated from protobuf field: QromaStreamCommand streamCommand = 4;
+         */
+        streamCommand: QromaStreamCommand;
     } | {
         oneofKind: undefined;
     };
@@ -89,6 +97,12 @@ export interface QromaCommResponse {
          */
         heartbeatResponse: QromaCommHeartbeatResponse;
     } | {
+        oneofKind: "streamResponse";
+        /**
+         * @generated from protobuf field: QromaStreamResponse streamResponse = 5;
+         */
+        streamResponse: QromaStreamResponse;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -98,7 +112,8 @@ class QromaCommCommand$Type extends MessageType<QromaCommCommand> {
         super("QromaCommCommand", [
             { no: 1, name: "appCommandBytes", kind: "scalar", oneof: "command", T: 12 /*ScalarType.BYTES*/ },
             { no: 2, name: "fsCommand", kind: "message", oneof: "command", T: () => FileSystemCommand },
-            { no: 3, name: "commConfigCommand", kind: "message", oneof: "command", T: () => QromaCommConfigCommand }
+            { no: 3, name: "commConfigCommand", kind: "message", oneof: "command", T: () => QromaCommConfigCommand },
+            { no: 4, name: "streamCommand", kind: "message", oneof: "command", T: () => QromaStreamCommand }
         ]);
     }
     create(value?: PartialMessage<QromaCommCommand>): QromaCommCommand {
@@ -131,6 +146,12 @@ class QromaCommCommand$Type extends MessageType<QromaCommCommand> {
                         commConfigCommand: QromaCommConfigCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).commConfigCommand)
                     };
                     break;
+                case /* QromaStreamCommand streamCommand */ 4:
+                    message.command = {
+                        oneofKind: "streamCommand",
+                        streamCommand: QromaStreamCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).streamCommand)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -152,6 +173,9 @@ class QromaCommCommand$Type extends MessageType<QromaCommCommand> {
         /* QromaCommConfigCommand commConfigCommand = 3; */
         if (message.command.oneofKind === "commConfigCommand")
             QromaCommConfigCommand.internalBinaryWrite(message.command.commConfigCommand, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+        /* QromaStreamCommand streamCommand = 4; */
+        if (message.command.oneofKind === "streamCommand")
+            QromaStreamCommand.internalBinaryWrite(message.command.streamCommand, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -223,7 +247,8 @@ class QromaCommResponse$Type extends MessageType<QromaCommResponse> {
             { no: 1, name: "appResponseBytes", kind: "scalar", oneof: "response", T: 12 /*ScalarType.BYTES*/ },
             { no: 2, name: "fsResponse", kind: "message", oneof: "response", T: () => FileSystemResponse },
             { no: 3, name: "commConfigResponse", kind: "message", oneof: "response", T: () => QromaCommConfigResponse },
-            { no: 4, name: "heartbeatResponse", kind: "message", oneof: "response", T: () => QromaCommHeartbeatResponse }
+            { no: 4, name: "heartbeatResponse", kind: "message", oneof: "response", T: () => QromaCommHeartbeatResponse },
+            { no: 5, name: "streamResponse", kind: "message", oneof: "response", T: () => QromaStreamResponse }
         ]);
     }
     create(value?: PartialMessage<QromaCommResponse>): QromaCommResponse {
@@ -262,6 +287,12 @@ class QromaCommResponse$Type extends MessageType<QromaCommResponse> {
                         heartbeatResponse: QromaCommHeartbeatResponse.internalBinaryRead(reader, reader.uint32(), options, (message.response as any).heartbeatResponse)
                     };
                     break;
+                case /* QromaStreamResponse streamResponse */ 5:
+                    message.response = {
+                        oneofKind: "streamResponse",
+                        streamResponse: QromaStreamResponse.internalBinaryRead(reader, reader.uint32(), options, (message.response as any).streamResponse)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -286,6 +317,9 @@ class QromaCommResponse$Type extends MessageType<QromaCommResponse> {
         /* QromaCommHeartbeatResponse heartbeatResponse = 4; */
         if (message.response.oneofKind === "heartbeatResponse")
             QromaCommHeartbeatResponse.internalBinaryWrite(message.response.heartbeatResponse, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+        /* QromaStreamResponse streamResponse = 5; */
+        if (message.response.oneofKind === "streamResponse")
+            QromaStreamResponse.internalBinaryWrite(message.response.streamResponse, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

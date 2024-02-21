@@ -11,6 +11,7 @@ import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
+import { FileData } from "./qroma-types";
 /**
  * @generated from protobuf message DirItem
  */
@@ -28,49 +29,10 @@ export interface DirItem {
      */
     filesize: number;
 }
-/**
- * @generated from protobuf message FileData
- */
-export interface FileData {
-    /**
-     * @generated from protobuf field: string filename = 1;
-     */
-    filename: string;
-    /**
-     * @generated from protobuf field: uint32 filesize = 2;
-     */
-    filesize: number;
-    /**
-     * @generated from protobuf field: uint32 checksum = 3;
-     */
-    checksum: number;
-}
-/**
- * @generated from protobuf message StoreUpcomingFileDataCommand
- */
-export interface StoreUpcomingFileDataCommand {
-    /**
-     * @generated from protobuf field: FileData fileData = 1;
-     */
-    fileData?: FileData;
-}
-/**
- * @generated from protobuf message StoreUpcomingFileDataResponse
- */
-export interface StoreUpcomingFileDataResponse {
-    /**
-     * @generated from protobuf field: bool success = 1;
-     */
-    success: boolean;
-    /**
-     * @generated from protobuf field: uint32 bytesWritten = 2;
-     */
-    bytesWritten: number;
-    /**
-     * @generated from protobuf field: FileData command = 3;
-     */
-    command?: FileData;
-}
+// message StoreUpcomingFileDataCommand {//   FileData fileData = 1;// }
+
+// message StoreUpcomingFileDataResponse {//   bool success = 1;//   uint32 bytesWritten = 2;//   FileData command = 3;// }
+
 /**
  * @generated from protobuf message RmFileCommand
  */
@@ -142,18 +104,18 @@ export interface MkDirResponse {
  */
 export interface ReportFileDataCommand {
     /**
-     * @generated from protobuf field: string filename = 1;
+     * @generated from protobuf field: string filePath = 1;
      */
-    filename: string;
+    filePath: string;
 }
 /**
  * @generated from protobuf message ReportFileDataResponse
  */
 export interface ReportFileDataResponse {
     /**
-     * @generated from protobuf field: bool fileExists = 1;
+     * @generated from protobuf field: GetFileStatusCode fileStatus = 1;
      */
-    fileExists: boolean;
+    fileStatus: GetFileStatusCode;
     /**
      * @generated from protobuf field: FileData fileData = 2;
      */
@@ -422,17 +384,17 @@ export enum GetFileStatusCode {
      */
     GFSC_NOT_SET = 0,
     /**
-     * @generated from protobuf enum value: GFSC_SUCCESS = 1;
+     * @generated from protobuf enum value: GFSC_FILE_EXISTS = 1;
      */
-    GFSC_SUCCESS = 1,
+    GFSC_FILE_EXISTS = 1,
     /**
      * @generated from protobuf enum value: GFSC_ERR_OPEN_FILE = 2;
      */
     GFSC_ERR_OPEN_FILE = 2,
     /**
-     * @generated from protobuf enum value: GFSC_ERR_INVALID_FILE = 3;
+     * @generated from protobuf enum value: GFSC_ERR_INVALID_FILE_PATH = 3;
      */
-    GFSC_ERR_INVALID_FILE = 3
+    GFSC_ERR_INVALID_FILE_PATH = 3
 }
 /**
  * @generated from protobuf enum WriteFileDataStatusCode
@@ -516,175 +478,6 @@ class DirItem$Type extends MessageType<DirItem> {
  * @generated MessageType for protobuf message DirItem
  */
 export const DirItem = new DirItem$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class FileData$Type extends MessageType<FileData> {
-    constructor() {
-        super("FileData", [
-            { no: 1, name: "filename", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "filesize", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 3, name: "checksum", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
-        ]);
-    }
-    create(value?: PartialMessage<FileData>): FileData {
-        const message = { filename: "", filesize: 0, checksum: 0 };
-        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
-        if (value !== undefined)
-            reflectionMergePartial<FileData>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FileData): FileData {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string filename */ 1:
-                    message.filename = reader.string();
-                    break;
-                case /* uint32 filesize */ 2:
-                    message.filesize = reader.uint32();
-                    break;
-                case /* uint32 checksum */ 3:
-                    message.checksum = reader.uint32();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: FileData, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string filename = 1; */
-        if (message.filename !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.filename);
-        /* uint32 filesize = 2; */
-        if (message.filesize !== 0)
-            writer.tag(2, WireType.Varint).uint32(message.filesize);
-        /* uint32 checksum = 3; */
-        if (message.checksum !== 0)
-            writer.tag(3, WireType.Varint).uint32(message.checksum);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message FileData
- */
-export const FileData = new FileData$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class StoreUpcomingFileDataCommand$Type extends MessageType<StoreUpcomingFileDataCommand> {
-    constructor() {
-        super("StoreUpcomingFileDataCommand", [
-            { no: 1, name: "fileData", kind: "message", T: () => FileData }
-        ]);
-    }
-    create(value?: PartialMessage<StoreUpcomingFileDataCommand>): StoreUpcomingFileDataCommand {
-        const message = {};
-        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
-        if (value !== undefined)
-            reflectionMergePartial<StoreUpcomingFileDataCommand>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: StoreUpcomingFileDataCommand): StoreUpcomingFileDataCommand {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* FileData fileData */ 1:
-                    message.fileData = FileData.internalBinaryRead(reader, reader.uint32(), options, message.fileData);
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: StoreUpcomingFileDataCommand, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* FileData fileData = 1; */
-        if (message.fileData)
-            FileData.internalBinaryWrite(message.fileData, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message StoreUpcomingFileDataCommand
- */
-export const StoreUpcomingFileDataCommand = new StoreUpcomingFileDataCommand$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class StoreUpcomingFileDataResponse$Type extends MessageType<StoreUpcomingFileDataResponse> {
-    constructor() {
-        super("StoreUpcomingFileDataResponse", [
-            { no: 1, name: "success", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 2, name: "bytesWritten", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 3, name: "command", kind: "message", T: () => FileData }
-        ]);
-    }
-    create(value?: PartialMessage<StoreUpcomingFileDataResponse>): StoreUpcomingFileDataResponse {
-        const message = { success: false, bytesWritten: 0 };
-        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
-        if (value !== undefined)
-            reflectionMergePartial<StoreUpcomingFileDataResponse>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: StoreUpcomingFileDataResponse): StoreUpcomingFileDataResponse {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* bool success */ 1:
-                    message.success = reader.bool();
-                    break;
-                case /* uint32 bytesWritten */ 2:
-                    message.bytesWritten = reader.uint32();
-                    break;
-                case /* FileData command */ 3:
-                    message.command = FileData.internalBinaryRead(reader, reader.uint32(), options, message.command);
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: StoreUpcomingFileDataResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* bool success = 1; */
-        if (message.success !== false)
-            writer.tag(1, WireType.Varint).bool(message.success);
-        /* uint32 bytesWritten = 2; */
-        if (message.bytesWritten !== 0)
-            writer.tag(2, WireType.Varint).uint32(message.bytesWritten);
-        /* FileData command = 3; */
-        if (message.command)
-            FileData.internalBinaryWrite(message.command, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message StoreUpcomingFileDataResponse
- */
-export const StoreUpcomingFileDataResponse = new StoreUpcomingFileDataResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class RmFileCommand$Type extends MessageType<RmFileCommand> {
     constructor() {
@@ -992,11 +785,11 @@ export const MkDirResponse = new MkDirResponse$Type();
 class ReportFileDataCommand$Type extends MessageType<ReportFileDataCommand> {
     constructor() {
         super("ReportFileDataCommand", [
-            { no: 1, name: "filename", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "filePath", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ReportFileDataCommand>): ReportFileDataCommand {
-        const message = { filename: "" };
+        const message = { filePath: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ReportFileDataCommand>(this, message, value);
@@ -1007,8 +800,8 @@ class ReportFileDataCommand$Type extends MessageType<ReportFileDataCommand> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string filename */ 1:
-                    message.filename = reader.string();
+                case /* string filePath */ 1:
+                    message.filePath = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1022,9 +815,9 @@ class ReportFileDataCommand$Type extends MessageType<ReportFileDataCommand> {
         return message;
     }
     internalBinaryWrite(message: ReportFileDataCommand, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string filename = 1; */
-        if (message.filename !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.filename);
+        /* string filePath = 1; */
+        if (message.filePath !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.filePath);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1039,12 +832,12 @@ export const ReportFileDataCommand = new ReportFileDataCommand$Type();
 class ReportFileDataResponse$Type extends MessageType<ReportFileDataResponse> {
     constructor() {
         super("ReportFileDataResponse", [
-            { no: 1, name: "fileExists", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 1, name: "fileStatus", kind: "enum", T: () => ["GetFileStatusCode", GetFileStatusCode] },
             { no: 2, name: "fileData", kind: "message", T: () => FileData }
         ]);
     }
     create(value?: PartialMessage<ReportFileDataResponse>): ReportFileDataResponse {
-        const message = { fileExists: false };
+        const message = { fileStatus: 0 };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ReportFileDataResponse>(this, message, value);
@@ -1055,8 +848,8 @@ class ReportFileDataResponse$Type extends MessageType<ReportFileDataResponse> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* bool fileExists */ 1:
-                    message.fileExists = reader.bool();
+                case /* GetFileStatusCode fileStatus */ 1:
+                    message.fileStatus = reader.int32();
                     break;
                 case /* FileData fileData */ 2:
                     message.fileData = FileData.internalBinaryRead(reader, reader.uint32(), options, message.fileData);
@@ -1073,9 +866,9 @@ class ReportFileDataResponse$Type extends MessageType<ReportFileDataResponse> {
         return message;
     }
     internalBinaryWrite(message: ReportFileDataResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* bool fileExists = 1; */
-        if (message.fileExists !== false)
-            writer.tag(1, WireType.Varint).bool(message.fileExists);
+        /* GetFileStatusCode fileStatus = 1; */
+        if (message.fileStatus !== 0)
+            writer.tag(1, WireType.Varint).int32(message.fileStatus);
         /* FileData fileData = 2; */
         if (message.fileData)
             FileData.internalBinaryWrite(message.fileData, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
