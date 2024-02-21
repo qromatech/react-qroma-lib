@@ -80,6 +80,7 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
 
 
   const getFileDetails = async (filePath: string): Promise<ReportFileDataResponse | undefined> => {
+    console.log("GET FILE DETAILS")
     const reportFileDataCommand: QromaCommCommand = {
       command: {
         oneofKind: 'fsCommand',
@@ -87,7 +88,7 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
           command: {
             oneofKind: 'reportFileDataCommand',
             reportFileDataCommand: {
-              filename: filePath,
+              filePath,
             }
           }
         }
@@ -96,12 +97,29 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
 
     await qromaCommWebSerial.sendQromaCommCommand(reportFileDataCommand);
 
-    return;
+    const result = await waitForResponse((message: QromaCommResponse) => {
+      console.log("FILTERING");
+      console.log(_latestResponse);
+
+      if (message.response.oneofKind === 'fsResponse' &&
+          message.response.fsResponse.response.oneofKind === 'reportFileDataResponse')
+      {
+        console.log("GET FILE DETAILS SUCCESS");
+        return message.response.fsResponse.response.reportFileDataResponse;
+      }
+
+      return;
+    }, 2000);
+
+    console.log("FILE DETAILS RESULT")
+    console.log(result)
+
+    return result;
   }
   
 
   const getFileContents = async (filePath: string): Promise<GetFileContentsResponse | undefined> => {
-    const reportFileDataCommand: QromaCommCommand = {
+    const getFileContentsCommand: QromaCommCommand = {
       command: {
         oneofKind: 'fsCommand',
         fsCommand: {
@@ -116,7 +134,7 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
     };
 
     clearLatestResponse();
-    await qromaCommWebSerial.sendQromaCommCommand(reportFileDataCommand);
+    await qromaCommWebSerial.sendQromaCommCommand(getFileContentsCommand);
 
     const result = await waitForResponse((message: QromaCommResponse) => {
       console.log("FILTERING");

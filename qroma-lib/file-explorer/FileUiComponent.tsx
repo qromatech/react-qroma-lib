@@ -36,6 +36,21 @@ export const FileUiComponent = (props: IFileUiComponentProps) => {
     alert(decoded);
   }
 
+  const showFileDetails = async (filePath: string) => {
+    const fileDetails = await qromaCommFileSystemApi.getFileDetails(filePath);
+    if (fileDetails === undefined) {
+      console.log("Unable to read file details for " + filePath);
+      return;
+    }
+
+    const filesize = fileDetails.fileData.filesize;
+
+    alert("File: " + fileDetails.fileData.filename +
+          "\n\nSize: " + fileDetails.fileData.filesize + " bytes" +
+          "\n\nChecksum: " + fileDetails.fileData.checksum);
+  }
+
+
   const rmFile = async (filePath: string) => {
     await qromaCommFileSystemApi.rmFile(filePath);
   }
@@ -46,6 +61,7 @@ export const FileUiComponent = (props: IFileUiComponentProps) => {
       f - {itemPath}
       <button onClick={() => rmFile(itemPath) }>Delete</button>
       <button onClick={() => showFileContents(itemPath) }>Show</button>
+      <button onClick={() => showFileDetails(itemPath) }>Details</button>
       <ShowQromaFileLink 
         itemPath={itemPath}
         />

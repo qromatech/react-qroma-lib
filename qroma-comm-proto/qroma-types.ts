@@ -25,6 +25,23 @@ export interface Qroma_LogMessage {
     message: string;
 }
 /**
+ * @generated from protobuf message FileData
+ */
+export interface FileData {
+    /**
+     * @generated from protobuf field: string filename = 1;
+     */
+    filename: string;
+    /**
+     * @generated from protobuf field: uint32 filesize = 2;
+     */
+    filesize: number;
+    /**
+     * @generated from protobuf field: uint32 checksum = 3;
+     */
+    checksum: number;
+}
+/**
  * @generated from protobuf enum Qroma_LogLevel
  */
 export enum Qroma_LogLevel {
@@ -124,3 +141,64 @@ class Qroma_LogMessage$Type extends MessageType<Qroma_LogMessage> {
  * @generated MessageType for protobuf message Qroma_LogMessage
  */
 export const Qroma_LogMessage = new Qroma_LogMessage$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FileData$Type extends MessageType<FileData> {
+    constructor() {
+        super("FileData", [
+            { no: 1, name: "filename", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "filesize", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 3, name: "checksum", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<FileData>): FileData {
+        const message = { filename: "", filesize: 0, checksum: 0 };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<FileData>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FileData): FileData {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string filename */ 1:
+                    message.filename = reader.string();
+                    break;
+                case /* uint32 filesize */ 2:
+                    message.filesize = reader.uint32();
+                    break;
+                case /* uint32 checksum */ 3:
+                    message.checksum = reader.uint32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FileData, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string filename = 1; */
+        if (message.filename !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.filename);
+        /* uint32 filesize = 2; */
+        if (message.filesize !== 0)
+            writer.tag(2, WireType.Varint).uint32(message.filesize);
+        /* uint32 checksum = 3; */
+        if (message.checksum !== 0)
+            writer.tag(3, WireType.Varint).uint32(message.checksum);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message FileData
+ */
+export const FileData = new FileData$Type();
