@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { IQromaConnectionState, PortRequestResult, useQromaWebSerial } from "./QromaWebSerial";
+import { IQromaConnectionState, IQromaWebSerial, PortRequestResult, useQromaWebSerial } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
 
 
@@ -8,6 +8,7 @@ export interface IQromaCommWebSerial {
   getConnectionState(): IQromaConnectionState
   stopMonitoring: () => void
   sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
+  qromaWebSerial: IQromaWebSerial
 }
 
 
@@ -108,5 +109,6 @@ export const useQromaCommWebSerial = (
     getConnectionState: qromaWebSerial.getConnectionState,
     stopMonitoring: qromaWebSerial.stopMonitoring,
     sendQromaCommCommand,
+    qromaWebSerial,
   };
 }
