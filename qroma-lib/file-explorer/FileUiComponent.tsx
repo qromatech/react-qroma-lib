@@ -43,8 +43,6 @@ export const FileUiComponent = (props: IFileUiComponentProps) => {
       return;
     }
 
-    const filesize = fileDetails.fileData.filesize;
-
     alert("File: " + fileDetails.fileData.filename +
           "\n\nSize: " + fileDetails.fileData.filesize + " bytes" +
           "\n\nChecksum: " + fileDetails.fileData.checksum);
@@ -56,12 +54,41 @@ export const FileUiComponent = (props: IFileUiComponentProps) => {
   }
 
 
+  const doFileDownload = async (filePath) => {
+
+    const lastSlashIndex = filePath.lastIndexOf('/');
+    const fileNameWithExtension = lastSlashIndex !== -1 ? filePath.slice(lastSlashIndex + 1) : filePath;
+
+    console.log(fileNameWithExtension)
+
+    const fileBytes = await qromaCommFileSystemApi.getFileBytes(filePath);
+    if (fileBytes === undefined) {
+      console.log("Unable to read file contents for " + filePath);
+      return;
+    }
+
+    const blob = new Blob([fileBytes], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileNameWithExtension;
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+
+
   return (
     <li>
       f - {itemPath}
       <button onClick={() => rmFile(itemPath) }>Delete</button>
       <button onClick={() => showFileContents(itemPath) }>Show</button>
       <button onClick={() => showFileDetails(itemPath) }>Details</button>
+      <button onClick={() => doFileDownload(itemPath) }>Download</button>
       <ShowQromaFileLink 
         itemPath={itemPath}
         />

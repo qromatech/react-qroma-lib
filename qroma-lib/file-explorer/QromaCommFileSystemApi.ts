@@ -20,6 +20,8 @@ export interface IQromaCommFilesystemApi {
 
   getFileDetails: (filePath: string) => Promise<ReportFileDataResponse | undefined>
   getFileContents: (filePath: string) => Promise<GetFileContentsResponse | undefined>
+  getFileBytes: (filePath: string) => Promise<Uint8Array | undefined>
+  
   writeFileContents: (filePath: string, contents: Uint8Array) => Promise<ReportFileDataResponse | undefined>
   rmFile: (filePath: string) => Promise<RmFileResponse | undefined>
 
@@ -153,6 +155,44 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
     return result;
   }
 
+  const getFileBytes = async (filePath: string): Promise<Uint8Array | undefined> => {
+
+    return new Uint8Array([1, 2, 3]);
+
+    // const getFileContentsCommand: QromaCommCommand = {
+    //   command: {
+    //     oneofKind: 'fsCommand',
+    //     fsCommand: {
+    //       command: {
+    //         oneofKind: 'getFileContentsCommand',
+    //         getFileContentsCommand: {
+    //           filePath,
+    //         }
+    //       }
+    //     }
+    //   }
+    // };
+
+    // clearLatestResponse();
+    // await qromaCommWebSerial.sendQromaCommCommand(getFileContentsCommand);
+
+    // const result = await waitForResponse((message: QromaCommResponse) => {
+    //   console.log("FILTERING");
+    //   console.log(_latestResponse);
+
+    //   if (message.response.oneofKind === 'fsResponse' &&
+    //       message.response.fsResponse.response.oneofKind === 'getFileContentsResponse')
+    //   {
+    //     console.log("GET FILE CONTENT SUCCESS");
+    //     return message.response.fsResponse.response.getFileContentsResponse;
+    //   }
+
+    //   return;
+    // }, 1000);
+
+    // return result;
+  }
+
   const rmDir = async (dirPath: string): Promise<RmDirResponse | undefined> => {
     const rmFileCommand: QromaCommCommand = {
       command: {
@@ -174,6 +214,14 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
   }
 
   const writeFileContents = async (filePath: string, contents: Uint8Array): Promise<ReportFileDataResponse | undefined> => {
+    if (contents.length < 500) {
+      return await _writeFileContents(filePath, contents);
+    }
+
+    return await _streamFileContents(filePath, contents);
+  }
+
+  const _writeFileContents = async (filePath: string, contents: Uint8Array): Promise<ReportFileDataResponse | undefined> => {
 
     const checksum = crc32(contents);
 
@@ -199,6 +247,73 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
     await qromaCommWebSerial.sendQromaCommCommand(writeFileContentsCommand);
 
     return;
+  }
+
+  const _streamFileContents = async (filePath: string, contents: Uint8Array): Promise<ReportFileDataResponse | undefined> => {
+
+    const checksum = crc32(contents);
+
+    const fileStreamId = Math.floor(Date.now() / 1000);
+
+    const initWriteFileStreamCommand: QromaCommCommand = {
+      command: {
+        oneofKind: 'streamCommand',
+        streamCommand: {
+          command: {
+            oneofKind: 'initWriteFileStreamCommand',
+            initWriteFileStreamCommand: {
+              fileStreamId,
+              fileData: {
+                filename: filePath,
+                filesize: contents.length,
+                checksum,
+              }
+            }
+          }
+        }
+      }
+    };
+
+    console.log("SENDING STREAM CMD")
+    clearLatestResponse();
+    await qromaCommWebSerial.sendQromaCommCommand(initWriteFileStreamCommand);
+    
+    const initStreamResult = await waitForResponse((message: QromaCommResponse) => {
+      if (message.response.oneofKind === 'streamResponse' &&
+          message.response.streamResponse.response.oneofKind === 'initWriteFileStreamAckResponse')
+      {
+        console.log("FILTER SUCCESS");
+        return message.response.streamResponse.response.initWriteFileStreamAckResponse;
+      }
+
+      return;
+    }, 2000);
+
+    console.log("ACK RESPONSE");
+    console.log(initStreamResult)
+
+    await _sendBytesStream(contents);
+
+    const sendCompleteResult = await waitForResponse((message: QromaCommResponse) => {
+      if (message.response.oneofKind === 'streamResponse' &&
+          message.response.streamResponse.response.oneofKind === 'writeFileStreamCompleteResponse')
+      {
+        console.log("FILTER SUCCESS");
+        return message.response.streamResponse.response.writeFileStreamCompleteResponse;
+      }
+
+      return;
+    }, 2000);
+
+    console.log("SEND COMPLETE RESPONSE");
+    console.log(sendCompleteResult)
+
+
+    return;
+  }
+
+  const _sendBytesStream = async (bytestoSend: Uint8Array) => {
+    return await qromaCommWebSerial.qromaWebSerial.sendBytesInChunks(bytestoSend, 2000, 100);
   }
 
   const rmFile = async (filePath: string): Promise<RmFileResponse | undefined> => {
@@ -303,6 +418,8 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
     
     getFileDetails,
     getFileContents,
+    getFileBytes,
+
     writeFileContents,
     rmFile,
 

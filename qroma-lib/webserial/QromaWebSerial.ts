@@ -1,3 +1,4 @@
+import { sleep } from "../utils";
 
 const qromaWebSerialContext = {
   initialized: false,
@@ -21,6 +22,8 @@ export interface IQromaWebSerial {
 
   sendBytes(data: Uint8Array): void
   sendString(data: string): void
+
+  sendBytesInChunks(data: Uint8Array, chunkSize: number, sleepDurationInMs: number): void
 
   startMonitoring(): void
   stopMonitoring(): void  
@@ -247,6 +250,50 @@ export const useQromaWebSerial = (
     await sendBytes(encoded);
   }
 
+  const sendBytesInChunks = async (data: Uint8Array, chunkSize: number, sleepDurationInMs: number) => {
+    
+    // Python equivalent this logic was based on
+    //
+    // bytes_to_send = file_bytes[:]
+    // print(f"TO SEND: {len(bytes_to_send)} BYTES")
+    // while len(bytes_to_send) > send_count:
+    //     the_bytes = bytes_to_send[0:send_count]
+    //     await qcio.send_bytes(the_bytes)
+    //     bytes_to_send = bytes_to_send[send_count:]
+    //     print("SLEEP")
+
+    //     data = await qcio.read_bytes_until_timeout(sleep_duration)
+    //     # await asyncio.sleep(sleep_duration)
+
+    //     # print(f"LINE RECEIVED: {data}")
+    //     text = data.decode('utf-8')
+    //     lines = text.splitlines()
+    //     print("")
+    //     for l in lines:
+    //         print(l)
+    //     print("")
+
+    // if len(bytes_to_send) > 0:
+    //     await qcio.send_bytes(bytes_to_send)
+
+    const chunks: Uint8Array[] = [];
+    for (let i = 0; i < data.length; i += chunkSize) {
+        chunks.push(data.subarray(i, i + chunkSize));
+    }
+
+    const port = await requestPort();
+    console.log(port);
+    const writer = port.writable.getWriter();
+
+    for (let i = 0; i < chunks.length; i++) {
+      await writer.write(data);
+      await sleep(sleepDurationInMs);
+    }
+
+    writer.releaseLock();
+
+  }
+
   const startMonitoring = async () => {
     console.log("START MONITORING: startMonitoring");
 
@@ -314,6 +361,7 @@ export const useQromaWebSerial = (
     
     sendBytes,
     sendString,
+    sendBytesInChunks,
 
     startMonitoring,
     stopMonitoring,

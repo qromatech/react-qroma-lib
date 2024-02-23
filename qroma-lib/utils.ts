@@ -1,8 +1,8 @@
 import { Buffer } from 'buffer';
 
 
-export const sleep = async (waitTime: number) =>
-  new Promise(resolve => setTimeout(resolve, waitTime)
+export const sleep = async (waitTimeInMs: number) =>
+  new Promise(resolve => setTimeout(resolve, waitTimeInMs)
 );
 
 
