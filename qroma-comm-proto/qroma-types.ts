@@ -87,6 +87,27 @@ export enum Qroma_DebugCommMode {
      */
     DebugCommMode_SerialAndBluetooth = 4
 }
+/**
+ * @generated from protobuf enum GetFileStatusCode
+ */
+export enum GetFileStatusCode {
+    /**
+     * @generated from protobuf enum value: GFSC_NOT_SET = 0;
+     */
+    GFSC_NOT_SET = 0,
+    /**
+     * @generated from protobuf enum value: GFSC_FILE_EXISTS = 1;
+     */
+    GFSC_FILE_EXISTS = 1,
+    /**
+     * @generated from protobuf enum value: GFSC_ERR_OPEN_FILE = 2;
+     */
+    GFSC_ERR_OPEN_FILE = 2,
+    /**
+     * @generated from protobuf enum value: GFSC_ERR_INVALID_FILE_PATH = 3;
+     */
+    GFSC_ERR_INVALID_FILE_PATH = 3
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Qroma_LogMessage$Type extends MessageType<Qroma_LogMessage> {
     constructor() {
