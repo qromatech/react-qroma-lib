@@ -9,9 +9,10 @@ import { IQromaConnectionState, PortRequestResult } from "../webserial/QromaWebS
 import { Buffer } from 'buffer';
 import { useState } from "react";
 import { GetFileStatusCode } from "../../qroma-comm-proto/qroma-types";
+import { useQromaCommWebSerialRx } from "../webserial/QromaCommWebSerialRx";
 
 
-export interface IQromaCommFilesystemApi {
+export interface IQromaCommFilesystemRxApi {
   // init: (onConnection: (success: boolean) => void) => void
   init: () => void
 
@@ -31,7 +32,7 @@ export interface IQromaCommFilesystemApi {
 }
 
 
-export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
+export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
 
   console.log("STARTING QromaCommFileSystemApi");
 
@@ -63,7 +64,7 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
     setConnectionState(latestConnectionState);
   }
 
-  const qromaCommWebSerial = useQromaCommWebSerial(onQromaCommResponse, onConnectionChange);
+  const qromaCommWebSerial = useQromaCommWebSerialRx(onQromaCommResponse, onConnectionChange);
 
 
   const waitForResponse = async <T,>(filter: (message: QromaCommResponse) => T, timeoutInMs: number) : Promise<T | undefined> => {
@@ -215,7 +216,7 @@ export const useQromaCommFileSystemApi = (): IQromaCommFilesystemApi => {
     };
 
     clearLatestResponse();
-    await qromaCommWebSerial.sendQromaCommCommand(requestFileStreamCommand);
+    await qromaCommWebSerial.sendQromaCommCommandRx(requestFileStreamCommand);
 
     const ackResult = await waitForResponse((message: QromaCommResponse) => {
       console.log("FILTERING");
