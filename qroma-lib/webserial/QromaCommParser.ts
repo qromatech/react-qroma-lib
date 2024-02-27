@@ -1,21 +1,22 @@
+import { Buffer } from 'buffer';
 import { QromaCommResponse } from "../../qroma-comm-proto/qroma-comm";
 
 
 export interface IQromaCommParser {
-
+  parse: (rxBuffer: Uint8Array, onQromaCommResponse: (message: QromaCommResponse) => void) => Uint8Array
 }
 
 
 export const createDefaultQromaParser = (): IQromaCommParser => {
   
   const parse = (
-    currentRxBuffer: Uint8Array, 
+    rxBuffer: Uint8Array, 
     onQromaCommResponse: (message: QromaCommResponse) => void
   ): Uint8Array => {
 
-    const returnBuffer = new Uint8Array(currentRxBuffer);
-
+    let currentRxBuffer = new Uint8Array(rxBuffer);
     let firstNewLineIndex = 0;
+    
     while (firstNewLineIndex !== -1) {
 
       let firstNewLineIndex = currentRxBuffer.findIndex(x => x === 10);
@@ -23,6 +24,8 @@ export const createDefaultQromaParser = (): IQromaCommParser => {
       if (firstNewLineIndex === -1) {
         // setRxBuffer(currentRxBuffer);
         // return;
+        // console.log("NO NEW LINE IN BUFFER")
+        // console.log(currentRxBuffer)
         return currentRxBuffer;
       }
 
@@ -36,14 +39,24 @@ export const createDefaultQromaParser = (): IQromaCommParser => {
         currentRxBuffer = currentRxBuffer.slice(firstNewLineIndex, currentRxBuffer.length);
 
         const b64String = new TextDecoder().decode(b64Bytes);
-        console.log("RESPONSE: " + b64String);
-        const messageBytes = Buffer.from(b64String, 'base64');
-        const response = QromaCommResponse.fromBinary(messageBytes);
+        // console.log("QCP - RESPONSE: " + b64String);
+        try {
+            
+          const messageBytes = Buffer.from(b64String, 'base64');
+          // console.log("MSG BYTES")
+          // console.log(messageBytes)
+          const response = QromaCommResponse.fromBinary(messageBytes);
+          // console.log("RESPONSE FROM BYTES")
+          // console.log(response)
 
-        console.log("DefaultQromaParser - parse() has response");
-        console.log(response);
+          // console.log("DefaultQromaParser - parse() has QC response");
+          // console.log(response);
 
-        onQromaCommResponse(response);
+          onQromaCommResponse(response);
+        } catch (e) {
+          // console.log("PARSE ERR")
+          // console.log(e)
+        }
 
       } catch (e) {
         // console.log("CAUGHT ERROR");
@@ -51,9 +64,10 @@ export const createDefaultQromaParser = (): IQromaCommParser => {
       }
     }
 
+    return currentRxBuffer;
   }
 
   return {
-
+    parse,
   }
 }
