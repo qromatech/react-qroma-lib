@@ -11,6 +11,7 @@ export interface IQromaCommWebSerialRx {
   stopMonitoring: () => void
   sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
   sendQromaCommCommandRx: (qcCommand: QromaCommCommand, rxHandler: IQromaCommRxHandler) => void
+  monitorRx: (rxHandler: IQromaCommRxHandler) => void
   qromaWebSerial: IQromaWebSerial
   unsubscribe: () => void
 }
@@ -149,6 +150,18 @@ export const useQromaCommWebSerialRx = (
     _exitRxMode();
   }
 
+  const monitorRx = async (rxHandler: IQromaCommRxHandler) => {
+    _enterRxMode(rxHandler);
+
+    while (!rxHandler.isRxComplete() &&
+           !rxHandler.hasTimeoutOccurred())
+    {
+      await sleep(25);
+    }
+
+    _exitRxMode();
+  }
+
 
   console.log("RX CALLING useQromaWebSerial");
   const qromaWebSerial = useQromaWebSerial(
@@ -162,6 +175,7 @@ export const useQromaCommWebSerialRx = (
     stopMonitoring: qromaWebSerial.stopMonitoring,
     sendQromaCommCommand,
     sendQromaCommCommandRx,
+    monitorRx,
     qromaWebSerial,
     unsubscribe: qromaWebSerial.unsubscribe,
   };
