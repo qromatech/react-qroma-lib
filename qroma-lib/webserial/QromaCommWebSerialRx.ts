@@ -1,8 +1,8 @@
 import { Buffer } from 'buffer';
-import { IQromaConnectionState, IQromaWebSerial, PortRequestResult, useQromaWebSerial } from "./QromaWebSerial";
+import { IQromaConnectionState, IQromaWebSerial, useQromaWebSerial } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
 import { createDefaultQromaParser } from './QromaCommParser';
-import { sleep } from '../utils';
+import { concatenateUint8Arrays, sleep } from '../utils';
 
 
 export interface IQromaCommWebSerialRx {
@@ -12,6 +12,7 @@ export interface IQromaCommWebSerialRx {
   sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
   sendQromaCommCommandRx: (qcCommand: QromaCommCommand, rxHandler: IQromaCommRxHandler) => void
   qromaWebSerial: IQromaWebSerial
+  unsubscribe: () => void
 }
 
 export interface IQromaCommRxHandler {
@@ -23,7 +24,7 @@ export interface IQromaCommRxHandler {
 
 
 export const useQromaCommWebSerialRx = (
-  onQromaCommResponse: (message: QromaCommResponse) => void,
+  // onQromaCommResponse: (message: QromaCommResponse) => boolean,
   onConnectionChange: (latestConnection: IQromaConnectionState) => void
 ): IQromaCommWebSerialRx => {
   if (!window) {
@@ -31,69 +32,50 @@ export const useQromaCommWebSerialRx = (
   }
 
   let _rxBuffer = new Uint8Array();
-  const _qromaCommParser = createDefaultQromaParser();
+  // const _qromaCommParser = createDefaultQromaParser("mainRx");
   let _qromaCommRxHandler: IQromaCommRxHandler | undefined;
 
   const setRxBuffer = (update: Uint8Array) => {
+    console.log("SETTING RX BUFFER")
+    console.log(update)
     _rxBuffer = update;
   }
 
   const onData = (newData: Uint8Array) => {
-    console.log("QromaCommWebSerial RX - onData");
-    console.log(newData);
+    console.log("QromaCommWebSerial RX - onData - " + newData.length + " bytes");
+    console.log(_qromaCommRxHandler)
+    // console.log(newData);
 
-    let currentRxBuffer = new Uint8Array([..._rxBuffer, ...newData]);
+    // let currentRxBuffer = new Uint8Array([..._rxBuffer, ...newData]);
+    let currentRxBuffer = concatenateUint8Arrays(_rxBuffer, newData);
 
     if (_qromaCommRxHandler) {
       console.log("QROMA COMM RX PARSING")
-      _qromaCommRxHandler.onRx(currentRxBuffer);
+      // let lastReadLength = 0;
+      // let toReadLength = currentRxBuffer.length;
+      let remainingBuffer = currentRxBuffer;
+      let lastRemainingBufferLength = remainingBuffer.length + 1;
+
+      while (remainingBuffer.length < lastRemainingBufferLength) {
+      // while (lastRemainingBufferLength < remainingBuffer.length) {
+        console.log("ONRX DATA");
+        console.log(remainingBuffer)
+        lastRemainingBufferLength = remainingBuffer.length;
+        remainingBuffer = _qromaCommRxHandler.onRx(remainingBuffer);
+      } 
+
+      setRxBuffer(remainingBuffer);
+      console.log("FINISH QROMA COMM RX PARSING")
     } else {
-      console.log("CLASSIC QROMA COMM PARSING")
-      const remainingBuffer = _qromaCommParser.parse(currentRxBuffer, onQromaCommResponse);
-      setRxBuffer(remainingBuffer);  
+      console.log("QC WEBSERIAL RX - CLASSIC QROMA COMM PARSING")
+      // const remainingBuffer = _qromaCommParser.parse(currentRxBuffer, onQromaCommResponse);
+      // setRxBuffer(remainingBuffer);
+      console.log("FINISH QC WEBSERIAL RX - CLASSIC QROMA COMM PARSING")
+      // throw new Error("NOT DOING THIS HERE")
+      console.log("NOT DOING THIS HERE")
     }
 
-
-
-
-    // let currentRxBuffer = new Uint8Array([..._rxBuffer, ...newData]);
-    // let firstNewLineIndex = 0;
-
-    // while (firstNewLineIndex !== -1) {
-
-    //   let firstNewLineIndex = currentRxBuffer.findIndex(x => x === 10);
-
-    //   if (firstNewLineIndex === -1) {
-    //     setRxBuffer(currentRxBuffer);
-    //     return;
-    //   }
-
-    //   if (firstNewLineIndex === 0) {
-    //     currentRxBuffer = currentRxBuffer.slice(1, currentRxBuffer.length);
-    //     continue;
-    //   }
-
-    //   try {
-    //     const b64Bytes = currentRxBuffer.slice(0, firstNewLineIndex);
-    //     currentRxBuffer = currentRxBuffer.slice(firstNewLineIndex, currentRxBuffer.length);
-
-    //     const b64String = new TextDecoder().decode(b64Bytes);
-    //     console.log("RESPONSE: " + b64String);
-    //     const messageBytes = Buffer.from(b64String, 'base64');
-    //     const response = QromaCommResponse.fromBinary(messageBytes);
-
-    //     console.log("QromaCommWebSerial - onData has response");
-    //     console.log(response);
-
-    //     onQromaCommResponse(response);
-
-    //   } catch (e) {
-    //     // console.log("CAUGHT ERROR");
-    //     // console.log(e);
-    //   }
-    // }
-    // setRxBuffer(currentRxBuffer);
-
+    console.log("QromaCommWebSerial RX - onData complete");
   }
 
   const startMonitoring = async () => {
@@ -181,5 +163,6 @@ export const useQromaCommWebSerialRx = (
     sendQromaCommCommand,
     sendQromaCommCommandRx,
     qromaWebSerial,
+    unsubscribe: qromaWebSerial.unsubscribe,
   };
 }

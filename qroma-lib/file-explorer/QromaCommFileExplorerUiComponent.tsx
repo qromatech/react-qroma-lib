@@ -3,19 +3,22 @@ import React, { ChangeEvent, useState } from "react"
 import { DirItem, DirItemType } from "../../qroma-comm-proto/file-system-commands";
 import { FileUiComponent } from "./FileUiComponent";
 import { DirUiComponent } from "./DirUiComponent";
-import { useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
+import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
 
 // // @ts-ignore
 // import { Buffer } from 'buffer';
 
 
-interface IQromaCommFileExplorerUiComponentProps { }
+interface IQromaCommFileExplorerUiComponentProps {
+  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
+}
 
 
 
 export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUiComponentProps) => {
 
-  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  // const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
 
   const [dirItems, setDirItems] = useState([] as DirItem[]);
   const [activeDirPath, setActiveDirPath] = useState("...");
@@ -123,6 +126,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
                 <DirUiComponent
                   dirPath={activeDirPath}
                   dirItem={x}
+                  qromaCommFileSystemApi={qromaCommFileSystemApi}
                   key={x.name}
                   />
               )
@@ -131,6 +135,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
                 <FileUiComponent
                   dirPath={activeDirPath}
                   dirItem={x}
+                  qromaCommFileSystemApi={qromaCommFileSystemApi}
                   key={x.name}
                   />
               ) 

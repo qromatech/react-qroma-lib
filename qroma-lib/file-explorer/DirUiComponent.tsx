@@ -1,13 +1,13 @@
 import React from "react";
 import { DirItem } from "../../qroma-comm-proto/file-system-commands";
-import { useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
+import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
 import { NavToDirLink } from "./NavToDirLink";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 
 interface IDirUiComponentProps {
   dirPath: string
   dirItem: DirItem
+  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
 }
 
 
@@ -19,7 +19,7 @@ export const DirUiComponent = (props: IDirUiComponentProps) => {
   const itemPath = dirPath + separator + dirItem.name;
   console.log("DIRPATH ITEM - " + itemPath);
 
-  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  // const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
 
   const createFileInDirPath = async (dirPath: string) => {
     const fileName = prompt("Enter file name");
@@ -41,7 +41,7 @@ export const DirUiComponent = (props: IDirUiComponentProps) => {
     const encoder = new TextEncoder();
     const encoded = encoder.encode(fileContent);
 
-    await qromaCommFileSystemApi.writeFileContents(filePath, encoded);
+    await props.qromaCommFileSystemApi.writeFileContents(filePath, encoded);
   }
 
   return (

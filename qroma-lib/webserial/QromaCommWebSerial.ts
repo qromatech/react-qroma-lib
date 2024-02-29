@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import { IQromaConnectionState, IQromaWebSerial, PortRequestResult, useQromaWebSerial } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
+import { concatenateUint8Arrays } from '../utils';
 
 
 export interface IQromaCommWebSerial {
@@ -30,7 +31,8 @@ export const useQromaCommWebSerial = (
     console.log("QromaCommWebSerial - onData");
     console.log(newData);
 
-    let currentRxBuffer = new Uint8Array([...rxBuffer, ...newData]);
+    // let currentRxBuffer = new Uint8Array([...rxBuffer, ...newData]);
+    let currentRxBuffer = concatenateUint8Arrays(rxBuffer, newData);
 
     let firstNewLineIndex = 0;
 
@@ -92,7 +94,7 @@ export const useQromaCommWebSerial = (
     
     console.log(messageBytes);
     const requestB64 = Buffer.from(messageBytes).toString('base64') + "\n";
-    console.log(requestB64);
+    console.log("TO DEVICE >> " + requestB64);
     console.log(requestB64.length);
 
     await qromaWebSerial.sendString(requestB64);

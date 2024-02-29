@@ -2,12 +2,13 @@ import React from "react";
 import { DirItem } from "../../qroma-comm-proto/file-system-commands";
 import { ShowQromaFileLink } from "./ShowQromaFileLink";
 // import { useQromaCommFileSystemApi } from "./QromaCommFileSystemApi";
-import { useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
+import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
 
 
 interface IFileUiComponentProps {
   dirPath: string
   dirItem: DirItem
+  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
 }
 
 
@@ -23,10 +24,11 @@ export const FileUiComponent = (props: IFileUiComponentProps) => {
   const itemPath = dirPath + separator + dirItem.name;
   console.log("FILEPATH ITEM - " + itemPath);
 
-  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  // const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
 
   const showFileContents = async (filePath: string) => {
-    const fileContents = await qromaCommFileSystemApi.getFileContents(filePath);
+    const fileContents = await props.qromaCommFileSystemApi.getFileContents(filePath);
     if (fileContents === undefined) {
       console.log("Unable to read file contents for " + filePath);
       return;

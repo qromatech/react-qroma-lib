@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react"
 import { useLocation } from "@docusaurus/router";
 // import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { convertBinaryToBase64 } from "../utils";
-import { useQromaCommFileSystemRxApi } from "../file-explorer/QromaCommFileSystemRxApi";
+import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "../file-explorer/QromaCommFileSystemRxApi";
 
 
-interface IQromaIoShowQromaFileUiComponentProps<T extends object, U extends object> { }
+interface IQromaIoShowQromaFileUiComponentProps<T extends object, U extends object> {
+  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
+}
 
 export const QromaIoShowQromaFileUiComponent = <T extends object, U extends object>(
   props: IQromaIoShowQromaFileUiComponentProps<T, U>
@@ -28,7 +30,8 @@ export const QromaIoShowQromaFileUiComponent = <T extends object, U extends obje
     </div>
   }
 
-  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  // const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
   const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   const showFileContents = async (filePath: string) => {

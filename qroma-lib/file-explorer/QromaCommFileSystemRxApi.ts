@@ -22,16 +22,17 @@ export interface IQromaCommFilesystemRxApi {
   mkDir: (dirPath: string) => Promise<MkDirResponse | undefined>
   rmDir: (dirPath: string) => Promise<RmDirResponse | undefined>
 
-  getFileDetails: (filePath: string) => Promise<ReportFileDataResponse | undefined>
+  // getFileDetails: (filePath: string) => Promise<ReportFileDataResponse | undefined>
   getFileDetailsRx: (filePath: string) => Promise<ReportFileDataResponse | undefined>
   getFileContents: (filePath: string) => Promise<GetFileContentsResponse | undefined>
-  getFileBytes: (filePath: string) => Promise<Uint8Array | undefined>
+  // getFileBytes: (filePath: string) => Promise<Uint8Array | undefined>
   
   writeFileContents: (filePath: string, contents: Uint8Array) => Promise<ReportFileDataResponse | undefined>
   downloadFileContents: (filePath: string) => Promise<Uint8Array | null>
   rmFile: (filePath: string) => Promise<RmFileResponse | undefined>
 
   connectionState: IQromaConnectionState
+  unsubscribe: () => void
 }
 
 
@@ -43,23 +44,28 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
     isConnected: false,
     isMonitorOn: false,
     isPortConnected: false,
+
+    isQromaMonitoringOn: false,
+    isWebSerialConnected: false,
+    keepQromaMonitoringOn: false,
   } as IQromaConnectionState);
 
-  let _latestResponse: QromaCommResponse | undefined = undefined;
+  // let _latestResponse: QromaCommResponse | undefined = undefined;
 
-  const clearLatestResponse = () => {
-    _latestResponse = undefined;
-  }
+  // const clearLatestResponse = () => {
+  //   _latestResponse = undefined;
+  // }
 
-  const setLatestResponse = (message: QromaCommResponse) => {
-    _latestResponse = message;
-  }
+  // const setLatestResponse = (message: QromaCommResponse) => {
+  //   _latestResponse = message;
+  // }
 
-  const onQromaCommResponse = (message: QromaCommResponse) => {
-    console.log("QCFSRX")
-    console.log(message)
-    setLatestResponse(message);
-  }
+  // const onQromaCommResponse = (message: QromaCommResponse): boolean => {
+  //   console.log("QCFSRX")
+  //   console.log(message)
+  //   setLatestResponse(message);
+  //   return true;
+  // }
 
   const startMonitoring = () => {
     qromaCommWebSerial.startMonitoring();
@@ -69,63 +75,65 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
     setConnectionState(latestConnectionState);
   }
 
-  const qromaCommWebSerial = useQromaCommWebSerialRx(onQromaCommResponse, onConnectionChange);
+  console.log("CALLING useQromaCommWebSerialRx()")
+  // const qromaCommWebSerial = useQromaCommWebSerialRx(onQromaCommResponse, onConnectionChange);
+  const qromaCommWebSerial = useQromaCommWebSerialRx(onConnectionChange);
 
 
-  const waitForResponse = async <T,>(filter: (message: QromaCommResponse) => T, timeoutInMs: number) : Promise<T | undefined> => {
-    const expirationTime = Date.now() + timeoutInMs;
+  // const waitForResponse = async <T,>(filter: (message: QromaCommResponse) => T, timeoutInMs: number) : Promise<T | undefined> => {
+  //   const expirationTime = Date.now() + timeoutInMs;
     
-    while (Date.now() < expirationTime) {
-      if (_latestResponse !== undefined) {
-        const filteredResponse = filter(_latestResponse);
-        if (filteredResponse !== undefined) {
-          return filteredResponse;
-        }
-      }
-      await sleep(25);
-    }
+  //   while (Date.now() < expirationTime) {
+  //     if (_latestResponse !== undefined) {
+  //       const filteredResponse = filter(_latestResponse);
+  //       if (filteredResponse !== undefined) {
+  //         return filteredResponse;
+  //       }
+  //     }
+  //     await sleep(25);
+  //   }
 
-    return;
-  }
+  //   return;
+  // }
 
 
-  const getFileDetails = async (filePath: string): Promise<ReportFileDataResponse | undefined> => {
-    console.log("GET FILE DETAILS")
-    const reportFileDataCommand: QromaCommCommand = {
-      command: {
-        oneofKind: 'fsCommand',
-        fsCommand: {
-          command: {
-            oneofKind: 'reportFileDataCommand',
-            reportFileDataCommand: {
-              filePath,
-            }
-          }
-        }
-      }
-    };
+  // const getFileDetails = async (filePath: string): Promise<ReportFileDataResponse | undefined> => {
+  //   console.log("GET FILE DETAILS")
+  //   const reportFileDataCommand: QromaCommCommand = {
+  //     command: {
+  //       oneofKind: 'fsCommand',
+  //       fsCommand: {
+  //         command: {
+  //           oneofKind: 'reportFileDataCommand',
+  //           reportFileDataCommand: {
+  //             filePath,
+  //           }
+  //         }
+  //       }
+  //     }
+  //   };
 
-    await qromaCommWebSerial.sendQromaCommCommand(reportFileDataCommand);
+  //   await qromaCommWebSerial.sendQromaCommCommand(reportFileDataCommand);
 
-    const result = await waitForResponse((message: QromaCommResponse) => {
-      console.log("FILTERING");
-      console.log(_latestResponse);
+  //   const result = await waitForResponse((message: QromaCommResponse) => {
+  //     console.log("FILTERING");
+  //     console.log(_latestResponse);
 
-      if (message.response.oneofKind === 'fsResponse' &&
-          message.response.fsResponse.response.oneofKind === 'reportFileDataResponse')
-      {
-        console.log("GET FILE DETAILS SUCCESS");
-        return message.response.fsResponse.response.reportFileDataResponse;
-      }
+  //     if (message.response.oneofKind === 'fsResponse' &&
+  //         message.response.fsResponse.response.oneofKind === 'reportFileDataResponse')
+  //     {
+  //       console.log("GET FILE DETAILS SUCCESS");
+  //       return message.response.fsResponse.response.reportFileDataResponse;
+  //     }
 
-      return;
-    }, 2000);
+  //     return;
+  //   }, 2000);
 
-    console.log("FILE DETAILS RESULT")
-    console.log(result)
+  //   console.log("FILE DETAILS RESULT")
+  //   console.log(result)
 
-    return result;
-  }
+  //   return result;
+  // }
 
 
   const getFileDetailsRx = async (filePath: string): Promise<ReportFileDataResponse | undefined> => {
@@ -150,13 +158,14 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
     const timeoutInMs = 2000;
     const expirationTime = Date.now() + timeoutInMs;
 
-    const dqp = createDefaultQromaParser();
+    const dqp = createDefaultQromaParser("getFileDetailsRx");
     const rxOnQromaCommResponse = (message: QromaCommResponse) => {
       if (message.response.oneofKind === 'fsResponse' &&
           message.response.fsResponse.response.oneofKind === 'reportFileDataResponse')
       {
         rx = message.response.fsResponse.response.reportFileDataResponse;
       }
+      return true;
     };
 
     let rxHandler: IQromaCommRxHandler = {
@@ -175,40 +184,6 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
     console.log(timedOut)
 
     return rx;
-
-    // const expirationTime = Date.now() + timeoutInMs;
-    
-    // while (Date.now() < expirationTime) {
-    //   if (_latestResponse !== undefined) {
-    //     const filteredResponse = filter(_latestResponse);
-    //     if (filteredResponse !== undefined) {
-    //       return filteredResponse;
-    //     }
-    //   }
-    //   await sleep(25);
-    // }
-
-
-
-
-    // const result = await waitForResponse((message: QromaCommResponse) => {
-    //   console.log("FILTERING");
-    //   console.log(_latestResponse);
-
-    //   if (message.response.oneofKind === 'fsResponse' &&
-    //       message.response.fsResponse.response.oneofKind === 'reportFileDataResponse')
-    //   {
-    //     console.log("GET FILE DETAILS SUCCESS");
-    //     return message.response.fsResponse.response.reportFileDataResponse;
-    //   }
-
-    //   return;
-    // }, 2000);
-
-    // console.log("FILE DETAILS RESULT")
-    // console.log(result)
-
-    // return result;
   }
   
 
@@ -227,61 +202,125 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
       }
     };
 
-    clearLatestResponse();
-    await qromaCommWebSerial.sendQromaCommCommand(getFileContentsCommand);
+    // clearLatestResponse();
+    // await qromaCommWebSerial.sendQromaCommCommand(getFileContentsCommand);
 
-    const result = await waitForResponse((message: QromaCommResponse) => {
-      console.log("FILTERING");
-      console.log(_latestResponse);
+    // const result = await waitForResponse((message: QromaCommResponse) => {
+    //   console.log("FILTERING");
+    //   console.log(_latestResponse);
 
+    //   if (message.response.oneofKind === 'fsResponse' &&
+    //       message.response.fsResponse.response.oneofKind === 'getFileContentsResponse')
+    //   {
+    //     console.log("GET FILE CONTENT SUCCESS");
+    //     return message.response.fsResponse.response.getFileContentsResponse;
+    //   }
+
+    //   return;
+    // }, 1000);
+
+    // return result;
+
+    let rx: GetFileContentsResponse | undefined = undefined;
+    let timedOut = false;
+    const timeoutInMs = 2000;
+    const expirationTime = Date.now() + timeoutInMs;
+
+    const dqp = createDefaultQromaParser("getFileDetailsRx");
+    const rxOnQromaCommResponse = (message: QromaCommResponse) => {
       if (message.response.oneofKind === 'fsResponse' &&
           message.response.fsResponse.response.oneofKind === 'getFileContentsResponse')
       {
-        console.log("GET FILE CONTENT SUCCESS");
-        return message.response.fsResponse.response.getFileContentsResponse;
+        rx = message.response.fsResponse.response.getFileContentsResponse;
       }
-
-      return;
-    }, 1000);
-
-    return result;
-  }
-
-  const getFileBytes = async (filePath: string): Promise<Uint8Array | undefined> => {
-
-    const getFileContentsCommand: QromaCommCommand = {
-      command: {
-        oneofKind: 'fsCommand',
-        fsCommand: {
-          command: {
-            oneofKind: 'getFileContentsCommand',
-            getFileContentsCommand: {
-              filePath,
-            }
-          }
-        }
-      }
+      return true;
     };
 
-    clearLatestResponse();
-    await qromaCommWebSerial.sendQromaCommCommand(getFileContentsCommand);
+    let rxHandler: IQromaCommRxHandler = {
+      hasTimeoutOccurred: () => Date.now() > expirationTime,
+      onTimeout: () => { timedOut = true; },
+      onRx: (rxBuffer: Uint8Array) => {
+        return dqp.parse(rxBuffer, rxOnQromaCommResponse);
+      },
+      isRxComplete: () => rx !== undefined,
+    };
 
-    const result = await waitForResponse((message: QromaCommResponse) => {
-      console.log("FILTERING");
-      console.log(_latestResponse);
+    await qromaCommWebSerial.sendQromaCommCommandRx(getFileContentsCommand, rxHandler);
 
-      if (message.response.oneofKind === 'fsResponse' &&
-          message.response.fsResponse.response.oneofKind === 'getFileContentsResponse')
-      {
-        console.log("GET FILE CONTENT SUCCESS");
-        return message.response.fsResponse.response.getFileContentsResponse;
-      }
+    console.log("GetFileContentsResponse RX")
+    console.log(rx)
+    console.log(timedOut)
 
-      return;
-    }, 1000);
-
-    return result;
+    return rx;
   }
+
+  // const getFileBytes = async (filePath: string): Promise<Uint8Array | undefined> => {
+
+  //   const getFileContentsCommand: QromaCommCommand = {
+  //     command: {
+  //       oneofKind: 'fsCommand',
+  //       fsCommand: {
+  //         command: {
+  //           oneofKind: 'getFileContentsCommand',
+  //           getFileContentsCommand: {
+  //             filePath,
+  //           }
+  //         }
+  //       }
+  //     }
+  //   };
+
+  //   // clearLatestResponse();
+  //   // await qromaCommWebSerial.sendQromaCommCommand(getFileContentsCommand);
+
+  //   // const result = await waitForResponse((message: QromaCommResponse) => {
+  //   //   console.log("FILTERING");
+  //   //   console.log(_latestResponse);
+
+  //   //   if (message.response.oneofKind === 'fsResponse' &&
+  //   //       message.response.fsResponse.response.oneofKind === 'getFileContentsResponse')
+  //   //   {
+  //   //     console.log("GET FILE CONTENT SUCCESS");
+  //   //     return message.response.fsResponse.response.getFileContentsResponse;
+  //   //   }
+
+  //   //   return;
+  //   // }, 1000);
+
+  //   // return result;
+
+  //   let rx: Uint8Array | undefined = undefined;
+  //   let timedOut = false;
+  //   const timeoutInMs = 2000;
+  //   const expirationTime = Date.now() + timeoutInMs;
+
+  //   const dqp = createDefaultQromaParser("getFileDetailsRx");
+  //   const rxOnQromaCommResponse = (message: QromaCommResponse) => {
+  //     if (message.response.oneofKind === 'fsResponse' &&
+  //         message.response.fsResponse.response.oneofKind === 'reportFileDataResponse')
+  //     {
+  //       rx = message.response.fsResponse.response.reportFileDataResponse;
+  //     }
+  //     return true;
+  //   };
+
+  //   let rxHandler: IQromaCommRxHandler = {
+  //     hasTimeoutOccurred: () => Date.now() > expirationTime,
+  //     onTimeout: () => { timedOut = true; },
+  //     onRx: (rxBuffer: Uint8Array) => {
+  //       return dqp.parse(rxBuffer, rxOnQromaCommResponse);
+  //     },
+  //     isRxComplete: () => rx !== undefined,
+  //   };
+
+  //   await qromaCommWebSerial.sendQromaCommCommandRx(getFileContentsCommand, rxHandler);
+
+  //   console.log("FILE DETAILS RESULT RX")
+  //   console.log(rx)
+  //   console.log(timedOut)
+
+  //   return rx;
+  // }
 
   const downloadFileContents = async (filePath: string): Promise<Uint8Array | null> => {
     // filter for init ack... on success, get number of bytes to wait for or timeout, then filter for complete... 
@@ -304,86 +343,17 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
       }
     };
 
-    // let rx: ReportFileDataResponse | undefined = undefined;
-    // let timedOut = false;
-    // const timeoutInMs = 2000;
-    // const expirationTime = Date.now() + timeoutInMs;
-
-    // const dqp = createDefaultQromaParser();
-    // const rxOnQromaCommResponse = (message: QromaCommResponse) => {
-    //   if (message.response.oneofKind === 'fsResponse' &&
-    //       message.response.fsResponse.response.oneofKind === 'reportFileDataResponse')
-    //   {
-    //     rx = message.response.fsResponse.response.reportFileDataResponse;
-    //   }
-    // };
-
-    // let rxHandler: IQromaCommRxHandler = {
-    //   hasTimeoutOccurred: () => Date.now() > expirationTime,
-    //   onTimeout: () => { timedOut = true; },
-    //   onRx: (rxBuffer: Uint8Array) => {
-    //     return dqp.parse(rxBuffer, rxOnQromaCommResponse);
-    //   },
-    //   isRxComplete: () => rx !== undefined,
-    // };
-
     const rxHandler = createDownloadFileContentsRxHandler(5000);
 
     await qromaCommWebSerial.sendQromaCommCommandRx(requestFileStreamCommand, rxHandler);
 
-    if (rxHandler.downloadStage === 'complete-success') {
-      return rxHandler.fileBytes;
+    if (rxHandler.getDownloadStage() === 'complete-success') {
+      return rxHandler.getFileBytes();
+
+    } else {
+      console.log("DOWNLOAD DIDN'T COMPLETE SUCCESSFULLY")
+      console.log(rxHandler)
     }
-
-    return null;
-
-
-    // clearLatestResponse();
-    // await qromaCommWebSerial.sendQromaCommCommandRx(requestFileStreamCommand);
-
-    // const ackResult = await waitForResponse((message: QromaCommResponse) => {
-    //   console.log("FILTERING");
-    //   console.log(_latestResponse);
-
-    //   if (message.response.oneofKind === 'streamResponse' &&
-    //       message.response.streamResponse.response.oneofKind === 'initReadFileStreamAckResponse')
-    //   {
-    //     console.log("ACK - initReadFileStreamAckResponse");
-    //     return message.response.streamResponse.response.initReadFileStreamAckResponse;
-    //   }
-
-    //   return;
-    // }, 1000);
-
-    // if (ackResult?.fileStatus !== GetFileStatusCode.GFSC_FILE_EXISTS) {
-    //   console.log("UNSUCCESSFUL ACK RESULT");
-    //   console.log(ackResult);
-    //   return null;
-    // }
-
-    // console.log("RECEIVE FILE CONTENTS STAGE")
-    // // const fileBytes = qromaCommWebSerial.qromaWebSerial.sendBytes
-
-    // // clearLatestResponse();
-    // const completeResult = await waitForResponse((message: QromaCommResponse) => {
-    //   console.log("FILTERING FOR readFileStreamCompleteResponse");
-    //   console.log(_latestResponse);
-
-    //   if (message.response.oneofKind === 'streamResponse' &&
-    //       message.response.streamResponse.response.oneofKind === 'readFileStreamCompleteResponse')
-    //   {
-    //     console.log("COMPLETE - readFileStreamCompleteResponse");
-    //     return message.response.streamResponse.response.readFileStreamCompleteResponse;
-    //   }
-
-    //   return;
-    // }, 1000);
-
-    // if (completeResult?.success !== true) {
-    //   console.log("UNSUCCESSFUL COMPLETE RESULT");
-    //   console.log(completeResult);
-    //   return null;
-    // }
 
     return null;
   }
@@ -550,25 +520,60 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
       }
     };
 
-    // wait for next message
-    clearLatestResponse();
-    await qromaCommWebSerial.sendQromaCommCommand(fsCommand);
-    // listen for latest message; if valid/expected message type, return value
-    const result = await waitForResponse((message: QromaCommResponse) => {
-      console.log("FILTERING");
-      console.log(_latestResponse);
+    // console.log("CALLING SF API - listDir()")
 
+    // // wait for next message
+    // clearLatestResponse();
+    // await qromaCommWebSerial.sendQromaCommCommand(fsCommand);
+    // // listen for latest message; if valid/expected message type, return value
+    // const result = await waitForResponse((message: QromaCommResponse) => {
+    //   console.log("FILTERING");
+    //   console.log(_latestResponse);
+
+    //   if (message.response.oneofKind === 'fsResponse' &&
+    //       message.response.fsResponse.response.oneofKind === 'listDirContentsResponse')
+    //   {
+    //     console.log("FILTER SUCCESS");
+    //     return message.response.fsResponse.response.listDirContentsResponse;
+    //   }
+
+    //   return;
+    // }, 1000);
+
+    // return result;
+
+
+    let rx: ListDirContentsResponse | undefined = undefined;
+    let timedOut = false;
+    const timeoutInMs = 2000;
+    const expirationTime = Date.now() + timeoutInMs;
+
+    const dqp = createDefaultQromaParser("listDir");
+    const rxOnQromaCommResponse = (message: QromaCommResponse) => {
       if (message.response.oneofKind === 'fsResponse' &&
           message.response.fsResponse.response.oneofKind === 'listDirContentsResponse')
       {
-        console.log("FILTER SUCCESS");
-        return message.response.fsResponse.response.listDirContentsResponse;
+        rx = message.response.fsResponse.response.listDirContentsResponse;
       }
+      return true;
+    };
 
-      return;
-    }, 1000);
+    let rxHandler: IQromaCommRxHandler = {
+      hasTimeoutOccurred: () => Date.now() > expirationTime,
+      onTimeout: () => { timedOut = true; },
+      onRx: (rxBuffer: Uint8Array) => {
+        return dqp.parse(rxBuffer, rxOnQromaCommResponse);
+      },
+      isRxComplete: () => rx !== undefined,
+    };
 
-    return result;
+    await qromaCommWebSerial.sendQromaCommCommandRx(fsCommand, rxHandler);
+
+    console.log("listDir RESULT RX")
+    console.log(rx)
+    console.log(timedOut)
+
+    return rx;
   }
 
   const mkDir = async (dirPath: string): Promise<MkDirResponse | undefined> => {
@@ -586,35 +591,67 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
       }
     };
 
-    // wait for next message
-    clearLatestResponse();
-    qromaCommWebSerial.sendQromaCommCommand(mkDirCommand);
+    // // wait for next message
+    // clearLatestResponse();
+    // qromaCommWebSerial.sendQromaCommCommand(mkDirCommand);
 
-    const result = await waitForResponse((message: QromaCommResponse) => {
-      console.log("FILTERING");
-      console.log(_latestResponse);
+    // const result = await waitForResponse((message: QromaCommResponse) => {
+    //   console.log("FILTERING");
+    //   console.log(_latestResponse);
 
+    //   if (message.response.oneofKind === 'fsResponse' &&
+    //       message.response.fsResponse.response.oneofKind === 'listDirContentsResponse')
+    //   {
+    //     console.log("FILTER SUCCESS");
+    //     return message.response.fsResponse.response.listDirContentsResponse;
+    //   }
+
+    //   return;
+    // }, 1000);
+
+    // return result;
+
+    let rx: MkDirResponse | undefined = undefined;
+    let timedOut = false;
+    const timeoutInMs = 2000;
+    const expirationTime = Date.now() + timeoutInMs;
+
+    const dqp = createDefaultQromaParser("mkDir");
+    const rxOnQromaCommResponse = (message: QromaCommResponse) => {
       if (message.response.oneofKind === 'fsResponse' &&
           message.response.fsResponse.response.oneofKind === 'listDirContentsResponse')
       {
-        console.log("FILTER SUCCESS");
-        return message.response.fsResponse.response.listDirContentsResponse;
+        rx = message.response.fsResponse.response.listDirContentsResponse;
       }
+      return true;
+    };
 
-      return;
-    }, 1000);
+    let rxHandler: IQromaCommRxHandler = {
+      hasTimeoutOccurred: () => Date.now() > expirationTime,
+      onTimeout: () => { timedOut = true; },
+      onRx: (rxBuffer: Uint8Array) => {
+        return dqp.parse(rxBuffer, rxOnQromaCommResponse);
+      },
+      isRxComplete: () => rx !== undefined,
+    };
 
-    return result;
+    await qromaCommWebSerial.sendQromaCommCommandRx(mkDirCommand, rxHandler);
+
+    console.log("mkDir RESULT RX")
+    console.log(rx)
+    console.log(timedOut)
+
+    return rx;
   }
 
 
   return {
     init: startMonitoring,
     
-    getFileDetails,
+    // getFileDetails,
     getFileDetailsRx,
     getFileContents,
-    getFileBytes,
+    // getFileBytes,
 
     writeFileContents,
     downloadFileContents,
@@ -625,5 +662,6 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
     rmDir,
 
     connectionState: qromaCommWebSerial.getConnectionState(),
+    unsubscribe: qromaCommWebSerial.unsubscribe,
   };
 }
