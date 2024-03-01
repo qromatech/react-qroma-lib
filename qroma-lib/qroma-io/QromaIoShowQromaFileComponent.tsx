@@ -4,9 +4,7 @@ import { QromaIoShowQromaFileUiComponent } from "./QromaIoShowQromaFileUiCompone
 
 interface IQromaIoShowQromaFileComponentProps { }
 
-export const QromaIoShowQromaFileComponent = (
-  props: IQromaIoShowQromaFileComponentProps
-) => {
+export const QromaIoShowQromaFileComponent = () => {
 
   return (
     <QromaIoShowQromaFileUiComponent

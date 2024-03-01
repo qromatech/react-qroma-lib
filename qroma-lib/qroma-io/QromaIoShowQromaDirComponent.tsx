@@ -4,11 +4,11 @@ import { useLocation } from "@docusaurus/router";
 import { DirItem, DirItemType, ListDirContentsResponse } from "../../qroma-comm-proto/file-system-commands";
 import { DirUiComponent } from "../file-explorer/DirUiComponent";
 import { FileUiComponent } from "../file-explorer/FileUiComponent";
-import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "../file-explorer/QromaCommFileSystemRxApi";
+import { useQromaCommFileSystemRxApi } from "../file-explorer/QromaCommFileSystemRxApi";
 
 
 interface IQromaIoShowQromaDirComponentProps<T extends object, U extends object> {
-  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
+  // qromaCommFileSystemApi: IQromaCommFilesystemRxApi
 }
 
 
@@ -34,8 +34,8 @@ export const QromaIoShowQromaDirComponent = <T extends object, U extends object>
     </div>
   }
 
-  // const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
-  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
+  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  // const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
   const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   console.log("DIRECTORY CONTENTS")

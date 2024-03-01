@@ -1,27 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { QromaCommFileExplorerUiComponent } from "./QromaCommFileExplorerUiComponent";
-import { useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
-// import { QromaCommFileSystemApi } from "./QromaCommFileSystemApi";
 
 
-export const QromaCommFileExplorerComponent = () => {
+interface IQromaCommFileExplorerComponentProps { }
 
-  console.log("CALLING useQromaCommFileSystemRxApi()")
 
-  // const qromaCommFileSystemApi = QromaCommFileSystemApi();
-  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
-  // let qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
-
-  // useEffect(() => {
-  //   return () => {
-  //     console.log("UNMOUNTING")
-  //     qromaCommFileSystemApi.unsubscribe();
-  //   }
-  // })
+export const QromaCommFileExplorerComponent = (props: IQromaCommFileExplorerComponentProps) => {
 
   return (
     <QromaCommFileExplorerUiComponent
-      qromaCommFileSystemApi={qromaCommFileSystemApi}
       />
   )
 }

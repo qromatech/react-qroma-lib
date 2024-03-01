@@ -23,7 +23,7 @@ export interface IQromaWebSerial {
   sendBytes(data: Uint8Array): void
   sendString(data: string): void
 
-  sendBytesInChunks(data: Uint8Array, chunkSize: number, sleepDurationInMs: number): void
+  sendBytesInChunks(data: Uint8Array, chunkSize: number, sleepDurationInMs: number): Promise<void>
 
   startMonitoring(): void
   stopMonitoring(): void  
@@ -109,6 +109,7 @@ export const useQromaWebSerial = (
     onData,
     onConnectionChange,
   };
+  
   subscriptions.push(newSubscription);
   
   const unsubscribe = () => {
@@ -250,7 +251,7 @@ export const useQromaWebSerial = (
     await sendBytes(encoded);
   }
 
-  const sendBytesInChunks = async (data: Uint8Array, chunkSize: number, sleepDurationInMs: number) => {
+  const sendBytesInChunks = async (data: Uint8Array, chunkSize: number, sleepDurationInMs: number): Promise<void> => {
     
     // Python equivalent this logic was based on
     //
@@ -291,7 +292,6 @@ export const useQromaWebSerial = (
     }
 
     writer.releaseLock();
-
   }
 
   const startMonitoring = async () => {

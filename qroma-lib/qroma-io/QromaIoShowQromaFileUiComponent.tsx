@@ -6,7 +6,7 @@ import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "../file-
 
 
 interface IQromaIoShowQromaFileUiComponentProps<T extends object, U extends object> {
-  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
+  // qromaCommFileSystemApi: IQromaCommFilesystemRxApi
 }
 
 export const QromaIoShowQromaFileUiComponent = <T extends object, U extends object>(
@@ -30,8 +30,8 @@ export const QromaIoShowQromaFileUiComponent = <T extends object, U extends obje
     </div>
   }
 
-  // const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
-  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
+  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  // const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
   const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   const showFileContents = async (filePath: string) => {

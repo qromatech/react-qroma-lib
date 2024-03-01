@@ -1,7 +1,6 @@
 import { Buffer } from 'buffer';
 import { IQromaConnectionState, IQromaWebSerial, useQromaWebSerial } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
-import { createDefaultQromaParser } from './QromaCommParser';
 import { concatenateUint8Arrays, sleep } from '../utils';
 
 
@@ -10,8 +9,8 @@ export interface IQromaCommWebSerialRx {
   getConnectionState(): IQromaConnectionState
   stopMonitoring: () => void
   sendQromaCommCommand: (qcCommand: QromaCommCommand) => void
-  sendQromaCommCommandRx: (qcCommand: QromaCommCommand, rxHandler: IQromaCommRxHandler) => void
-  monitorRx: (rxHandler: IQromaCommRxHandler) => void
+  sendQromaCommCommandRx: (qcCommand: QromaCommCommand, rxHandler: IQromaCommRxHandler) => Promise<void>
+  monitorRx: (rxHandler: IQromaCommRxHandler) => Promise<void>
   qromaWebSerial: IQromaWebSerial
   unsubscribe: () => void
 }
@@ -68,15 +67,15 @@ export const useQromaCommWebSerialRx = (
       setRxBuffer(remainingBuffer);
       console.log("FINISH QROMA COMM RX PARSING")
     } else {
-      console.log("QC WEBSERIAL RX - CLASSIC QROMA COMM PARSING")
-      // const remainingBuffer = _qromaCommParser.parse(currentRxBuffer, onQromaCommResponse);
-      // setRxBuffer(remainingBuffer);
-      console.log("FINISH QC WEBSERIAL RX - CLASSIC QROMA COMM PARSING")
-      // throw new Error("NOT DOING THIS HERE")
-      console.log("NOT DOING THIS HERE")
+      // console.log("QC WEBSERIAL RX - CLASSIC QROMA COMM PARSING")
+      // // const remainingBuffer = _qromaCommParser.parse(currentRxBuffer, onQromaCommResponse);
+      // // setRxBuffer(remainingBuffer);
+      // console.log("FINISH QC WEBSERIAL RX - CLASSIC QROMA COMM PARSING")
+      // // throw new Error("NOT DOING THIS HERE")
+      // console.log("NOT DOING THIS HERE")
     }
 
-    console.log("QromaCommWebSerial RX - onData complete");
+    // console.log("QromaCommWebSerial RX - onData complete");
   }
 
   const startMonitoring = async () => {
@@ -117,7 +116,7 @@ export const useQromaCommWebSerialRx = (
     console.log("EXIT RX MODE", _qromaCommRxHandler);
   }
 
-  const sendQromaCommCommandRx = async (qcCommand: QromaCommCommand, rxHandler: IQromaCommRxHandler) => {
+  const sendQromaCommCommandRx = async (qcCommand: QromaCommCommand, rxHandler: IQromaCommRxHandler): Promise<void> => {
     if (!qromaWebSerial.getConnectionState().isWebSerialConnected) {
       console.log("sendQromaCommCommand - CAN'T SEND COMMAND - NO CONNECTION");
       console.log(qcCommand);
@@ -150,7 +149,7 @@ export const useQromaCommWebSerialRx = (
     _exitRxMode();
   }
 
-  const monitorRx = async (rxHandler: IQromaCommRxHandler) => {
+  const monitorRx = async (rxHandler: IQromaCommRxHandler): Promise<void> => {
     _enterRxMode(rxHandler);
 
     while (!rxHandler.isRxComplete() &&
