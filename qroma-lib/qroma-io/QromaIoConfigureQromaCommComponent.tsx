@@ -1,7 +1,6 @@
 
 
 import React, { useState } from "react"
-import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { useQromaCommWebSerial } from "../webserial/QromaCommWebSerial";
 import { QromaCommResponse } from "../../qroma-comm-proto/qroma-comm";
 import { IQromaConnectionState } from "../webserial/QromaWebSerial";

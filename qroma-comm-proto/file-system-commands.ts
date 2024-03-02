@@ -12,6 +12,7 @@ import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { FileData } from "./qroma-types";
+import { GetFileStatusCode } from "./qroma-types";
 /**
  * @generated from protobuf message DirItem
  */
@@ -374,27 +375,6 @@ export enum DirItemType {
      * @generated from protobuf enum value: DIT_DIR = 2;
      */
     DIT_DIR = 2
-}
-/**
- * @generated from protobuf enum GetFileStatusCode
- */
-export enum GetFileStatusCode {
-    /**
-     * @generated from protobuf enum value: GFSC_NOT_SET = 0;
-     */
-    GFSC_NOT_SET = 0,
-    /**
-     * @generated from protobuf enum value: GFSC_FILE_EXISTS = 1;
-     */
-    GFSC_FILE_EXISTS = 1,
-    /**
-     * @generated from protobuf enum value: GFSC_ERR_OPEN_FILE = 2;
-     */
-    GFSC_ERR_OPEN_FILE = 2,
-    /**
-     * @generated from protobuf enum value: GFSC_ERR_INVALID_FILE_PATH = 3;
-     */
-    GFSC_ERR_INVALID_FILE_PATH = 3
 }
 /**
  * @generated from protobuf enum WriteFileDataStatusCode

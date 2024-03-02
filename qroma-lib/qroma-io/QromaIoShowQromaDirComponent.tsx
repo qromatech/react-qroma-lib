@@ -1,15 +1,20 @@
 import React, { useContext, useEffect, useState } from "react"
 import { useLocation } from "@docusaurus/router";
-import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
+// import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { DirItem, DirItemType, ListDirContentsResponse } from "../../qroma-comm-proto/file-system-commands";
 import { DirUiComponent } from "../file-explorer/DirUiComponent";
 import { FileUiComponent } from "../file-explorer/FileUiComponent";
+import { useQromaCommFileSystemRxApi } from "../file-explorer/QromaCommFileSystemRxApi";
 
 
-interface IQromaIoShowQromaDirComponentProps<T extends object, U extends object> { }
+interface IQromaIoShowQromaDirComponentProps<T extends object, U extends object> {
+  // qromaCommFileSystemApi: IQromaCommFilesystemRxApi
+}
 
 
-export const QromaIoShowQromaDirComponent = <T extends object, U extends object>() => {
+export const QromaIoShowQromaDirComponent = <T extends object, U extends object>(
+  props: IQromaIoShowQromaDirComponentProps<T, U>
+) => {
 
   const [dirItems, setDirItems] = useState([] as DirItem[]);
   const [activeDirPath, setActiveDirPath] = useState("...");
@@ -29,7 +34,8 @@ export const QromaIoShowQromaDirComponent = <T extends object, U extends object>
     </div>
   }
 
-  const qromaCommFileSystemApi = useQromaCommFileSystemApi();
+  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  // const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
   const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 
   console.log("DIRECTORY CONTENTS")
@@ -76,6 +82,7 @@ export const QromaIoShowQromaDirComponent = <T extends object, U extends object>
             <DirUiComponent
               dirPath={activeDirPath}
               dirItem={x}
+              qromaCommFileSystemApi={qromaCommFileSystemApi}
               key={x.name}
               />
           )
@@ -84,6 +91,7 @@ export const QromaIoShowQromaDirComponent = <T extends object, U extends object>
             <FileUiComponent
               dirPath={activeDirPath}
               dirItem={x}
+              qromaCommFileSystemApi={qromaCommFileSystemApi}
               key={x.name}
               />
           ) 

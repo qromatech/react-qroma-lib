@@ -1,17 +1,21 @@
 import React from "react"
 import { useLocation } from "@docusaurus/router";
-import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
+// import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { convertBase64ToBinary } from "../utils";
+import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "../file-explorer/QromaCommFileSystemRxApi";
 
 
-interface IQromaIoAddQromaFileComponentProps { }
+interface IQromaIoAddQromaFileComponentProps {
+  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
+}
 
 export const QromaIoAddQromaFileComponent = (
   props: IQromaIoAddQromaFileComponentProps
 ) => {
   
   const location = useLocation();
-  const qromaCommFileSystemApi = useQromaCommFileSystemApi();
+  // const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
 
   const hash: string = location.hash;
 

@@ -1,8 +1,8 @@
-import React, { ChangeEvent, useState } from "react"
-import { useQromaCommFileSystemApi } from "./QromaCommFileSystemApi";
+import React, { useState } from "react"
 import { DirItem, DirItemType } from "../../qroma-comm-proto/file-system-commands";
 import { FileUiComponent } from "./FileUiComponent";
 import { DirUiComponent } from "./DirUiComponent";
+import { useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
 
 // // @ts-ignore
 // import { Buffer } from 'buffer';
@@ -14,16 +14,20 @@ interface IQromaCommFileExplorerUiComponentProps { }
 
 export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUiComponentProps) => {
 
-  const qromaCommFileSystemApi = useQromaCommFileSystemApi();
+  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
 
   const [dirItems, setDirItems] = useState([] as DirItem[]);
   const [activeDirPath, setActiveDirPath] = useState("...");
 
-  const [fileData, setFileData] = useState<Uint8Array | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-
-
+  // useEffect(() => {
+  //   return () => {
+  //     console.log("UNMOUNTING")
+  //     qromaCommFileSystemApi.unsubscribe();
+  //   }
+  // })
+  
   const listDirPath = async (dirPath: string) => {
+    console.log("LISTING DIR PATH")
     const dirResult = await qromaCommFileSystemApi.listDir(dirPath);
     if (dirResult && dirResult.success) {
       setDirItems(dirResult.dirItems);
@@ -61,34 +65,6 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
     await qromaCommFileSystemApi.writeFileContents(filePath, encoded);
   }
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target?.result as ArrayBuffer;
-      const byteArray = new Uint8Array(data);
-      setFileData(byteArray);
-    };
-
-    reader.readAsArrayBuffer(file);
-    setFileName(file.name);
-  };
-
-  const doFileUpload = async () => {
-    if (fileData !== null) {
-      const uploadPath = "/" + fileName;
-
-      const result = await qromaCommFileSystemApi.writeFileContents(uploadPath, fileData);
-
-      console.log("FILE UPLOAD");
-      console.log(uploadPath);
-      console.log(fileData);
-      console.log(result);
-    }
-  }
-
   const startMonitoring = async () => {
     qromaCommFileSystemApi.init();
   }
@@ -110,8 +86,6 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
       <button onClick={() => listDirPath("/") }>LIST ROOT DIR</button>
       <button onClick={() => createDir() }>CREATE DIR</button>
       <button onClick={() => createFile() }>CREATE FILE</button>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={() => doFileUpload() } disabled={fileData === null}>UPLOAD FILE</button>
       
       <div>
         DIR PATH: {activeDirPath}
@@ -122,6 +96,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
                 <DirUiComponent
                   dirPath={activeDirPath}
                   dirItem={x}
+                  qromaCommFileSystemApi={qromaCommFileSystemApi}
                   key={x.name}
                   />
               )
@@ -130,6 +105,7 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
                 <FileUiComponent
                   dirPath={activeDirPath}
                   dirItem={x}
+                  qromaCommFileSystemApi={qromaCommFileSystemApi}
                   key={x.name}
                   />
               ) 

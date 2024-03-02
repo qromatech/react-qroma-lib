@@ -1,11 +1,13 @@
 import React, { useState } from "react"
-import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
+// import { useQromaCommFileSystemApi } from "../file-explorer/QromaCommFileSystemApi";
 import { MessageType } from "@protobuf-ts/runtime";
+import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "../file-explorer/QromaCommFileSystemRxApi";
 
 
 interface IQromaIoShowQromaFileAsMessageTypeUiComponentProps<T extends object> {
   fileMessageType: MessageType<T>
   filePath: string
+  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
 }
 
 
@@ -19,7 +21,8 @@ export const QromaIoShowQromaFileAsMessageTypeUiComponent = <T extends object>(
 
   const filePath = props.filePath;
 
-  const qromaCommFileSystemApi = useQromaCommFileSystemApi();
+  // const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  const qromaCommFileSystemApi = props.qromaCommFileSystemApi;
 
   const isConnected = qromaCommFileSystemApi.connectionState.isWebSerialConnected;
 

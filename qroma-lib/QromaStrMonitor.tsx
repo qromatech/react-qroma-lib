@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { IUseQromaWebSerialInputs, useQromaWebSerial } from "./webserial/QromaWebSerial";
+import { concatenateUint8Arrays } from "./utils";
 
 
 export const QromaStrMonitor = () => {
@@ -16,7 +17,8 @@ export const QromaStrMonitor = () => {
     // console.log("STR RECEIVED");
     // console.log(newData);
 
-    let currentRxBuffer = new Uint8Array([...rxBuffer, ...newData]);
+    // let currentRxBuffer = new Uint8Array([...rxBuffer, ...newData]);
+    let currentRxBuffer = concatenateUint8Arrays(rxBuffer, newData);
 
     let firstNewLineIndex = 0;
 

@@ -1,15 +1,14 @@
 import React from "react";
 import { QromaCommFileExplorerUiComponent } from "./QromaCommFileExplorerUiComponent";
-// import { QromaCommFileSystemApi } from "./QromaCommFileSystemApi";
 
 
-export const QromaCommFileExplorerComponent = () => {
+interface IQromaCommFileExplorerComponentProps { }
 
-  // const qromaCommFileSystemApi = QromaCommFileSystemApi();
+
+export const QromaCommFileExplorerComponent = (props: IQromaCommFileExplorerComponentProps) => {
 
   return (
     <QromaCommFileExplorerUiComponent
-      // qromaCommFileSystemApi={qromaCommFileSystemApi}
       />
   )
 }
