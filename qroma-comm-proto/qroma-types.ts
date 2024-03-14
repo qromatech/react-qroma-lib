@@ -42,6 +42,36 @@ export interface FileData {
     checksum: number;
 }
 /**
+ * @generated from protobuf message FirmwareDetails
+ */
+export interface FirmwareDetails {
+    /**
+     * @generated from protobuf field: string buildTime = 1;
+     */
+    buildTime: string;
+    /**
+     * @generated from protobuf field: string qromaFirmwareLibVersion = 2;
+     */
+    qromaFirmwareLibVersion: string;
+    /**
+     * @generated from protobuf field: string qromaDeviceFirmwareVersion = 3;
+     */
+    qromaDeviceFirmwareVersion: string;
+}
+/**
+ * @generated from protobuf message HeartbeatResponse
+ */
+export interface HeartbeatResponse {
+    /**
+     * @generated from protobuf field: uint32 uptimeInMs = 1;
+     */
+    uptimeInMs: number;
+    /**
+     * @generated from protobuf field: uint32 heartbeatTicks = 2;
+     */
+    heartbeatTicks: number;
+}
+/**
  * @generated from protobuf enum Qroma_LogLevel
  */
 export enum Qroma_LogLevel {
@@ -107,6 +137,23 @@ export enum GetFileStatusCode {
      * @generated from protobuf enum value: GFSC_ERR_INVALID_FILE_PATH = 3;
      */
     GFSC_ERR_INVALID_FILE_PATH = 3
+}
+/**
+ * @generated from protobuf enum HeartbeatType
+ */
+export enum HeartbeatType {
+    /**
+     * @generated from protobuf enum value: HeartbeatType_NotSet = 0;
+     */
+    HeartbeatType_NotSet = 0,
+    /**
+     * @generated from protobuf enum value: HeartbeatType_None = 1;
+     */
+    HeartbeatType_None = 1,
+    /**
+     * @generated from protobuf enum value: HeartbeatType_Interval = 2;
+     */
+    HeartbeatType_Interval = 2
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class Qroma_LogMessage$Type extends MessageType<Qroma_LogMessage> {
@@ -223,3 +270,118 @@ class FileData$Type extends MessageType<FileData> {
  * @generated MessageType for protobuf message FileData
  */
 export const FileData = new FileData$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FirmwareDetails$Type extends MessageType<FirmwareDetails> {
+    constructor() {
+        super("FirmwareDetails", [
+            { no: 1, name: "buildTime", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "qromaFirmwareLibVersion", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "qromaDeviceFirmwareVersion", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<FirmwareDetails>): FirmwareDetails {
+        const message = { buildTime: "", qromaFirmwareLibVersion: "", qromaDeviceFirmwareVersion: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<FirmwareDetails>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FirmwareDetails): FirmwareDetails {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string buildTime */ 1:
+                    message.buildTime = reader.string();
+                    break;
+                case /* string qromaFirmwareLibVersion */ 2:
+                    message.qromaFirmwareLibVersion = reader.string();
+                    break;
+                case /* string qromaDeviceFirmwareVersion */ 3:
+                    message.qromaDeviceFirmwareVersion = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FirmwareDetails, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string buildTime = 1; */
+        if (message.buildTime !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.buildTime);
+        /* string qromaFirmwareLibVersion = 2; */
+        if (message.qromaFirmwareLibVersion !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.qromaFirmwareLibVersion);
+        /* string qromaDeviceFirmwareVersion = 3; */
+        if (message.qromaDeviceFirmwareVersion !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.qromaDeviceFirmwareVersion);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message FirmwareDetails
+ */
+export const FirmwareDetails = new FirmwareDetails$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class HeartbeatResponse$Type extends MessageType<HeartbeatResponse> {
+    constructor() {
+        super("HeartbeatResponse", [
+            { no: 1, name: "uptimeInMs", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "heartbeatTicks", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<HeartbeatResponse>): HeartbeatResponse {
+        const message = { uptimeInMs: 0, heartbeatTicks: 0 };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<HeartbeatResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: HeartbeatResponse): HeartbeatResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* uint32 uptimeInMs */ 1:
+                    message.uptimeInMs = reader.uint32();
+                    break;
+                case /* uint32 heartbeatTicks */ 2:
+                    message.heartbeatTicks = reader.uint32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: HeartbeatResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* uint32 uptimeInMs = 1; */
+        if (message.uptimeInMs !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.uptimeInMs);
+        /* uint32 heartbeatTicks = 2; */
+        if (message.heartbeatTicks !== 0)
+            writer.tag(2, WireType.Varint).uint32(message.heartbeatTicks);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message HeartbeatResponse
+ */
+export const HeartbeatResponse = new HeartbeatResponse$Type();

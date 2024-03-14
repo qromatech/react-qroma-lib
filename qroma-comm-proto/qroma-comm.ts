@@ -12,11 +12,11 @@ import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { QromaStreamResponse } from "./qroma-streams";
-import { QromaCommConfigResponse } from "./qroma-comm-config-commands";
 import { FileSystemResponse } from "./file-system-commands";
+import { QromaCoreResponse } from "./qroma-core";
 import { QromaStreamCommand } from "./qroma-streams";
-import { QromaCommConfigCommand } from "./qroma-comm-config-commands";
 import { FileSystemCommand } from "./file-system-commands";
+import { QromaCoreCommand } from "./qroma-core";
 /**
  * @generated from protobuf message QromaCommCommand
  */
@@ -31,17 +31,17 @@ export interface QromaCommCommand {
          */
         appCommandBytes: Uint8Array;
     } | {
+        oneofKind: "coreCommand";
+        /**
+         * @generated from protobuf field: QromaCoreCommand coreCommand = 2;
+         */
+        coreCommand: QromaCoreCommand;
+    } | {
         oneofKind: "fsCommand";
         /**
-         * @generated from protobuf field: FileSystemCommand fsCommand = 2;
+         * @generated from protobuf field: FileSystemCommand fsCommand = 3;
          */
         fsCommand: FileSystemCommand;
-    } | {
-        oneofKind: "commConfigCommand";
-        /**
-         * @generated from protobuf field: QromaCommConfigCommand commConfigCommand = 3;
-         */
-        commConfigCommand: QromaCommConfigCommand;
     } | {
         oneofKind: "streamCommand";
         /**
@@ -51,19 +51,6 @@ export interface QromaCommCommand {
     } | {
         oneofKind: undefined;
     };
-}
-/**
- * @generated from protobuf message QromaCommHeartbeatResponse
- */
-export interface QromaCommHeartbeatResponse {
-    /**
-     * @generated from protobuf field: uint32 uptimeInMs = 1;
-     */
-    uptimeInMs: number;
-    /**
-     * @generated from protobuf field: uint32 heartbeatTicks = 2;
-     */
-    heartbeatTicks: number;
 }
 /**
  * @generated from protobuf message QromaCommResponse
@@ -79,23 +66,17 @@ export interface QromaCommResponse {
          */
         appResponseBytes: Uint8Array;
     } | {
+        oneofKind: "coreResponse";
+        /**
+         * @generated from protobuf field: QromaCoreResponse coreResponse = 2;
+         */
+        coreResponse: QromaCoreResponse;
+    } | {
         oneofKind: "fsResponse";
         /**
-         * @generated from protobuf field: FileSystemResponse fsResponse = 2;
+         * @generated from protobuf field: FileSystemResponse fsResponse = 3;
          */
         fsResponse: FileSystemResponse;
-    } | {
-        oneofKind: "commConfigResponse";
-        /**
-         * @generated from protobuf field: QromaCommConfigResponse commConfigResponse = 3;
-         */
-        commConfigResponse: QromaCommConfigResponse;
-    } | {
-        oneofKind: "heartbeatResponse";
-        /**
-         * @generated from protobuf field: QromaCommHeartbeatResponse heartbeatResponse = 4;
-         */
-        heartbeatResponse: QromaCommHeartbeatResponse;
     } | {
         oneofKind: "streamResponse";
         /**
@@ -111,8 +92,8 @@ class QromaCommCommand$Type extends MessageType<QromaCommCommand> {
     constructor() {
         super("QromaCommCommand", [
             { no: 1, name: "appCommandBytes", kind: "scalar", oneof: "command", T: 12 /*ScalarType.BYTES*/ },
-            { no: 2, name: "fsCommand", kind: "message", oneof: "command", T: () => FileSystemCommand },
-            { no: 3, name: "commConfigCommand", kind: "message", oneof: "command", T: () => QromaCommConfigCommand },
+            { no: 2, name: "coreCommand", kind: "message", oneof: "command", T: () => QromaCoreCommand },
+            { no: 3, name: "fsCommand", kind: "message", oneof: "command", T: () => FileSystemCommand },
             { no: 4, name: "streamCommand", kind: "message", oneof: "command", T: () => QromaStreamCommand }
         ]);
     }
@@ -134,16 +115,16 @@ class QromaCommCommand$Type extends MessageType<QromaCommCommand> {
                         appCommandBytes: reader.bytes()
                     };
                     break;
-                case /* FileSystemCommand fsCommand */ 2:
+                case /* QromaCoreCommand coreCommand */ 2:
+                    message.command = {
+                        oneofKind: "coreCommand",
+                        coreCommand: QromaCoreCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).coreCommand)
+                    };
+                    break;
+                case /* FileSystemCommand fsCommand */ 3:
                     message.command = {
                         oneofKind: "fsCommand",
                         fsCommand: FileSystemCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).fsCommand)
-                    };
-                    break;
-                case /* QromaCommConfigCommand commConfigCommand */ 3:
-                    message.command = {
-                        oneofKind: "commConfigCommand",
-                        commConfigCommand: QromaCommConfigCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).commConfigCommand)
                     };
                     break;
                 case /* QromaStreamCommand streamCommand */ 4:
@@ -167,12 +148,12 @@ class QromaCommCommand$Type extends MessageType<QromaCommCommand> {
         /* bytes appCommandBytes = 1; */
         if (message.command.oneofKind === "appCommandBytes")
             writer.tag(1, WireType.LengthDelimited).bytes(message.command.appCommandBytes);
-        /* FileSystemCommand fsCommand = 2; */
+        /* QromaCoreCommand coreCommand = 2; */
+        if (message.command.oneofKind === "coreCommand")
+            QromaCoreCommand.internalBinaryWrite(message.command.coreCommand, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* FileSystemCommand fsCommand = 3; */
         if (message.command.oneofKind === "fsCommand")
-            FileSystemCommand.internalBinaryWrite(message.command.fsCommand, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
-        /* QromaCommConfigCommand commConfigCommand = 3; */
-        if (message.command.oneofKind === "commConfigCommand")
-            QromaCommConfigCommand.internalBinaryWrite(message.command.commConfigCommand, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+            FileSystemCommand.internalBinaryWrite(message.command.fsCommand, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         /* QromaStreamCommand streamCommand = 4; */
         if (message.command.oneofKind === "streamCommand")
             QromaStreamCommand.internalBinaryWrite(message.command.streamCommand, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
@@ -187,67 +168,12 @@ class QromaCommCommand$Type extends MessageType<QromaCommCommand> {
  */
 export const QromaCommCommand = new QromaCommCommand$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class QromaCommHeartbeatResponse$Type extends MessageType<QromaCommHeartbeatResponse> {
-    constructor() {
-        super("QromaCommHeartbeatResponse", [
-            { no: 1, name: "uptimeInMs", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: "heartbeatTicks", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
-        ]);
-    }
-    create(value?: PartialMessage<QromaCommHeartbeatResponse>): QromaCommHeartbeatResponse {
-        const message = { uptimeInMs: 0, heartbeatTicks: 0 };
-        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
-        if (value !== undefined)
-            reflectionMergePartial<QromaCommHeartbeatResponse>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QromaCommHeartbeatResponse): QromaCommHeartbeatResponse {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* uint32 uptimeInMs */ 1:
-                    message.uptimeInMs = reader.uint32();
-                    break;
-                case /* uint32 heartbeatTicks */ 2:
-                    message.heartbeatTicks = reader.uint32();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: QromaCommHeartbeatResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* uint32 uptimeInMs = 1; */
-        if (message.uptimeInMs !== 0)
-            writer.tag(1, WireType.Varint).uint32(message.uptimeInMs);
-        /* uint32 heartbeatTicks = 2; */
-        if (message.heartbeatTicks !== 0)
-            writer.tag(2, WireType.Varint).uint32(message.heartbeatTicks);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message QromaCommHeartbeatResponse
- */
-export const QromaCommHeartbeatResponse = new QromaCommHeartbeatResponse$Type();
-// @generated message type with reflection information, may provide speed optimized methods
 class QromaCommResponse$Type extends MessageType<QromaCommResponse> {
     constructor() {
         super("QromaCommResponse", [
             { no: 1, name: "appResponseBytes", kind: "scalar", oneof: "response", T: 12 /*ScalarType.BYTES*/ },
-            { no: 2, name: "fsResponse", kind: "message", oneof: "response", T: () => FileSystemResponse },
-            { no: 3, name: "commConfigResponse", kind: "message", oneof: "response", T: () => QromaCommConfigResponse },
-            { no: 4, name: "heartbeatResponse", kind: "message", oneof: "response", T: () => QromaCommHeartbeatResponse },
+            { no: 2, name: "coreResponse", kind: "message", oneof: "response", T: () => QromaCoreResponse },
+            { no: 3, name: "fsResponse", kind: "message", oneof: "response", T: () => FileSystemResponse },
             { no: 5, name: "streamResponse", kind: "message", oneof: "response", T: () => QromaStreamResponse }
         ]);
     }
@@ -269,22 +195,16 @@ class QromaCommResponse$Type extends MessageType<QromaCommResponse> {
                         appResponseBytes: reader.bytes()
                     };
                     break;
-                case /* FileSystemResponse fsResponse */ 2:
+                case /* QromaCoreResponse coreResponse */ 2:
+                    message.response = {
+                        oneofKind: "coreResponse",
+                        coreResponse: QromaCoreResponse.internalBinaryRead(reader, reader.uint32(), options, (message.response as any).coreResponse)
+                    };
+                    break;
+                case /* FileSystemResponse fsResponse */ 3:
                     message.response = {
                         oneofKind: "fsResponse",
                         fsResponse: FileSystemResponse.internalBinaryRead(reader, reader.uint32(), options, (message.response as any).fsResponse)
-                    };
-                    break;
-                case /* QromaCommConfigResponse commConfigResponse */ 3:
-                    message.response = {
-                        oneofKind: "commConfigResponse",
-                        commConfigResponse: QromaCommConfigResponse.internalBinaryRead(reader, reader.uint32(), options, (message.response as any).commConfigResponse)
-                    };
-                    break;
-                case /* QromaCommHeartbeatResponse heartbeatResponse */ 4:
-                    message.response = {
-                        oneofKind: "heartbeatResponse",
-                        heartbeatResponse: QromaCommHeartbeatResponse.internalBinaryRead(reader, reader.uint32(), options, (message.response as any).heartbeatResponse)
                     };
                     break;
                 case /* QromaStreamResponse streamResponse */ 5:
@@ -308,15 +228,12 @@ class QromaCommResponse$Type extends MessageType<QromaCommResponse> {
         /* bytes appResponseBytes = 1; */
         if (message.response.oneofKind === "appResponseBytes")
             writer.tag(1, WireType.LengthDelimited).bytes(message.response.appResponseBytes);
-        /* FileSystemResponse fsResponse = 2; */
+        /* QromaCoreResponse coreResponse = 2; */
+        if (message.response.oneofKind === "coreResponse")
+            QromaCoreResponse.internalBinaryWrite(message.response.coreResponse, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* FileSystemResponse fsResponse = 3; */
         if (message.response.oneofKind === "fsResponse")
-            FileSystemResponse.internalBinaryWrite(message.response.fsResponse, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
-        /* QromaCommConfigResponse commConfigResponse = 3; */
-        if (message.response.oneofKind === "commConfigResponse")
-            QromaCommConfigResponse.internalBinaryWrite(message.response.commConfigResponse, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
-        /* QromaCommHeartbeatResponse heartbeatResponse = 4; */
-        if (message.response.oneofKind === "heartbeatResponse")
-            QromaCommHeartbeatResponse.internalBinaryWrite(message.response.heartbeatResponse, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+            FileSystemResponse.internalBinaryWrite(message.response.fsResponse, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         /* QromaStreamResponse streamResponse = 5; */
         if (message.response.oneofKind === "streamResponse")
             QromaStreamResponse.internalBinaryWrite(message.response.streamResponse, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
