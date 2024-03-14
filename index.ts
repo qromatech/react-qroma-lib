@@ -16,7 +16,6 @@ export * from './qroma-lib/webserial/QromaAppWebSerial';
 
 export * from './qroma-comm-proto/qroma-comm'
 export * from './qroma-comm-proto/qroma-types'
-export * from './qroma-comm-proto/qroma-comm-config-commands'
 export * from './qroma-comm-proto/file-system-commands'
 
 export * from './qroma-lib/file-explorer/QromaCommFileExplorerComponent'
