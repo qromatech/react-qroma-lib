@@ -1,6 +1,6 @@
 
 export * from './qroma-lib/EspWebInstallButton'
-export { QromaRequestForm } from './qroma-lib/QromaRequestForm'
+export { QromaRequestForm } from './qroma-lib/QromaCommandRequestForm'
 
 export { useQromaWebSerial } from './qroma-lib/webserial/QromaWebSerial'
 export { QromaCommMonitor } from './qroma-lib/QromaCommMonitor'
@@ -11,6 +11,7 @@ export { sleep } from './qroma-lib/utils'
 
 
 export * from './qroma-lib/QromaCommandDeviceApp';
+export * from './qroma-lib/QromaCoreDeviceApp';
 export * from './qroma-lib/webserial/QromaWebSerial';
 export * from './qroma-lib/webserial/QromaAppWebSerial';
 
@@ -26,6 +27,6 @@ export * from './qroma-lib/qroma-io/QromaIoSendQromaCommMessageComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaFileComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaDirComponent'
 export * from './qroma-lib/qroma-io/QromaIoShowQromaFileAsMessageTypeComponent'
-export * from './qroma-lib/qroma-io/QromaIoConfigureQromaCommComponent'
+// export * from './qroma-lib/qroma-io/QromaIoConfigureQromaCommComponent'
 
 export * from './qroma-lib/page-app/QromaAppMessageTypesRegistry'
