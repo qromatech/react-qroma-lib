@@ -310,7 +310,7 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
     };
 
     const _sendBytesStream = async (bytestoSend: Uint8Array) => {
-      return await qromaCommWebSerial.qromaWebSerial.sendBytesInChunks(bytestoSend, 2000, 100);
+      return await qromaCommWebSerial.qromaWebSerial.sendBytesInChunks(bytestoSend, 100, 100);
     }
 
     await qromaCommWebSerial.sendQromaCommCommandRx(initWriteFileStreamCommand, rxHandler);
