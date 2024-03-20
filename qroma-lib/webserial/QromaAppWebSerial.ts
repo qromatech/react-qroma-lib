@@ -59,8 +59,14 @@ export const useQromaAppWebSerial =
   }
 
   const onQromaCommResponse = (qromaCommResponse: QromaCommResponse) => {
-    console.log("QromaAppWebSerial - onData");
-    console.log(qromaCommResponse);
+    if (qromaCommResponse.response.oneofKind !== 'coreResponse' &&
+        qromaCommResponse.response.coreResponse.oneofKind !== 'heartbeat')
+    {
+      console.log("QromaAppWebSerial - onData");
+      console.log(qromaCommResponse);
+    } else {
+      // console.log("CORE HEARTBEAT: ", qromaCommResponse.response.coreResponse.response.heartbeat);
+    }
     if (qromaCommResponse.response.oneofKind === 'appResponseBytes') {
       const appResponseBytes = qromaCommResponse.response.appResponseBytes;
       const appResponse = inputs.responseMessageType.fromBinary(appResponseBytes);

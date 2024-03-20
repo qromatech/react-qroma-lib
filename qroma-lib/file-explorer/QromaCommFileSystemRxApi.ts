@@ -41,7 +41,7 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
 
   console.log("STARTING QromaCommFileSystemRxApi");
 
-  const [connectionState, setConnectionState] = useState({
+  const [connectionState, _setConnectionState] = useState({
     isConnected: false,
     isMonitorOn: false,
     isPortConnected: false,
@@ -54,12 +54,19 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
   const startMonitoring = () => {
     qromaCommWebSerial.startMonitoring();
   }
+
+  const setConnectionState = (x) => {
+    console.log("SET CONNECTION STATE")
+    console.log(x)
+    _setConnectionState(x);
+  }
   
   const onConnectionChange = (latestConnectionState: IQromaConnectionState) => {
+    console.log("ON CONN CHANGE")
     setConnectionState(latestConnectionState);
   }
 
-  console.log("CALLING useQromaCommWebSerialRx()")
+  // console.log("CALLING useQromaCommWebSerialRx()")
   const qromaCommWebSerial = useQromaCommWebSerialRx(onConnectionChange);
 
 
@@ -310,14 +317,15 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
     };
 
     const _sendBytesStream = async (bytestoSend: Uint8Array) => {
-      return await qromaCommWebSerial.qromaWebSerial.sendBytesInChunks(bytestoSend, 100, 100);
+      return await qromaCommWebSerial.qromaWebSerial.sendBytesInChunks(bytestoSend, 50, 50);
     }
 
     await qromaCommWebSerial.sendQromaCommCommandRx(initWriteFileStreamCommand, rxHandler);
     console.log("DONE WAITING FOR INIT WRITE FS")
     console.log(initRx)
 
-    _sendBytesStream(contents);
+    await _sendBytesStream(contents);
+    console.log("DONE WAITING FOR STREAQM SEND")
 
     const rxOnQromaCommCompleteResponse = (message: QromaCommResponse) => {
       if (message.response.oneofKind === 'streamResponse' &&

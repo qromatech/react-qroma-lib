@@ -155,6 +155,7 @@ export const useQromaWebSerial = (
   };
 
   const updateConnectionState = (newState: IQromaConnectionState) => {
+    console.log("QROMA WBE SERIAL: UPDATE CONNECTION STATE")
     _connectionState.isWebSerialConnected = newState.isWebSerialConnected;
     _connectionState.keepQromaMonitoringOn = newState.keepQromaMonitoringOn;
     _connectionState.isQromaMonitoringOn = newState.isQromaMonitoringOn;
@@ -287,8 +288,10 @@ export const useQromaWebSerial = (
     const writer = port.writable.getWriter();
 
     for (let i = 0; i < chunks.length; i++) {
-      await writer.write(data);
+      await writer.write(chunks[i]);
       await sleep(sleepDurationInMs);
+      const now = new Date().getTime();
+      console.log("TX DELAY - " + now)
     }
 
     writer.releaseLock();
@@ -312,17 +315,16 @@ export const useQromaWebSerial = (
     console.log(qromaWebSerialContext);
     console.log(port);
     console.log(port.readable);
-    
+
+    updateConnectionState({
+      ..._connectionState,
+      isQromaMonitoringOn: true,
+    });
+
     while (port.readable && 
            _connectionState.isWebSerialConnected &&
            _connectionState.keepQromaMonitoringOn) 
     {
-      updateConnectionState({
-        ..._connectionState,
-        isQromaMonitoringOn: true,
-      });
-
-
       const reader = port.readable.getReader();
 
       try {
