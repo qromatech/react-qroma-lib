@@ -23,3 +23,9 @@ export const concatenateUint8Arrays = (array1: Uint8Array, array2: Uint8Array): 
   concatenatedArray.set(array2, array1.length);
   return concatenatedArray;
 }
+
+
+export const logTimeStamp = (messagePrefix: string) => {
+  const now = new Date().getTime();
+  console.log(messagePrefix + now)
+}

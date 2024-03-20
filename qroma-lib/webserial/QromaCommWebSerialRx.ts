@@ -140,11 +140,18 @@ export const useQromaCommWebSerialRx = (
 
     qromaWebSerial.sendString(requestB64);
 
+    logTimeStamp("START WAITING FOR COMM RX TO COMPLETE")
+
     while (!rxHandler.isRxComplete() &&
            !rxHandler.hasTimeoutOccurred())
     {
+      logTimeStamp("WAITING FOR COMM RX TO COMPLETE")
       await sleep(25);
     }
+
+    console.log("IS RX COMPLETE???");
+    console.log(rxHandler.isRxComplete());
+    console.log(rxHandler.hasTimeoutOccurred());
 
     _exitRxMode();
   }

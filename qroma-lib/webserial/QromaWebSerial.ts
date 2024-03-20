@@ -291,7 +291,8 @@ export const useQromaWebSerial = (
       await writer.write(chunks[i]);
       await sleep(sleepDurationInMs);
       const now = new Date().getTime();
-      console.log("TX DELAY - " + now)
+      const percentComplete = ((i + 1) / chunks.length) * 100;
+      console.log("TX DELAY [" + percentComplete + "%] - " + now)
     }
 
     writer.releaseLock();
