@@ -42,18 +42,18 @@ export interface GetQromaCoreFirmwareDetailsCommand {
  */
 export interface RestartQromaDeviceCommand {
     /**
-     * @generated from protobuf field: uint32 ignoreThis = 1;
+     * @generated from protobuf field: bool areYouSure = 1;
      */
-    ignoreThis: number;
+    areYouSure: boolean; // must be set to true to actually restart
 }
 /**
  * @generated from protobuf message RestartQromaDeviceAck
  */
 export interface RestartQromaDeviceAck {
     /**
-     * @generated from protobuf field: uint32 ignoreThis = 1;
+     * @generated from protobuf field: uint32 youWerentSureSoWeDidnt = 1;
      */
-    ignoreThis: number;
+    youWerentSureSoWeDidnt: number;
 }
 /**
  * @generated from protobuf message SetQromaCommSerialIoConfigCommand
@@ -108,45 +108,39 @@ export interface QromaCoreCommand {
      * @generated from protobuf oneof: command
      */
     command: {
-        oneofKind: "getQromaCoreConfig";
+        oneofKind: "noArgCommand";
         /**
-         * @generated from protobuf field: GetQromaCoreConfigCommand getQromaCoreConfig = 1;
+         * @generated from protobuf field: QromaCoreNoArgCommands noArgCommand = 1;
          */
-        getQromaCoreConfig: GetQromaCoreConfigCommand;
-    } | {
-        oneofKind: "getFirmwareDetails";
-        /**
-         * @generated from protobuf field: GetQromaCoreFirmwareDetailsCommand getFirmwareDetails = 2;
-         */
-        getFirmwareDetails: GetQromaCoreFirmwareDetailsCommand;
+        noArgCommand: QromaCoreNoArgCommands;
     } | {
         oneofKind: "restartQromaDevice";
         /**
-         * @generated from protobuf field: RestartQromaDeviceCommand restartQromaDevice = 3;
+         * @generated from protobuf field: RestartQromaDeviceCommand restartQromaDevice = 2;
          */
         restartQromaDevice: RestartQromaDeviceCommand;
     } | {
         oneofKind: "setQromaCommSerialIoConfig";
         /**
-         * @generated from protobuf field: SetQromaCommSerialIoConfigCommand setQromaCommSerialIoConfig = 4;
+         * @generated from protobuf field: SetQromaCommSerialIoConfigCommand setQromaCommSerialIoConfig = 3;
          */
         setQromaCommSerialIoConfig: SetQromaCommSerialIoConfigCommand;
     } | {
         oneofKind: "setQromaCommSerialProcessingConfig";
         /**
-         * @generated from protobuf field: SetQromaCommSerialProcessingConfig setQromaCommSerialProcessingConfig = 5;
+         * @generated from protobuf field: SetQromaCommSerialProcessingConfig setQromaCommSerialProcessingConfig = 4;
          */
         setQromaCommSerialProcessingConfig: SetQromaCommSerialProcessingConfig;
     } | {
         oneofKind: "setQromaCoreLoggingConfig";
         /**
-         * @generated from protobuf field: SetQromaCoreLoggingConfigCommand setQromaCoreLoggingConfig = 6;
+         * @generated from protobuf field: SetQromaCoreLoggingConfigCommand setQromaCoreLoggingConfig = 5;
          */
         setQromaCoreLoggingConfig: SetQromaCoreLoggingConfigCommand;
     } | {
         oneofKind: "setQromaCoreManagementConfiguration";
         /**
-         * @generated from protobuf field: SetQromaCoreManagementConfiguration setQromaCoreManagementConfiguration = 7;
+         * @generated from protobuf field: SetQromaCoreManagementConfiguration setQromaCoreManagementConfiguration = 6;
          */
         setQromaCoreManagementConfiguration: SetQromaCoreManagementConfiguration;
     } | {
@@ -187,6 +181,39 @@ export interface QromaCoreResponse {
     } | {
         oneofKind: undefined;
     };
+}
+/**
+ * @generated from protobuf enum QromaCoreNoArgCommands
+ */
+export enum QromaCoreNoArgCommands {
+    /**
+     * @generated from protobuf enum value: Qc_Nac_NotSet = 0;
+     */
+    Qc_Nac_NotSet = 0,
+    /**
+     * @generated from protobuf enum value: Qc_Nac_GetQromaCoreConfig = 1;
+     */
+    Qc_Nac_GetQromaCoreConfig = 1,
+    /**
+     * @generated from protobuf enum value: Qc_Nac_GetQromaCoreFirmwareDetails = 2;
+     */
+    Qc_Nac_GetQromaCoreFirmwareDetails = 2,
+    /**
+     * @generated from protobuf enum value: Qc_Nac_DisableCoreHeartbeat = 3;
+     */
+    Qc_Nac_DisableCoreHeartbeat = 3,
+    /**
+     * @generated from protobuf enum value: Qc_Nac_EnableCoreHeartbeat = 4;
+     */
+    Qc_Nac_EnableCoreHeartbeat = 4,
+    /**
+     * @generated from protobuf enum value: Qc_Nac_DisableLogging = 5;
+     */
+    Qc_Nac_DisableLogging = 5,
+    /**
+     * @generated from protobuf enum value: Qc_Nac_EnableAllLogging = 6;
+     */
+    Qc_Nac_EnableAllLogging = 6
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class GetQromaCoreConfigCommand$Type extends MessageType<GetQromaCoreConfigCommand> {
@@ -286,11 +313,11 @@ export const GetQromaCoreFirmwareDetailsCommand = new GetQromaCoreFirmwareDetail
 class RestartQromaDeviceCommand$Type extends MessageType<RestartQromaDeviceCommand> {
     constructor() {
         super("RestartQromaDeviceCommand", [
-            { no: 1, name: "ignoreThis", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+            { no: 1, name: "areYouSure", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<RestartQromaDeviceCommand>): RestartQromaDeviceCommand {
-        const message = { ignoreThis: 0 };
+        const message = { areYouSure: false };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<RestartQromaDeviceCommand>(this, message, value);
@@ -301,8 +328,8 @@ class RestartQromaDeviceCommand$Type extends MessageType<RestartQromaDeviceComma
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* uint32 ignoreThis */ 1:
-                    message.ignoreThis = reader.uint32();
+                case /* bool areYouSure */ 1:
+                    message.areYouSure = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -316,9 +343,9 @@ class RestartQromaDeviceCommand$Type extends MessageType<RestartQromaDeviceComma
         return message;
     }
     internalBinaryWrite(message: RestartQromaDeviceCommand, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* uint32 ignoreThis = 1; */
-        if (message.ignoreThis !== 0)
-            writer.tag(1, WireType.Varint).uint32(message.ignoreThis);
+        /* bool areYouSure = 1; */
+        if (message.areYouSure !== false)
+            writer.tag(1, WireType.Varint).bool(message.areYouSure);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -333,11 +360,11 @@ export const RestartQromaDeviceCommand = new RestartQromaDeviceCommand$Type();
 class RestartQromaDeviceAck$Type extends MessageType<RestartQromaDeviceAck> {
     constructor() {
         super("RestartQromaDeviceAck", [
-            { no: 1, name: "ignoreThis", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+            { no: 1, name: "youWerentSureSoWeDidnt", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
         ]);
     }
     create(value?: PartialMessage<RestartQromaDeviceAck>): RestartQromaDeviceAck {
-        const message = { ignoreThis: 0 };
+        const message = { youWerentSureSoWeDidnt: 0 };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<RestartQromaDeviceAck>(this, message, value);
@@ -348,8 +375,8 @@ class RestartQromaDeviceAck$Type extends MessageType<RestartQromaDeviceAck> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* uint32 ignoreThis */ 1:
-                    message.ignoreThis = reader.uint32();
+                case /* uint32 youWerentSureSoWeDidnt */ 1:
+                    message.youWerentSureSoWeDidnt = reader.uint32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -363,9 +390,9 @@ class RestartQromaDeviceAck$Type extends MessageType<RestartQromaDeviceAck> {
         return message;
     }
     internalBinaryWrite(message: RestartQromaDeviceAck, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* uint32 ignoreThis = 1; */
-        if (message.ignoreThis !== 0)
-            writer.tag(1, WireType.Varint).uint32(message.ignoreThis);
+        /* uint32 youWerentSureSoWeDidnt = 1; */
+        if (message.youWerentSureSoWeDidnt !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.youWerentSureSoWeDidnt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -615,13 +642,12 @@ export const SetQromaCoreManagementConfiguration = new SetQromaCoreManagementCon
 class QromaCoreCommand$Type extends MessageType<QromaCoreCommand> {
     constructor() {
         super("QromaCoreCommand", [
-            { no: 1, name: "getQromaCoreConfig", kind: "message", oneof: "command", T: () => GetQromaCoreConfigCommand },
-            { no: 2, name: "getFirmwareDetails", kind: "message", oneof: "command", T: () => GetQromaCoreFirmwareDetailsCommand },
-            { no: 3, name: "restartQromaDevice", kind: "message", oneof: "command", T: () => RestartQromaDeviceCommand },
-            { no: 4, name: "setQromaCommSerialIoConfig", kind: "message", oneof: "command", T: () => SetQromaCommSerialIoConfigCommand },
-            { no: 5, name: "setQromaCommSerialProcessingConfig", kind: "message", oneof: "command", T: () => SetQromaCommSerialProcessingConfig },
-            { no: 6, name: "setQromaCoreLoggingConfig", kind: "message", oneof: "command", T: () => SetQromaCoreLoggingConfigCommand },
-            { no: 7, name: "setQromaCoreManagementConfiguration", kind: "message", oneof: "command", T: () => SetQromaCoreManagementConfiguration }
+            { no: 1, name: "noArgCommand", kind: "enum", oneof: "command", T: () => ["QromaCoreNoArgCommands", QromaCoreNoArgCommands] },
+            { no: 2, name: "restartQromaDevice", kind: "message", oneof: "command", T: () => RestartQromaDeviceCommand },
+            { no: 3, name: "setQromaCommSerialIoConfig", kind: "message", oneof: "command", T: () => SetQromaCommSerialIoConfigCommand },
+            { no: 4, name: "setQromaCommSerialProcessingConfig", kind: "message", oneof: "command", T: () => SetQromaCommSerialProcessingConfig },
+            { no: 5, name: "setQromaCoreLoggingConfig", kind: "message", oneof: "command", T: () => SetQromaCoreLoggingConfigCommand },
+            { no: 6, name: "setQromaCoreManagementConfiguration", kind: "message", oneof: "command", T: () => SetQromaCoreManagementConfiguration }
         ]);
     }
     create(value?: PartialMessage<QromaCoreCommand>): QromaCoreCommand {
@@ -636,43 +662,37 @@ class QromaCoreCommand$Type extends MessageType<QromaCoreCommand> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* GetQromaCoreConfigCommand getQromaCoreConfig */ 1:
+                case /* QromaCoreNoArgCommands noArgCommand */ 1:
                     message.command = {
-                        oneofKind: "getQromaCoreConfig",
-                        getQromaCoreConfig: GetQromaCoreConfigCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).getQromaCoreConfig)
+                        oneofKind: "noArgCommand",
+                        noArgCommand: reader.int32()
                     };
                     break;
-                case /* GetQromaCoreFirmwareDetailsCommand getFirmwareDetails */ 2:
-                    message.command = {
-                        oneofKind: "getFirmwareDetails",
-                        getFirmwareDetails: GetQromaCoreFirmwareDetailsCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).getFirmwareDetails)
-                    };
-                    break;
-                case /* RestartQromaDeviceCommand restartQromaDevice */ 3:
+                case /* RestartQromaDeviceCommand restartQromaDevice */ 2:
                     message.command = {
                         oneofKind: "restartQromaDevice",
                         restartQromaDevice: RestartQromaDeviceCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).restartQromaDevice)
                     };
                     break;
-                case /* SetQromaCommSerialIoConfigCommand setQromaCommSerialIoConfig */ 4:
+                case /* SetQromaCommSerialIoConfigCommand setQromaCommSerialIoConfig */ 3:
                     message.command = {
                         oneofKind: "setQromaCommSerialIoConfig",
                         setQromaCommSerialIoConfig: SetQromaCommSerialIoConfigCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).setQromaCommSerialIoConfig)
                     };
                     break;
-                case /* SetQromaCommSerialProcessingConfig setQromaCommSerialProcessingConfig */ 5:
+                case /* SetQromaCommSerialProcessingConfig setQromaCommSerialProcessingConfig */ 4:
                     message.command = {
                         oneofKind: "setQromaCommSerialProcessingConfig",
                         setQromaCommSerialProcessingConfig: SetQromaCommSerialProcessingConfig.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).setQromaCommSerialProcessingConfig)
                     };
                     break;
-                case /* SetQromaCoreLoggingConfigCommand setQromaCoreLoggingConfig */ 6:
+                case /* SetQromaCoreLoggingConfigCommand setQromaCoreLoggingConfig */ 5:
                     message.command = {
                         oneofKind: "setQromaCoreLoggingConfig",
                         setQromaCoreLoggingConfig: SetQromaCoreLoggingConfigCommand.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).setQromaCoreLoggingConfig)
                     };
                     break;
-                case /* SetQromaCoreManagementConfiguration setQromaCoreManagementConfiguration */ 7:
+                case /* SetQromaCoreManagementConfiguration setQromaCoreManagementConfiguration */ 6:
                     message.command = {
                         oneofKind: "setQromaCoreManagementConfiguration",
                         setQromaCoreManagementConfiguration: SetQromaCoreManagementConfiguration.internalBinaryRead(reader, reader.uint32(), options, (message.command as any).setQromaCoreManagementConfiguration)
@@ -690,27 +710,24 @@ class QromaCoreCommand$Type extends MessageType<QromaCoreCommand> {
         return message;
     }
     internalBinaryWrite(message: QromaCoreCommand, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* GetQromaCoreConfigCommand getQromaCoreConfig = 1; */
-        if (message.command.oneofKind === "getQromaCoreConfig")
-            GetQromaCoreConfigCommand.internalBinaryWrite(message.command.getQromaCoreConfig, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        /* GetQromaCoreFirmwareDetailsCommand getFirmwareDetails = 2; */
-        if (message.command.oneofKind === "getFirmwareDetails")
-            GetQromaCoreFirmwareDetailsCommand.internalBinaryWrite(message.command.getFirmwareDetails, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
-        /* RestartQromaDeviceCommand restartQromaDevice = 3; */
+        /* QromaCoreNoArgCommands noArgCommand = 1; */
+        if (message.command.oneofKind === "noArgCommand")
+            writer.tag(1, WireType.Varint).int32(message.command.noArgCommand);
+        /* RestartQromaDeviceCommand restartQromaDevice = 2; */
         if (message.command.oneofKind === "restartQromaDevice")
-            RestartQromaDeviceCommand.internalBinaryWrite(message.command.restartQromaDevice, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
-        /* SetQromaCommSerialIoConfigCommand setQromaCommSerialIoConfig = 4; */
+            RestartQromaDeviceCommand.internalBinaryWrite(message.command.restartQromaDevice, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* SetQromaCommSerialIoConfigCommand setQromaCommSerialIoConfig = 3; */
         if (message.command.oneofKind === "setQromaCommSerialIoConfig")
-            SetQromaCommSerialIoConfigCommand.internalBinaryWrite(message.command.setQromaCommSerialIoConfig, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
-        /* SetQromaCommSerialProcessingConfig setQromaCommSerialProcessingConfig = 5; */
+            SetQromaCommSerialIoConfigCommand.internalBinaryWrite(message.command.setQromaCommSerialIoConfig, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+        /* SetQromaCommSerialProcessingConfig setQromaCommSerialProcessingConfig = 4; */
         if (message.command.oneofKind === "setQromaCommSerialProcessingConfig")
-            SetQromaCommSerialProcessingConfig.internalBinaryWrite(message.command.setQromaCommSerialProcessingConfig, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
-        /* SetQromaCoreLoggingConfigCommand setQromaCoreLoggingConfig = 6; */
+            SetQromaCommSerialProcessingConfig.internalBinaryWrite(message.command.setQromaCommSerialProcessingConfig, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+        /* SetQromaCoreLoggingConfigCommand setQromaCoreLoggingConfig = 5; */
         if (message.command.oneofKind === "setQromaCoreLoggingConfig")
-            SetQromaCoreLoggingConfigCommand.internalBinaryWrite(message.command.setQromaCoreLoggingConfig, writer.tag(6, WireType.LengthDelimited).fork(), options).join();
-        /* SetQromaCoreManagementConfiguration setQromaCoreManagementConfiguration = 7; */
+            SetQromaCoreLoggingConfigCommand.internalBinaryWrite(message.command.setQromaCoreLoggingConfig, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
+        /* SetQromaCoreManagementConfiguration setQromaCoreManagementConfiguration = 6; */
         if (message.command.oneofKind === "setQromaCoreManagementConfiguration")
-            SetQromaCoreManagementConfiguration.internalBinaryWrite(message.command.setQromaCoreManagementConfiguration, writer.tag(7, WireType.LengthDelimited).fork(), options).join();
+            SetQromaCoreManagementConfiguration.internalBinaryWrite(message.command.setQromaCoreManagementConfiguration, writer.tag(6, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
