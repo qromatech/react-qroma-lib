@@ -59,25 +59,30 @@ export const useQromaAppWebSerial =
   }
 
   const onQromaCommResponse = (qromaCommResponse: QromaCommResponse) => {
-    if (qromaCommResponse.response.oneofKind !== 'coreResponse' &&
-        qromaCommResponse.response.coreResponse.oneofKind !== 'heartbeat')
-    {
-      console.log("QromaAppWebSerial - onData");
-      console.log(qromaCommResponse);
-    } else {
-      // console.log("CORE HEARTBEAT: ", qromaCommResponse.response.coreResponse.response.heartbeat);
-    }
-    if (qromaCommResponse.response.oneofKind === 'appResponseBytes') {
-      const appResponseBytes = qromaCommResponse.response.appResponseBytes;
-      const appResponse = inputs.responseMessageType.fromBinary(appResponseBytes);
-      console.log("APP RESPONSE");
-      console.log(appResponse);
-      if (appResponse === undefined) {
-        console.log("UNDEFINED APP RESPONSE BYTES");
-        console.log(appResponseBytes);
-        return;
+    // console.log("SOME RESPONSE HERE")
+    // console.log(qromaCommResponse)
+    if (qromaCommResponse.response.oneofKind === 'coreResponse') {
+      if (qromaCommResponse.response.coreResponse.oneofKind === 'heartbeat') {
+        // console.log("CORE HEARTBEAT: ", qromaCommResponse.response.coreResponse.response.heartbeat);
       }
-      inputs.onQromaAppResponse(appResponse);
+    } else if (qromaCommResponse.response.oneofKind === 'appResponseBytes') {
+      // console.log("APP RESPONSE");
+      const appResponseBytes = qromaCommResponse.response.appResponseBytes;
+      // console.log(appResponseBytes)
+      // console.log(inputs.responseMessageType)
+      try {
+        const appResponse = inputs.responseMessageType.fromBinary(appResponseBytes);
+        // console.log(appResponse);
+        if (appResponse === undefined) {
+          console.log("UNDEFINED APP RESPONSE BYTES");
+          console.log(appResponseBytes);
+          return;
+        }
+        inputs.onQromaAppResponse(appResponse);
+      } catch (e) {
+        console.log("APP RESPONSE PARSE ERR");
+        console.log(e);
+      }
     }
   }
 

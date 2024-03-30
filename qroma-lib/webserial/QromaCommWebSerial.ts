@@ -28,8 +28,8 @@ export const useQromaCommWebSerial = (
   }
 
   const onData = (newData: Uint8Array) => {
-    console.log("QromaCommWebSerial - onData");
-    console.log(newData);
+    // console.log("QromaCommWebSerial - onData");
+    // console.log(newData);
 
     // let currentRxBuffer = new Uint8Array([...rxBuffer, ...newData]);
     let currentRxBuffer = concatenateUint8Arrays(rxBuffer, newData);
@@ -55,12 +55,12 @@ export const useQromaCommWebSerial = (
         currentRxBuffer = currentRxBuffer.slice(firstNewLineIndex, currentRxBuffer.length);
 
         const b64String = new TextDecoder().decode(b64Bytes);
-        console.log("RESPONSE: " + b64String);
+        // console.log("RESPONSE: " + b64String);
         const messageBytes = Buffer.from(b64String, 'base64');
         const response = QromaCommResponse.fromBinary(messageBytes);
 
-        console.log("QromaCommWebSerial - onData has response");
-        console.log(response);
+        // console.log("QromaCommWebSerial - onData has response");
+        // console.log(response);
 
         onQromaCommResponse(response);
 

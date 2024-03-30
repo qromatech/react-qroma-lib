@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import { IQromaConnectionState, IQromaWebSerial, useQromaWebSerial } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
-import { concatenateUint8Arrays, sleep } from '../utils';
+import { concatenateUint8Arrays, logTimeStamp, sleep } from '../utils';
 
 
 export interface IQromaCommWebSerialRx {
@@ -44,7 +44,7 @@ export const useQromaCommWebSerialRx = (
   const onData = (newData: Uint8Array) => {
     console.log("QromaCommWebSerial RX - onData - " + newData.length + " bytes");
     console.log(_qromaCommRxHandler)
-    // console.log(newData);
+    console.log(newData);
 
     // let currentRxBuffer = new Uint8Array([..._rxBuffer, ...newData]);
     let currentRxBuffer = concatenateUint8Arrays(_rxBuffer, newData);
@@ -145,7 +145,7 @@ export const useQromaCommWebSerialRx = (
     while (!rxHandler.isRxComplete() &&
            !rxHandler.hasTimeoutOccurred())
     {
-      logTimeStamp("WAITING FOR COMM RX TO COMPLETE")
+      logTimeStamp("WAITING FOR COMM RX TO COMPLETE - ")
       await sleep(25);
     }
 
@@ -169,7 +169,7 @@ export const useQromaCommWebSerialRx = (
   }
 
 
-  console.log("RX CALLING useQromaWebSerial");
+  // console.log("RX CALLING useQromaWebSerial");
   const qromaWebSerial = useQromaWebSerial(
     onData,
     onConnectionChange,

@@ -46,6 +46,11 @@ const subscriptions = [] as IQromaWebSerialSubscription[];
 
 const subscriberInputs = {
   onData: (data: Uint8Array) => {
+    console.log("RECEIVED DATA");
+    // console.log(data);
+    let str = new TextDecoder().decode(data);
+    console.log(str)
+
     subscriptions.forEach(s => {
       try {
         s.onData(data);
