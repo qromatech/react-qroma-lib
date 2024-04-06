@@ -117,6 +117,8 @@ export const useQromaCommWebSerialRx = (
   }
 
   const sendQromaCommCommandRx = async (qcCommand: QromaCommCommand, rxHandler: IQromaCommRxHandler): Promise<void> => {
+    console.log("STARTING sendQromaCommCommandRx()");
+    
     if (!qromaWebSerial.getConnectionState().isWebSerialConnected) {
       console.log("sendQromaCommCommand - CAN'T SEND COMMAND - NO CONNECTION");
       console.log(qcCommand);

@@ -1,9 +1,10 @@
 import { Buffer } from 'buffer';
 import { IQromaConnectionState, PortRequestResult } from "./QromaWebSerial";
 import { QromaCommCommand, QromaCommResponse } from '../../qroma-comm-proto/qroma-comm';
-import { useQromaCommWebSerial } from './QromaCommWebSerial';
 import { IMessageType } from '@protobuf-ts/runtime';
 import { QcuCreateQromaCommMessageForAppCommand } from '../QromaCommUtils';
+import { IQromaCommRxHandler, useQromaCommWebSerialRx } from './QromaCommWebSerialRx';
+import { createDefaultQromaParser } from './QromaCommParser';
 
 
 export interface IUseQromaAppWebSerialInputs<TCommand extends object, TResponse extends object> {
@@ -18,18 +19,26 @@ export interface IUseQromaAppWebSerialInputs<TCommand extends object, TResponse 
   onQromaAppResponse: (appMessage: TResponse) => void;
 }
 
-export interface IQromaAppWebSerialRx<TCommand extends object> {
+export interface IQromaAppRxHandler<TResponse extends object> {
+  onAppRx: (rxBuffer: TResponse) => boolean // return true if the app considers this handled based on response
+  // isRxComplete: () => boolean
+  // hasTimeoutOccurred: () => boolean
+  // onTimeout: () => void
+}
+
+export interface IQromaAppWebSerial<TCommand extends object, TResponse extends object> {
   startMonitoring: () => void
   stopMonitoring: () => void
   getConnectionState: () => IQromaConnectionState
   sendQromaAppCommand: (appCommand: TCommand) => void
   createQromaCommMessageForAppCommand: (appCommand: TCommand) => QromaCommCommand
+  sendQromaAppCommandRx: (appCommand: TCommand, rxHandler: IQromaAppRxHandler<TResponse>, timeoutInMs: number) => Promise<void>
 }
 
 
-export const useQromaAppWebSerial = 
+export const useQromaAppWebSerialRx = 
   <TCommand extends object, TResponse extends object>
-(inputs: IUseQromaAppWebSerialInputs<TCommand, TResponse>): IQromaAppWebSerialRx<TCommand> => 
+(inputs: IUseQromaAppWebSerialInputs<TCommand, TResponse>): IQromaAppWebSerial<TCommand> => 
 {
 
   if (!window) {
@@ -58,18 +67,69 @@ export const useQromaAppWebSerial =
     qromaCommWebSerial.sendQromaCommCommand(qromaCommCommand);
   }
 
+  const sendQromaAppCommandRx = async (appCommand: TCommand, rxHandler: IQromaAppRxHandler<TResponse>, timeoutInMs: number) => {
+    const qromaCommCommand = createQromaCommMessageForAppCommand(appCommand);
+
+    const expirationTime = Date.now() + timeoutInMs;
+    let appResponse: TResponse | undefined;
+    let handled = false;
+
+    const dqp = createDefaultQromaParser("downloadRx");
+
+    const checkForAppResult = (qromaCommResponse: QromaCommResponse): boolean => {
+
+      console.log("CHECKING FOR APP RESULT");
+      console.log(qromaCommResponse);
+
+      if (qromaCommResponse.response.oneofKind === 'appResponseBytes') {
+        const appResponseBytes = qromaCommResponse.response.appResponseBytes;
+
+        try {
+          appResponse = inputs.responseMessageType.fromBinary(appResponseBytes);
+          if (appResponse === undefined) {
+            console.log("sendQromaAppCommandRx - UNDEFINED APP RESPONSE BYTES");
+            console.log(appResponseBytes);
+            return;
+          }
+
+          console.log("PARSED APP RESPONSE")
+          console.log(appResponse)
+          
+          // leave it up to rxHandler to decide if this is handled or not
+          handled = rxHandler.onAppRx(appResponse);
+        } catch (e) {
+          console.log("APP RESPONSE PARSE ERR");
+          console.log(e);
+        }
+      }
+  
+      return true;
+    }
+
+    const qromaCommRxHandler: IQromaCommRxHandler = {
+      hasTimeoutOccurred: () => Date.now() > expirationTime,
+      onTimeout: () => { console.log("IQromaCommRxHandler for QromaAppWebSerialRx timed out") },
+      isRxComplete: () => appResponse !== undefined || Date.now() > expirationTime,
+      onRx: (rxBuffer: Uint8Array) => {
+        return dqp.parse(rxBuffer, checkForAppResult);
+      },
+    }
+
+    await qromaCommWebSerial.sendQromaCommCommandRx(qromaCommCommand, qromaCommRxHandler);
+  }
+
   const onQromaCommResponse = (qromaCommResponse: QromaCommResponse) => {
-    // console.log("SOME RESPONSE HERE")
-    // console.log(qromaCommResponse)
+    console.log("SOME RESPONSE HERE")
+    console.log(qromaCommResponse)
     if (qromaCommResponse.response.oneofKind === 'coreResponse') {
       if (qromaCommResponse.response.coreResponse.oneofKind === 'heartbeat') {
         // console.log("CORE HEARTBEAT: ", qromaCommResponse.response.coreResponse.response.heartbeat);
       }
     } else if (qromaCommResponse.response.oneofKind === 'appResponseBytes') {
-      // console.log("APP RESPONSE");
+      console.log("APP RESPONSE");
       const appResponseBytes = qromaCommResponse.response.appResponseBytes;
-      // console.log(appResponseBytes)
-      // console.log(inputs.responseMessageType)
+      console.log(appResponseBytes)
+      console.log(inputs.responseMessageType)
       try {
         const appResponse = inputs.responseMessageType.fromBinary(appResponseBytes);
         // console.log(appResponse);
@@ -90,9 +150,9 @@ export const useQromaAppWebSerial =
     inputs.onPortRequestResult({success: latestConnection.isWebSerialConnected});
   }
 
-  console.log("CALLING useQromaCommWebSerial");
-  const qromaCommWebSerial = useQromaCommWebSerial(
-    onQromaCommResponse,
+  console.log("CALLING useQromaCommWebSerialRx");
+  const qromaCommWebSerial = useQromaCommWebSerialRx(
+    // onQromaCommResponse,
     onConnectionChange
   );
 
@@ -103,5 +163,6 @@ export const useQromaAppWebSerial =
     stopMonitoring: qromaCommWebSerial.stopMonitoring,
     sendQromaAppCommand,
     createQromaCommMessageForAppCommand,
+    sendQromaAppCommandRx,
   };
 }

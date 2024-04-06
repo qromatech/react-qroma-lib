@@ -30,16 +30,18 @@ export const QromaCoreRequestForm = (props: IQromaCoreRequestFormProps) => {
     qromaCoreWebSerial.sendQromaCoreCommand(command);
   }
 
-  // const showSavedCoreConfig = async () => {
-  //   const command: QromaCoreCommand = {
-  //     command: {
-  //       oneofKind: 'getFirmwareDetails',
-  //       getFirmwareDetails: { ignoreThis: 1 },
-  //     }
-  //   };
-  //   qromaCoreWebSerial.sendQromaCoreCommand(command);
-  //   console.log("DID IT")
-  // }
+  const restartDevice = () => {
+    const areYouSure = window.confirm("Are you sure you want to restart?");
+    const command: QromaCoreCommand = {
+      command: {
+        oneofKind: 'restartQromaDevice',
+        restartQromaDevice: {
+          areYouSure,
+        }
+      }
+    }
+    qromaCoreWebSerial.sendQromaCoreCommand(command);
+  }
 
   const enableLogging = async () => {
     const command: QromaCoreCommand = {
@@ -90,6 +92,10 @@ export const QromaCoreRequestForm = (props: IQromaCoreRequestFormProps) => {
       
       <div>
         <button onClick={() => { getFirmwareDetails(); }}>Get firmware details</button>
+      </div>
+
+      <div>
+        <button onClick={() => { restartDevice(); }}>Restart</button>
       </div>
 
       <div>
