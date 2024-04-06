@@ -2,7 +2,7 @@ import { GetFileContentsResponse, ListDirContentsResponse, MkDirResponse, RmDirR
 import { QromaCommCommand, QromaCommResponse } from "../../qroma-comm-proto/qroma-comm";
 import { crc32 } from "crc";
 // import { useQromaCommWebSerial } from "../webserial/QromaCommWebSerial";
-import { sleep } from "../utils";
+import { logTimeStamp, sleep } from "../utils";
 import { IQromaConnectionState, PortRequestResult } from "../webserial/QromaWebSerial";
 
 // @ts-ignore
@@ -41,7 +41,7 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
 
   console.log("STARTING QromaCommFileSystemRxApi");
 
-  const [connectionState, setConnectionState] = useState({
+  const [connectionState, _setConnectionState] = useState({
     isConnected: false,
     isMonitorOn: false,
     isPortConnected: false,
@@ -54,12 +54,19 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
   const startMonitoring = () => {
     qromaCommWebSerial.startMonitoring();
   }
+
+  const setConnectionState = (x) => {
+    console.log("SET CONNECTION STATE")
+    console.log(x)
+    _setConnectionState(x);
+  }
   
   const onConnectionChange = (latestConnectionState: IQromaConnectionState) => {
+    console.log("ON CONN CHANGE")
     setConnectionState(latestConnectionState);
   }
 
-  console.log("CALLING useQromaCommWebSerialRx()")
+  // console.log("CALLING useQromaCommWebSerialRx()")
   const qromaCommWebSerial = useQromaCommWebSerialRx(onConnectionChange);
 
 
@@ -284,67 +291,117 @@ export const useQromaCommFileSystemRxApi = (): IQromaCommFilesystemRxApi => {
       }
     };
 
-    let initRx: InitWriteFileStreamAckResponse | undefined = undefined;
-    let timedOut = false;
-    const timeoutInMs = 2000;
-    const expirationTime = Date.now() + timeoutInMs;
+    const waitForInit = async (): Promise<boolean> => {
+      let initRx: InitWriteFileStreamAckResponse | undefined = undefined;
+      let timedOut = false;
+      const ackRxTimeoutInMs = 2500;
+      const ackRxExpirationTime = Date.now() + ackRxTimeoutInMs;
+  
+      const dqp = createDefaultQromaParser("_streamFileContentsAck");
+      const rxOnQromaCommAckResponse = (message: QromaCommResponse) => {
+        console.log("CHECKING MESSAGES FOR STREAM ACK");
+        console.log(message);
+        if (message.response.oneofKind === 'streamResponse' &&
+            message.response.streamResponse.response.oneofKind === 'initWriteFileStreamAckResponse')
+        {
+          console.log("FOUND IT! RX rxOnQromaCommAckResponse")
+          console.log(message)
+          initRx = message.response.streamResponse.response.initWriteFileStreamAckResponse;
+        }
+        return true;
+      };
+  
+      let rxInitAckHandler: IQromaCommRxHandler = {
+        hasTimeoutOccurred: () => Date.now() > ackRxExpirationTime,
+        onTimeout: () => { timedOut = true; },
+        onRx: (rxBuffer: Uint8Array) => {
+          console.log("RX rxOnQromaCommAckResponse ??");
+          const parsed = dqp.parse(rxBuffer, rxOnQromaCommAckResponse);
+          console.log(parsed);
+          return parsed;
+        },
+        isRxComplete: () => initRx !== undefined,
+      };
 
-    const dqp = createDefaultQromaParser("_streamFileContentsAck");
-    const rxOnQromaCommAckResponse = (message: QromaCommResponse) => {
-      if (message.response.oneofKind === 'fsResponse' &&
-          message.response.fsResponse.response.oneofKind === 'initWriteFileStreamAckResponse')
-      {
-        initRx = message.response.fsResponse.response.initWriteFileStreamAckResponse;
-      }
-      return true;
-    };
+      // const awaitInitAckTask = qromaCommWebSerial.monitorRx(rxInitAckHandler);
 
-    let rxHandler: IQromaCommRxHandler = {
-      hasTimeoutOccurred: () => Date.now() > expirationTime,
-      onTimeout: () => { timedOut = true; },
-      onRx: (rxBuffer: Uint8Array) => {
-        console.log("RX rxOnQromaCommAckResponse");
-        return dqp.parse(rxBuffer, rxOnQromaCommAckResponse);
-      },
-      isRxComplete: () => initRx !== undefined,
-    };
+      logTimeStamp("pre sendQromaCommCommandRx() - init write")
+      await qromaCommWebSerial.sendQromaCommCommandRx(initWriteFileStreamCommand, rxInitAckHandler);
+      logTimeStamp("done sendQromaCommCommandRx - init write")
+      
+      // logTimeStamp("start await awaitInitAckTask")
+      // await awaitInitAckTask;
+      // logTimeStamp("done await awaitInitAckTask")
+      console.log(initRx)
+      console.log(timedOut)
 
-    const _sendBytesStream = async (bytestoSend: Uint8Array) => {
-      return await qromaCommWebSerial.qromaWebSerial.sendBytesInChunks(bytestoSend, 100, 100);
+      return initRx !== undefined;
     }
 
-    await qromaCommWebSerial.sendQromaCommCommandRx(initWriteFileStreamCommand, rxHandler);
-    console.log("DONE WAITING FOR INIT WRITE FS")
-    console.log(initRx)
+    const waitForUploadToComplete = async (): Promise<boolean> => {
+      let timedOut = false;
+      const uploadCompleteTimeoutInMs = contents.length * 1.5;  // we do about 1k-byte a second... increase by 50%
+      const uploadCompleteExpirationTime = Date.now() + uploadCompleteTimeoutInMs;
+
+      const dqp = createDefaultQromaParser("_waitForUploadToComplete");
+      const rxOnQromaCommCompleteResponse = (message: QromaCommResponse) => {
+        console.log("CHECKING MESSAGES FOR STREAM COMPLETE");
+        console.log(message);
+
+        if (message.response.oneofKind === 'streamResponse' &&
+            message.response.streamResponse.response.oneofKind === 'writeFileStreamCompleteResponse')
+        {
+          console.log("FILTER SUCCESS");
+          completeRx = message.response.streamResponse.response.writeFileStreamCompleteResponse;
+        }
+        return true;
+      };
+  
+      let completeRx: ReadFileStreamCompleteResponse | undefined = undefined;
+      let rxCompleteHandler: IQromaCommRxHandler = {
+        hasTimeoutOccurred: () => Date.now() > uploadCompleteExpirationTime,
+        onTimeout: () => {
+          console.log("RX rxOnQromaCommCompleteResponse TIMED OUT")
+          timedOut = true;
+        },
+        onRx: (rxBuffer: Uint8Array) => {
+          console.log("RX rxOnQromaCommCompleteResponse");
+          return dqp.parse(rxBuffer, rxOnQromaCommCompleteResponse);
+        },
+        isRxComplete: () => {
+          const isCompleteRx = completeRx !== undefined;
+          console.log("UPLOAD RX IS COMPLETE? CHECK: " + isCompleteRx);
+          return isCompleteRx;
+        },
+      };
+  
+      await qromaCommWebSerial.monitorRx(rxCompleteHandler);
+      console.log("DONE WAITING FOR RX COMPLETE CHECK");
+      console.log(rxCompleteHandler.isRxComplete());
+      console.log(rxCompleteHandler.hasTimeoutOccurred());
+      
+      console.log("RECEIVED SEND COMPLETE RESPONSE");
+      console.log(completeRx)
+      console.log(timedOut)
+
+      return completeRx !== undefined;
+    }
+
+    const initSuccess = await waitForInit();
+    console.log("initSuccess RESPONSE");
+    console.log(initSuccess);
+
+    const _sendBytesStream = async (bytestoSend: Uint8Array) => {
+      return await qromaCommWebSerial.qromaWebSerial.sendBytesInChunks(bytestoSend, 50, 50);
+    }
 
     _sendBytesStream(contents);
+    console.log("DONE WAITING FOR STREAQM SEND")
 
-    const rxOnQromaCommCompleteResponse = (message: QromaCommResponse) => {
-      if (message.response.oneofKind === 'streamResponse' &&
-          message.response.streamResponse.response.oneofKind === 'writeFileStreamCompleteResponse')
-      {
-        console.log("FILTER SUCCESS");
-        return message.response.streamResponse.response.writeFileStreamCompleteResponse;
-      }
-      return true;
-    };
+    const uploadComplete = await waitForUploadToComplete();
 
-    let completeRx: ReadFileStreamCompleteResponse | undefined = undefined;
-    let rxCompleteHandler: IQromaCommRxHandler = {
-      hasTimeoutOccurred: () => Date.now() > expirationTime,
-      onTimeout: () => { timedOut = true; },
-      onRx: (rxBuffer: Uint8Array) => {
-        console.log("RX rxOnQromaCommCompleteResponse");
-        return dqp.parse(rxBuffer, rxOnQromaCommCompleteResponse);
-      },
-      isRxComplete: () => completeRx !== undefined,
-    };
-
-    await qromaCommWebSerial.monitorRx(rxCompleteHandler);
-
-    console.log("SEND COMPLETE RESPONSE");
-    console.log(completeRx)
-    console.log(timedOut)
+    console.log("uploadComplete RESPONSE");
+    console.log(uploadComplete);
 
     return;
   }

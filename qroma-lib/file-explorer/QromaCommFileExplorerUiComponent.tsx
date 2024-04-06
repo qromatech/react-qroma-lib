@@ -2,19 +2,21 @@ import React, { useState } from "react"
 import { DirItem, DirItemType } from "../../qroma-comm-proto/file-system-commands";
 import { FileUiComponent } from "./FileUiComponent";
 import { DirUiComponent } from "./DirUiComponent";
-import { useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
+import { IQromaCommFilesystemRxApi, useQromaCommFileSystemRxApi } from "./QromaCommFileSystemRxApi";
 
 // // @ts-ignore
 // import { Buffer } from 'buffer';
 
 
-interface IQromaCommFileExplorerUiComponentProps { }
+interface IQromaCommFileExplorerUiComponentProps {
+  qromaCommFileSystemApi: IQromaCommFilesystemRxApi
+}
 
 
 
 export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUiComponentProps) => {
 
-  const qromaCommFileSystemApi = useQromaCommFileSystemRxApi();
+  const { qromaCommFileSystemApi } = { ...props };
 
   const [dirItems, setDirItems] = useState([] as DirItem[]);
   const [activeDirPath, setActiveDirPath] = useState("...");
@@ -25,11 +27,14 @@ export const QromaCommFileExplorerUiComponent = (props: IQromaCommFileExplorerUi
   //     qromaCommFileSystemApi.unsubscribe();
   //   }
   // })
+
+  console.log("RENDERING QromaCommFileExplorerUiComponent")
   
   const listDirPath = async (dirPath: string) => {
     console.log("LISTING DIR PATH")
     const dirResult = await qromaCommFileSystemApi.listDir(dirPath);
     if (dirResult && dirResult.success) {
+      console.log("UPDATING DIR ITEMS")
       setDirItems(dirResult.dirItems);
       setActiveDirPath(dirResult.dirPath);
     }

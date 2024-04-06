@@ -12,25 +12,26 @@ interface IQromaCoreDeviceAppProps {
 
 export const QromaCoreDeviceApp = (props: IQromaCoreDeviceAppProps) => {
   
-  const [qromaCoreResponse, setQromaCoreResponse] = useState(QromaCoreResponse.create());
+  const [qromaCoreNonHeartbeatResponse, setQromaCoreNonHeartbeatResponse] = useState(QromaCoreResponse.create());
+  const [qromaCoreHeartbeatResponse, setQromaCoreHeartbeatResponse] = useState(QromaCoreResponse.create());
   const [isPortConnected, setIsPortConnected] = useState(false);
-  const [ignoreHeartbeatMessages, setIgnoreHeartbeatMessages] = useState(true);
-  console.log("IGNORE CHECKED - " + ignoreHeartbeatMessages);
+  // const [ignoreHeartbeatMessages, setIgnoreHeartbeatMessages] = useState(true);
+  // console.log("IGNORE CHECKED - " + ignoreHeartbeatMessages);
 
   const inputs: IUseQromaCoreWebSerialInputs = {
     onQromaCoreResponse: (coreResponse: QromaCoreResponse) => {
       console.log("QromaCoreDeviceApp - onQromaCoreResponse!!");
-      if (coreResponse.response.oneofKind === 'heartbeat' &&
-          ignoreHeartbeatMessages)
+      if (coreResponse.response.oneofKind === 'heartbeat')
       {
-        console.log("IGNORE HB NOW")
-        return;
+        setQromaCoreHeartbeatResponse(coreResponse);
+      } else {
+        setQromaCoreNonHeartbeatResponse(coreResponse);
       }
 
       // console.log(coreResponse);
-      // console.log(ignoreHeartbeatMessages);
+      // // console.log(ignoreHeartbeatMessages);
       // console.log("SETTING QROMA CORE RESPONSE");
-      setQromaCoreResponse(coreResponse);
+      // setQromaCoreResponse(coreResponse);
     },
     onPortRequestResult: (requestResult: PortRequestResult) => { 
       if (requestResult.success === isPortConnected) {
@@ -74,17 +75,12 @@ export const QromaCoreDeviceApp = (props: IQromaCoreDeviceAppProps) => {
 
       <div>
         <div>
-        <label>
-          <input 
-            type="checkbox" 
-            checked={ignoreHeartbeatMessages} 
-            onChange={(event) => setIgnoreHeartbeatMessages(event.target.checked) } 
-          />
-          Ignore heartbeat messages
-        </label>
-      </div>
-        App Response: {JSON.stringify(qromaCoreResponse)}
-      </div>
+          Core Response: {JSON.stringify(qromaCoreNonHeartbeatResponse)}
+        </div>
+        <div>
+          Heartbeat Response: {JSON.stringify(qromaCoreHeartbeatResponse)}
+        </div>
+      </div>      
     </>
   )
 }
